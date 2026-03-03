@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1" name="viewport"/>
+<title>Wael — About</title>
+<style>
+:root{
+  --left-bg:#063826;
+  --right-bg:#5b0b0b;
+  --text:#f5f7fa;
+  --muted:rgba(255,255,255,.78);
+  --radius:999px;
+  --card:rgba(255,255,255,.08);
+  --card-border:rgba(255,255,255,.15);
+}
+
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+  background:#0b0b0b;
+  color:var(--text);
+}
+
+/* Layout */
+.wrap{
+  min-height:100vh;
+  position:relative;
+  overflow:hidden;
+}
+
+/* Panels */
+.left,.right{
+  position:absolute;
+  top:0;
+  bottom:0;
+}
+
+.left{
+  left:0;
+  width:58%;
+  background:linear-gradient(135deg,#052e21 0%,#063826 60%,#052b1f 100%);
+  padding:92px 7vw;
+  display:flex;
+  align-items:flex-start;
+  z-index:2;
+}
+
+.right{
+  right:0;
+  width:52%;
+  background:linear-gradient(135deg,#4a0707 0%,#5b0b0b 60%,#360606 100%);
+  z-index:1;
+}
+
+/* Diagonal split (desktop) */
+.right::before{
+  content:"";
+  position:absolute;
+  left:-140px;
+  top:-10%;
+  width:280px;
+  height:120%;
+  background:inherit;
+  transform:skewX(-14deg);
+  box-shadow:-20px 0 50px rgba(0,0,0,.35);
+}
+
+/* Top-right button */
+.topBtn{
+  position:absolute;
+  top:20px;
+  right:20px;
+  z-index:10;
+  padding:12px 22px;
+  border-radius:var(--radius);
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.25);
+  backdrop-filter:blur(10px);
+  color:#fff;
+  font-weight:700;
+  text-decoration:none;
+  transition:none;
+}
+.topBtn:hover{ background:rgba(255,255,255,.2); }
+
+/* Content */
+.content{
+  max-width:700px;
+  /* animation removed for performance */
+}
+
+.kicker{
+  margin:0 0 10px;
+  color:var(--muted);
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  font-size:12px;
+}
+
+.title{
+  margin:0 0 14px;
+  font-size:clamp(40px,4.6vw,64px);
+  line-height:1.05;
+}
+
+.subtitle{
+  margin:0 0 28px;
+  font-size:16px;
+  color:var(--muted);
+  max-width:60ch;
+}
+
+/* Cards */
+.grid{
+  display:grid;
+  grid-template-columns:1fr;
+  gap:16px;
+  margin-top:10px;
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--card-border);
+  border-radius:22px;
+  padding:18px 18px 16px;
+  backdrop-filter:blur(14px);
+  box-shadow:0 25px 70px rgba(0,0,0,.22);
+}
+
+.cardHeader{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-bottom:10px;
+}
+
+.badge{
+  width:42px;
+  height:42px;
+  border-radius:16px;
+  background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.16);
+  display:grid;
+  place-items:center;
+  flex:0 0 auto;
+}
+
+.cardTitle{
+  margin:0;
+  font-size:18px;
+  letter-spacing:.2px;
+}
+
+.list{
+  margin:0;
+  padding-left:18px;
+  color:rgba(255,255,255,.90);
+}
+.list li{ margin:8px 0; }
+.list strong{ color:#fff; }
+
+/* Right hero */
+.hero{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:flex-start;
+  justify-content:flex-end;
+  padding:110px 6vw 40px;
+}
+
+.hero .frame{
+  width:640px;
+  max-width:96%;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:28px;
+  backdrop-filter:blur(14px);
+  box-shadow:0 25px 70px rgba(0,0,0,.45);
+  padding:22px;
+  /* animation removed for performance */
+}
+
+.heroTop{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:14px;
+}
+
+.chip{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding:10px 14px;
+  border-radius:var(--radius);
+  background:rgba(255,255,255,.10);
+  border:1px solid rgba(255,255,255,.16);
+  color:rgba(255,255,255,.92);
+  font-weight:700;
+  font-size:13px;
+  white-space:nowrap;
+}
+
+.heroTitle{
+  margin:0 0 10px;
+  font-size:22px;
+}
+
+.heroText{
+  margin:0 0 14px;
+  color:var(--muted);
+  line-height:1.6;
+}
+
+.pills{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+}
+
+.pill{
+  padding:10px 12px;
+  border-radius:var(--radius);
+  background:rgba(0,0,0,.18);
+  border:1px solid rgba(255,255,255,.14);
+  font-size:13px;
+  color:rgba(255,255,255,.92);
+}
+
+/* Tiny inline icons */
+svg{ display:block; }
+
+/* Animations removed for performance */
+
+
+/* Desktop snapshot (placed in the green side) */
+.snapshotDesktop{
+  margin: 6px 0 18px;
+  width: 100%;
+  max-width: 700px;
+}
+
+/* In desktop, keep the red panel as background only */
+@media (min-width:861px){
+  .right .hero{ display:none; }
+}
+
+/* Mobile */
+@media (max-width:860px){
+  .snapshotDesktop{ display:none; }
+
+  .left,.right{ position:relative; width:100%; }
+  .right{ min-height:46vh; }
+  .right::before{ display:none; }
+  .left{
+    padding:110px 7vw 50px;
+  }
+  .hero{ position:relative; align-items:flex-start; justify-content:center; padding:90px 7vw 40px; }
+  .topBtn{ top:15px; right:15px; }
+}
+</style>
+</head>
+<body>
+<main class="wrap">
+<!-- Keep this consistent with your landing page -->
+<a aria-label="Back to Home" class="topBtn" href="index.html">Home</a>
+<section class="left">
+<div class="content">
+<p class="kicker">About me</p>
+<h1 class="title">Wael</h1>
+<p class="subtitle">
+        Student, builder, and curious tinkerer—mixing school, programming, and Moroccan culture into everyday projects.
+      </p>
+
+      <div class="frame snapshotDesktop">
+<div class="heroTop">
+<span class="chip">
+<!-- star -->
+<svg aria-hidden="true" fill="none" height="16" viewbox="0 0 24 24" width="16">
+<path d="m12 3 2.7 5.7 6.3.9-4.6 4.5 1.1 6.3L12 17.9 6.5 20.4l1.1-6.3L3 9.6l6.3-.9L12 3Z" stroke="white" stroke-linejoin="round" stroke-opacity=".9" stroke-width="2"></path>
+</svg>
+            Profile Snapshot
+          </span>
+<span class="chip">
+<!-- pin -->
+<svg aria-hidden="true" fill="none" height="16" viewbox="0 0 24 24" width="16">
+<path d="M12 21s7-4.4 7-11a7 7 0 0 0-14 0c0 6.6 7 11 7 11Z" stroke="white" stroke-linejoin="round" stroke-opacity=".9" stroke-width="2"></path>
+<path d="M12 10.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" stroke="white" stroke-opacity=".7" stroke-width="2"></path>
+</svg>
+            Morocco
+          </span>
+</div>
+<h3 class="heroTitle">What I’m into right now</h3>
+<p class="heroText">
+          Learning, building, and experimenting—especially with Python tools, OS customization,
+          and school projects that connect technology with real life.
+        </p>
+<div aria-label="Highlights" class="pills">
+<span class="pill">Math Olympiad prep</span>
+<span class="pill">Python mini-tools</span>
+<span class="pill">Windows 11 / Ubuntu tinkering</span>
+<span class="pill">ThinkPad E330 optimization</span>
+<span class="pill">Moroccan culture &amp; tea</span>
+<span class="pill">Steam gaming</span>
+</div>
+</div>
+<div class="grid">
+<article class="card">
+<div class="cardHeader">
+<div aria-hidden="true" class="badge">
+<!-- book -->
+<svg fill="none" height="20" viewbox="0 0 24 24" width="20">
+<path d="M6 4h11a2 2 0 0 1 2 2v14a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2V6a2 2 0 0 1 2-2Z" stroke="white" stroke-opacity=".92" stroke-width="2"></path>
+<path d="M6 4v14" stroke="white" stroke-opacity=".6" stroke-width="2"></path>
+</svg>
+</div>
+<h2 class="cardTitle">The Basics</h2>
+</div>
+<ul class="list">
+<li><strong>Education:</strong> 7th-grade (1APIC) student navigating the 2025–2026 school year.</li>
+<li><strong>Location:</strong> Morocco.</li>
+<li><strong>Current Academic Focus:</strong> Gearing up for the math olympiad and diving into school research projects, including exploring how modern technological innovations improve human life and lifestyle.</li>
+</ul>
+</article>
+<article class="card">
+<div class="cardHeader">
+<div aria-hidden="true" class="badge">
+<!-- code -->
+<svg fill="none" height="20" viewbox="0 0 24 24" width="20">
+<path d="M9 18 3 12l6-6" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-opacity=".92" stroke-width="2"></path>
+<path d="m15 6 6 6-6 6" stroke="white" stroke-linecap="round" stroke-linejoin="round" stroke-opacity=".92" stroke-width="2"></path>
+</svg>
+</div>
+<h2 class="cardTitle">Tech &amp; Programming</h2>
+</div>
+<ul class="list">
+<li><strong>Hardware Setup:</strong> Powering through projects, coding, and troubleshooting on a trusty Lenovo ThinkPad E330.</li>
+<li><strong>OS Tinkering:</strong> Testing Windows 11 (25H2), Ubuntu, and Tiny11—plus tweaking with Rectify11 and HackBGRT to optimize older hardware.</li>
+<li><strong>Developer:</strong> Writing Python scripts to build practical tools: GUI chat apps, audio metadata editors, and country information dashboards.</li>
+<li><strong>Daily Toolkit:</strong> Microsoft 365 Family and Google AI Pro to get things done.</li>
+</ul>
+</article>
+<article class="card">
+<div class="cardHeader">
+<div aria-hidden="true" class="badge">
+<!-- gamepad -->
+<svg fill="none" height="20" viewbox="0 0 24 24" width="20">
+<path d="M8 15h.01M16 15h.01" stroke="white" stroke-linecap="round" stroke-opacity=".92" stroke-width="3"></path>
+<path d="M7 12h4" stroke="white" stroke-linecap="round" stroke-opacity=".92" stroke-width="2"></path>
+<path d="M9 10v4" stroke="white" stroke-linecap="round" stroke-opacity=".92" stroke-width="2"></path>
+<path d="M7.5 8.5h9A5.5 5.5 0 0 1 22 14v2a3 3 0 0 1-5.2 2.1L15 16H9l-1.8 2.1A3 3 0 0 1 2 16v-2a5.5 5.5 0 0 1 5.5-5.5Z" stroke="white" stroke-linejoin="round" stroke-opacity=".92" stroke-width="2"></path>
+</svg>
+</div>
+<h2 class="cardTitle">Gaming &amp; Interests</h2>
+</div>
+<ul class="list">
+<li><strong>Gaming:</strong> PC gamer playing PvZ Fusion, Asphalt 8, and Asphalt Legends Unite via Steam—and waiting for Silksong.</li>
+<li><strong>Culture:</strong> Appreciative of Moroccan heritage—traditional living room designs, history, Moroccan tea, and desserts.</li>
+</ul>
+</article>
+</div>
+</div>
+</section>
+<section aria-hidden="true" class="right">
+<div class="hero">
+<div class="frame">
+<div class="heroTop">
+<span class="chip">
+<!-- star -->
+<svg aria-hidden="true" fill="none" height="16" viewbox="0 0 24 24" width="16">
+<path d="m12 3 2.7 5.7 6.3.9-4.6 4.5 1.1 6.3L12 17.9 6.5 20.4l1.1-6.3L3 9.6l6.3-.9L12 3Z" stroke="white" stroke-linejoin="round" stroke-opacity=".9" stroke-width="2"></path>
+</svg>
+            Profile Snapshot
+          </span>
+<span class="chip">
+<!-- pin -->
+<svg aria-hidden="true" fill="none" height="16" viewbox="0 0 24 24" width="16">
+<path d="M12 21s7-4.4 7-11a7 7 0 0 0-14 0c0 6.6 7 11 7 11Z" stroke="white" stroke-linejoin="round" stroke-opacity=".9" stroke-width="2"></path>
+<path d="M12 10.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" stroke="white" stroke-opacity=".7" stroke-width="2"></path>
+</svg>
+            Morocco
+          </span>
+</div>
+<h3 class="heroTitle">What I’m into right now</h3>
+<p class="heroText">
+          Learning, building, and experimenting—especially with Python tools, OS customization,
+          and school projects that connect technology with real life.
+        </p>
+<div aria-label="Highlights" class="pills">
+<span class="pill">Math Olympiad prep</span>
+<span class="pill">Python mini-tools</span>
+<span class="pill">Windows 11 / Ubuntu tinkering</span>
+<span class="pill">ThinkPad E330 optimization</span>
+<span class="pill">Moroccan culture &amp; tea</span>
+<span class="pill">Steam gaming</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+</body>
+</html>
