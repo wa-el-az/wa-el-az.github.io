@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Wael — Redeem</title>
+  <link rel="icon" type="image/png" href="1000003608.png" />
+  <link rel="stylesheet" href="assets/style.css" />
+  <script defer src="assets/app.js"></script>
+</head>
+<body class="page-redeem">
+  <header class="siteHeader">
+    <a class="brand" href="index.html" aria-label="Wael home">Wael</a>
+    <nav class="nav" aria-label="Primary">
+      <a class="navLink" data-page="home" href="index.html">Home</a>
+      <a class="navLink" data-page="about" href="about.html">About</a>
+      <a class="navLink" data-page="redeem" href="redeem.html">Redeem</a>
+    </nav>
+  </header>
+
+  <main class="wrap">
+    <section class="left">
+      <div class="card" role="region" aria-label="Redeem code">
+  <p class="kicker">Redeem</p>
+  <h1 class="title">Enter your code</h1>
+  <p class="subtitle">Type your code below to unlock your message — no popups, just your theme.</p>
+
+  <form id="redeemForm" aria-label="Redeem form">
+    <div class="formRow">
+      <input id="redeemCode" class="input" type="text" inputmode="text" autocomplete="off"
+             placeholder="Type WAEL" aria-label="Code" />
+      <button id="redeemBtn" class="btn" type="submit">Redeem</button>
+    </div>
+    <p class="help">Tip: codes are case-insensitive. Example: <strong>WAEL</strong></p>
+    <div id="redeemNotice" class="notice" aria-live="polite"></div>
+  </form>
+</div>
+    </section>
+
+    <section class="right" aria-hidden="true">
+      <div class="heroImg">
+  <div class="frame">
+    <img src="https://static.wikitide.net/ballsdexwiki/e/e4/Morocco.png" alt="Morocco" />
+  </div>
+</div>
+    </section>
+  </main>
+
+  <footer class="siteFooter">
+    <div class="footInner">© 2026 Wael • Built with ❤️</div>
+  </footer>
+
+  <div class="modal" id="redeemModal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="redeemModalTitle">
+  <div class="modalPanel">
+    <div class="modalTop">
+      <h2 class="modalTitle" id="redeemModalTitle">Yay!</h2>
+      <button class="iconBtn" type="button" data-modal-close aria-label="Close">✕</button>
+    </div>
+    <div class="modalBody">
+      <p id="redeemModalMessage"></p>
+    </div>
+    <div class="modalActions">
+      <button class="pillBtn" type="button" data-modal-close>Nice</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>
