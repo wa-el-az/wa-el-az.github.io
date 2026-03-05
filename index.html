@@ -98,15 +98,34 @@ body{
   color:var(--muted);
 }
 
+/* Typewriter Title Styles */
 .title{
   margin:0;
-  font-size:clamp(44px,5vw,72px);
-  line-height:1.05;
+  font-size:clamp(40px,5vw,72px);
+  line-height:1.1;
+  /* Keep a minimum height so the button below doesn't jump up and down on mobile */
+  min-height: 2.2em; 
+}
+@media (min-width: 861px) {
+  .title { min-height: 1.2em; }
+}
+
+.cursor {
+  display: inline-block;
+  width: 4px;
+  height: 0.9em;
+  background-color: var(--text);
+  margin-left: 6px;
+  vertical-align: middle;
+  animation: blink 1s step-end infinite;
+}
+@keyframes blink {
+  50% { opacity: 0; }
 }
 
 .cta{
   display:inline-flex;
-  margin-top:34px;
+  margin-top:24px;
   padding:16px 28px;
   border-radius:var(--radius);
   background:#fff;
@@ -175,39 +194,33 @@ body{
   .content{ animation:none !important; }
   .heroImg .frame{ animation:none !important; }
   .cta, .redeem{ transition:none !important; }
+  .cursor { animation: none !important; }
 }
 
 /* Mobile */
 @media (max-width:860px){
-
   .left,.right{
     position:relative;
     width:100%;
   }
-
   .right{
     height:50vh;
   }
-
   .right::before{
-    display:none; /* remove diagonal on mobile */
+    display:none; 
   }
-
   .left{
     text-align:center;
     justify-content:center;
     padding:120px 7vw 60px;
   }
-
   .content{
     margin:0 auto;
   }
-
   .heroImg{
     position:relative;
     height:50vh;
   }
-
   .redeem{
     top:15px;
     right:15px;
@@ -225,7 +238,11 @@ body{
   <section class="left">
     <div class="content">
       <p class="hello">Hi,</p>
-      <h1 class="title">I am Wael.</h1>
+      
+      <h1 class="title">
+        <span id="typewriter-text">I am Wael.</span><span class="cursor"></span>
+      </h1>
+      
       <a class="cta" href="about.html">About me</a>
     </div>
   </section>
@@ -242,6 +259,51 @@ body{
   </section>
 
 </main>
+
+<script>
+  const phrases = [
+    "I am Wael.",
+    "I am a Moroccan.",
+    "I am a tech enthusiast."
+  ];
+  
+  let phraseIndex = 0;
+  // Start with the first phrase fully typed out
+  let charIndex = phrases[0].length; 
+  let isDeleting = true;
+
+  const typeNode = document.getElementById('typewriter-text');
+
+  function typeEffect() {
+    const currentPhrase = phrases[phraseIndex];
+    
+    if (isDeleting) {
+      charIndex--; // Erase a character
+    } else {
+      charIndex++; // Type a character
+    }
+
+    typeNode.textContent = currentPhrase.substring(0, charIndex);
+
+    // Adjust typing speeds
+    let typingSpeed = isDeleting ? 40 : 80;
+
+    // Logic for pausing at the ends
+    if (!isDeleting && charIndex === currentPhrase.length) {
+      typingSpeed = 2500; // Pause when a phrase is fully typed
+      isDeleting = true;
+    } else if (isDeleting && charIndex === 0) {
+      isDeleting = false;
+      phraseIndex = (phraseIndex + 1) % phrases.length; // Move to next phrase
+      typingSpeed = 500; // Pause before starting the next phrase
+    }
+
+    setTimeout(typeEffect, typingSpeed);
+  }
+
+  // Wait 2.5 seconds before starting the deletion of the first phrase
+  setTimeout(typeEffect, 2500);
+</script>
 
 </body>
 </html>
