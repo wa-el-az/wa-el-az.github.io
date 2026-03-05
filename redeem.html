@@ -68,7 +68,7 @@ body{
   box-shadow:-20px 0 50px rgba(0,0,0,.35);
 }
 
-/* Top-right nav button (same style as index) */
+/* Top-right nav button */
 .navBtn{
   position:absolute;
   top:20px;
@@ -144,7 +144,16 @@ body{
   color:rgba(255,255,255,.72);
 }
 
-/* Decorative right-side frame (no animations) */
+/* Status Message */
+#statusMessage {
+  margin: 14px 0 0;
+  font-size: 14px;
+  font-weight: 600;
+  display: none;
+}
+.error-text { color: #ff6b6b; } /* Soft red for invalid codes */
+
+/* Decorative right-side frame */
 .heroImg{
   position:absolute;
   inset:0;
@@ -174,36 +183,56 @@ body{
   filter:drop-shadow(0 30px 60px rgba(0,0,0,.55));
 }
 
+/* --- POPUP MODAL STYLES --- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+.modal-card {
+  width: min(420px, 90%);
+  background: rgba(255, 255, 255, .08);
+  border: 1px solid rgba(255, 255, 255, .15);
+  border-radius: 28px;
+  padding: 32px 26px;
+  text-align: center;
+  box-shadow: 0 25px 70px rgba(0, 0, 0, .55);
+  transform: translateY(20px);
+  transition: transform 0.3s ease;
+}
+.modal-overlay.active .modal-card {
+  transform: translateY(0);
+}
+.modal-title {
+  margin: 0 0 12px;
+  font-size: 26px;
+}
+.modal-text {
+  margin: 0 0 26px;
+  color: rgba(255, 255, 255, .85);
+  line-height: 1.5;
+}
+
 /* Mobile */
 @media (max-width:860px){
-
-  .left,.right{
-    position:relative;
-    width:100%;
-  }
-
-  .right{
-    height:44vh;
-  }
-
-  .right::before{
-    display:none;
-  }
-
-  .left{
-    justify-content:center;
-    padding:110px 7vw 60px;
-  }
-
-  .navBtn{
-    top:15px;
-    right:15px;
-  }
-
-  .heroImg{
-    position:relative;
-    height:44vh;
-  }
+  .left,.right{ position:relative; width:100%; }
+  .right{ height:44vh; }
+  .right::before{ display:none; }
+  .left{ justify-content:center; padding:110px 7vw 60px; }
+  .navBtn{ top:15px; right:15px; }
+  .heroImg{ position:relative; height:44vh; }
 }
 </style>
 </head>
@@ -218,13 +247,13 @@ body{
       <p class="kicker">Redeem</p>
       <h1 class="title">Enter your code</h1>
 
-      <form onsubmit="event.preventDefault(); alert('Redeem submitted: ' + (document.getElementById('code').value || ''));"
-            aria-label="Redeem form">
+      <form id="redeemForm" aria-label="Redeem form">
         <div class="formRow">
           <input id="code" class="input" type="text" inputmode="text" autocomplete="off"
-                 placeholder="e.g. WAEL-1234" aria-label="Code" />
+                 placeholder="e.g. WAEL-1234" aria-label="Code" required />
           <button class="btn" type="submit">Redeem</button>
         </div>
+        <p id="statusMessage"></p>
         <p class="help">Tip: paste your code exactly as you received it.</p>
       </form>
     </div>
@@ -233,14 +262,92 @@ body{
   <section class="right" aria-hidden="true">
     <div class="heroImg">
       <div class="frame">
-        <img
-          src="https://static.wikitide.net/ballsdexwiki/e/e4/Morocco.png"
-          alt=""
-        />
+        <img src="https://static.wikitide.net/ballsdexwiki/e/e4/Morocco.png" alt="" />
       </div>
     </div>
   </section>
 
 </main>
+
+<div class="modal-overlay" id="popupModal">
+  <div class="modal-card">
+    <h2 class="modal-title">Code Redeemed!</h2>
+    <p class="modal-text" id="popupText">Message goes here.</p>
+    <button class="btn" id="closePopup">Awesome</button>
+  </div>
+</div>
+
+<script>
+  document.getElementById('redeemForm').addEventListener('submit', async function(e) {
+    e.preventDefault(); // Stop page from reloading
+    
+    const codeInput = document.getElementById('code').value.trim();
+    const statusMsg = document.getElementById('statusMessage');
+
+    // Reset UI
+    statusMsg.style.display = 'none';
+    statusMsg.className = '';
+
+    if (!codeInput) return;
+
+    try {
+      // Fetch the database (Make sure codes.json is in your GitHub repo)
+      const response = await fetch('codes.json');
+      
+      if (!response.ok) {
+        throw new Error("Could not load the code database.");
+      }
+      
+      const database = await response.json();
+      
+      // Convert input to uppercase so it's not case-sensitive
+      const upperCode = codeInput.toUpperCase();
+      const codeData = database[upperCode];
+
+      if (codeData) {
+        // CODE IS VALID - Switch based on the type
+        switch (codeData.type) {
+          case 'redirect':
+            window.location.href = codeData.url;
+            break;
+            
+          case 'popup':
+            showPopup(codeData.message);
+            document.getElementById('code').value = ''; // clear input
+            break;
+            
+          default:
+            console.log("Found an unknown code type setup:", codeData.type);
+            showError("Code valid, but setup is incomplete.");
+        }
+      } else {
+        // CODE IS INVALID
+        showError("Invalid code. Please check and try again.");
+      }
+      
+    } catch (error) {
+      console.error(error);
+      showError("System error: Unable to verify code right now.");
+    }
+  });
+
+  // Helper functions for UI
+  function showError(msg) {
+    const statusMsg = document.getElementById('statusMessage');
+    statusMsg.textContent = msg;
+    statusMsg.className = 'error-text';
+    statusMsg.style.display = 'block';
+  }
+
+  function showPopup(message) {
+    document.getElementById('popupText').textContent = message;
+    document.getElementById('popupModal').classList.add('active');
+  }
+
+  document.getElementById('closePopup').addEventListener('click', () => {
+    document.getElementById('popupModal').classList.remove('active');
+  });
+</script>
+
 </body>
 </html>
