@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Wael — Projects Admin</title>
+<link rel="icon" type="image/png" href="1000003608.png" />
+<style>
+:root{ --text:#f5f7fa; --muted:rgba(255,255,255,.78); }
+*{box-sizing:border-box;}
+body{ margin:0; min-height:100vh; font-family:system-ui,-apple-system,sans-serif; background:linear-gradient(135deg,#052e21 0%,#063826 40%,#5b0b0b 60%,#360606 100%); color:var(--text); padding: 40px 20px; }
+.navBtn{ position:absolute; top:20px; right:20px; padding:12px 22px; border-radius:999px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.25); backdrop-filter:blur(10px); color:#fff; font-weight:700; text-decoration:none; }
+.container { max-width: 900px; margin: 0 auto; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15); border-radius:28px; backdrop-filter:blur(14px); padding: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+@media (max-width: 768px) { .container { grid-template-columns: 1fr; margin-top: 40px;} }
+label { display: block; margin-bottom: 6px; font-size: 14px; color: var(--muted); }
+input, textarea { width: 100%; padding: 12px; border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,.18); background: rgba(0,0,0,.18); color: #fff; outline: none; font-family: inherit; }
+textarea { resize: vertical; min-height: 80px; }
+.btn { padding: 12px 20px; border-radius: 12px; border: 0; background: #fff; color: #111; font-weight: 800; cursor: pointer; width: 100%; }
+.btn-danger { background: #ff4757; color: white; padding: 6px 12px; border-radius: 8px; border: 0; cursor: pointer;}
+.proj-list { max-height: 300px; overflow-y: auto; background: rgba(0,0,0,.18); border-radius: 12px; padding: 10px; border: 1px solid rgba(255,255,255,.1); }
+.proj-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid rgba(255,255,255,.05); }
+.proj-item:last-child { border-bottom: none; }
+</style>
+</head>
+<body>
+
+<a class="navBtn" href="redeem.html">Back to Redeem</a>
+
+<div class="container">
+  <div>
+    <h1 style="margin-top:0;">Add Project</h1>
+    <form id="addProjForm">
+      <label>Project ID (e.g. py-chat-app)</label>
+      <input type="text" id="pId" required autocomplete="off">
+      
+      <label>Project Title</label>
+      <input type="text" id="pTitle" required autocomplete="off" placeholder="e.g. Python GUI Chat">
+      
+      <label>Description</label>
+      <textarea id="pDesc" required placeholder="A brief description of what you built..."></textarea>
+      
+      <label>Link (Optional)</label>
+      <input type="text" id="pLink" autocomplete="off" placeholder="e.g. https://github.com/...">
+      
+      <button type="submit" class="btn">Add to List</button>
+    </form>
+  </div>
+
+  <div>
+    <h2 style="margin-top:0;">Current Projects</h2>
+    <div class="proj-list" id="projList"></div>
+
+    <div style="background: rgba(0,0,0,.25); padding: 15px; border-radius: 12px; margin-top: 20px; border: 1px solid rgba(255,255,255,.1);">
+      <label>GitHub PAT</label>
+      <input type="password" id="githubToken" placeholder="ghp_...">
+      <button class="btn" id="pushBtn" style="background: #4ade80;">Push to GitHub</button>
+      <p id="apiMsg" style="margin-top: 10px; font-weight: bold; font-size: 14px;"></p>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ==========================================
+  // CHANGE THESE TO YOUR GITHUB DETAILS
+  // ==========================================
+  const REPO_OWNER = "YOUR_GITHUB_USERNAME"; 
+  const REPO_NAME = "YOUR_REPO_NAME";        
+  const FILE_PATH = "projects.json";
+  
+  let currentDatabase = {};
+  let fileSha = null;
+
+  window.onload = async () => {
+    const savedToken = localStorage.getItem('gh_token');
+    if (savedToken) document.getElementById('githubToken').value = savedToken;
+
+    try {
+      const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`);
+      if (res.ok) {
+        const data = await res.json();
+        fileSha = data.sha;
+        currentDatabase = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+      }
+    } catch (e) { console.log("Creating new projects.json file."); }
+    updateUI();
+  };
+
+  document.getElementById('addProjForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    let id = document.getElementById('pId').value.trim().toLowerCase().replace(/\s+/g, '-');
+    
+    currentDatabase[id] = {
+      title: document.getElementById('pTitle').value.trim(),
+      description: document.getElementById('pDesc').value.trim(),
+      link: document.getElementById('pLink').value.trim()
+    };
+
+    document.getElementById('addProjForm').reset();
+    updateUI();
+  });
+
+  function deleteProj(id) {
+    delete currentDatabase[id];
+    updateUI();
+  }
+
+  function updateUI() {
+    const listDiv = document.getElementById('projList');
+    listDiv.innerHTML = '';
+    if (Object.keys(currentDatabase).length === 0) {
+      listDiv.innerHTML = '<p style="color:#aaa; text-align:center;">No projects yet.</p>';
+      return;
+    }
+    for (const [id, data] of Object.entries(currentDatabase)) {
+      const item = document.createElement('div');
+      item.className = 'proj-item';
+      item.innerHTML = `
+        <div><strong style="color:#fff;">${data.title}</strong></div>
+        <button class="btn-danger" onclick="deleteProj('${id}')">Delete</button>
+      `;
+      listDiv.appendChild(item);
+    }
+  }
+
+  document.getElementById('pushBtn').addEventListener('click', async () => {
+    const token = document.getElementById('githubToken').value.trim();
+    const msg = document.getElementById('apiMsg');
+
+    if (!token) return msg.innerText = "Please enter your Token.";
+    localStorage.setItem('gh_token', token);
+    msg.style.color = "#fff"; msg.innerText = "Pushing...";
+
+    const newJson = JSON.stringify(currentDatabase, null, 2);
+    const encodedContent = btoa(unescape(encodeURIComponent(newJson)));
+    const bodyData = { message: "Updated projects", content: encodedContent };
+    if (fileSha) bodyData.sha = fileSha;
+
+    try {
+      const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
+        method: 'PUT',
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify(bodyData)
+      });
+      if (response.ok) {
+        const result = await response.json();
+        fileSha = result.content.sha; 
+        msg.style.color = "#4ade80"; msg.innerText = "✓ Projects Updated!";
+      } else throw new Error("API Error");
+    } catch (error) {
+      msg.style.color = "#ff6b6b"; msg.innerText = "✗ Failed to update.";
+    }
+  });
+</script>
+</body>
+</html>
