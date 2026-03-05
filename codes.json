@@ -10,5 +10,9 @@
   "About": {
     "type": "redirect",
     "url": "About.html"
+  },
+  "WAEL-1234": {
+    "type": "popup",
+    "message": "Try another Code, for exemple SECRET-TEA 🫖."
   }
 }
