@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Wael — Admin Dashboard</title>
+<link rel="icon" type="image/png" href="1000003608.png" />
+
+<style>
+:root{
+  --left-bg:#063826; --right-bg:#5b0b0b;
+  --text:#f5f7fa; --muted:rgba(255,255,255,.78);
+  --radius:16px;
+}
+*{box-sizing:border-box;}
+body{
+  margin:0; min-height:100vh;
+  font-family:system-ui,-apple-system,Segoe UI,sans-serif;
+  background:linear-gradient(135deg,#052e21 0%,#063826 40%,#5b0b0b 60%,#360606 100%);
+  color:var(--text); padding: 40px 20px;
+}
+
+.navBtn{
+  position:absolute; top:20px; right:20px; z-index:10; padding:12px 22px;
+  border-radius:999px; background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.25); backdrop-filter:blur(10px);
+  color:#fff; font-weight:700; text-decoration:none;
+}
+
+.container {
+  max-width: 900px; margin: 0 auto;
+  background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15);
+  border-radius:28px; backdrop-filter:blur(14px); box-shadow:0 25px 70px rgba(0,0,0,.35);
+  padding: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px;
+}
+
+@media (max-width: 768px) {
+  .container { grid-template-columns: 1fr; padding: 20px; margin-top: 40px;}
+}
+
+h1, h2 { margin-top: 0; }
+.kicker { color: var(--muted); font-weight: 600; font-size: 14px; text-transform: uppercase; margin-bottom: 5px; }
+
+/* Forms & Inputs */
+.form-group { margin-bottom: 15px; }
+label { display: block; margin-bottom: 6px; font-size: 14px; color: var(--muted); }
+input, select {
+  width: 100%; padding: 12px; border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.18); background: rgba(0,0,0,.18);
+  color: #fff; outline: none; font-family: inherit;
+}
+.btn {
+  padding: 12px 20px; border-radius: 12px; border: 0; background: #fff;
+  color: #111; font-weight: 800; cursor: pointer; width: 100%; margin-top: 10px;
+}
+.btn-danger { background: #ff4757; color: white; width: auto; padding: 6px 12px; border-radius: 8px; font-size: 12px;}
+
+/* JSON Output */
+textarea {
+  width: 100%; height: 250px; padding: 15px; border-radius: 12px;
+  border: 1px solid rgba(255,255,255,.18); background: rgba(0,0,0,.4);
+  color: #a2ff9f; font-family: monospace; font-size: 13px; resize: vertical;
+}
+
+/* Code List */
+.code-list {
+  max-height: 250px; overflow-y: auto; background: rgba(0,0,0,.18);
+  border-radius: 12px; padding: 10px; border: 1px solid rgba(255,255,255,.1);
+}
+.code-item {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 10px; border-bottom: 1px solid rgba(255,255,255,.05);
+}
+.code-item:last-child { border-bottom: none; }
+.code-name { font-weight: bold; color: #fff; }
+.code-type { font-size: 12px; color: var(--muted); background: rgba(255,255,255,.1); padding: 2px 8px; border-radius: 99px; }
+
+</style>
+</head>
+<body>
+
+<a class="navBtn" href="redeem.html">Back to Redeem</a>
+
+<div class="container">
+  
+  <div>
+    <p class="kicker">Admin Dashboard</p>
+    <h1>Code Manager</h1>
+    <p style="color: var(--muted); font-size: 14px; line-height: 1.5;">
+      Add or delete codes here. When you are finished, copy the JSON block on the right and paste it into your <code>codes.json</code> file on GitHub.
+    </p>
+
+    <form id="addCodeForm" style="margin-top: 25px;">
+      <div class="form-group">
+        <label>New Code (e.g. WAEL-TEA)</label>
+        <input type="text" id="newCodeId" required autocomplete="off" placeholder="Must be unique">
+      </div>
+      
+      <div class="form-group">
+        <label>What should this code do?</label>
+        <select id="newCodeType">
+          <option value="popup">Show a Pop-up Message</option>
+          <option value="redirect">Redirect to a Link</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label id="valueLabel">Pop-up Message text:</label>
+        <input type="text" id="newCodeValue" required autocomplete="off" placeholder="Enter message here...">
+      </div>
+
+      <button type="submit" class="btn">Add Code to List</button>
+    </form>
+  </div>
+
+  <div>
+    <h2>Current Codes</h2>
+    <div class="code-list" id="codeList">
+      </div>
+
+    <h2 style="margin-top: 25px;">Final JSON Output</h2>
+    <textarea id="jsonOutput" readonly></textarea>
+    <button class="btn" id="copyBtn" style="background: #4ade80;">Copy JSON for GitHub</button>
+  </div>
+
+</div>
+
+<script>
+  // This stores the codes while you are on the page
+  let currentDatabase = {};
+
+  // Fetch the existing codes from GitHub when the page loads
+  window.onload = async () => {
+    try {
+      const res = await fetch('codes.json');
+      if (res.ok) {
+        currentDatabase = await res.json();
+      }
+    } catch (e) {
+      console.log("No existing codes.json found or failed to fetch. Starting fresh.");
+    }
+    updateUI();
+  };
+
+  // Change the input label based on what type is selected
+  document.getElementById('newCodeType').addEventListener('change', (e) => {
+    const label = document.getElementById('valueLabel');
+    const input = document.getElementById('newCodeValue');
+    if (e.target.value === 'redirect') {
+      label.innerText = 'URL to Redirect to:';
+      input.placeholder = 'https://... or about.html';
+    } else {
+      label.innerText = 'Pop-up Message text:';
+      input.placeholder = 'Enter message here...';
+    }
+  });
+
+  // Add a new code
+  document.getElementById('addCodeForm').addEventListener('submit', (e) => {
+    e.preventDefault();
+    
+    let codeId = document.getElementById('newCodeId').value.trim().toUpperCase();
+    let type = document.getElementById('newCodeType').value;
+    let value = document.getElementById('newCodeValue').value.trim();
+
+    // Create the object
+    if (type === 'redirect') {
+      currentDatabase[codeId] = { "type": "redirect", "url": value };
+    } else {
+      currentDatabase[codeId] = { "type": "popup", "message": value };
+    }
+
+    // Reset form and update UI
+    document.getElementById('newCodeId').value = '';
+    document.getElementById('newCodeValue').value = '';
+    updateUI();
+  });
+
+  // Delete a code
+  function deleteCode(codeId) {
+    delete currentDatabase[codeId];
+    updateUI();
+  }
+
+  // Update the visual list and the JSON text box
+  function updateUI() {
+    const listDiv = document.getElementById('codeList');
+    const textArea = document.getElementById('jsonOutput');
+    
+    listDiv.innerHTML = '';
+    
+    // Check if empty
+    if (Object.keys(currentDatabase).length === 0) {
+      listDiv.innerHTML = '<p style="color:#aaa; text-align:center;">No codes yet.</p>';
+    }
+
+    // Populate list
+    for (const [code, data] of Object.entries(currentDatabase)) {
+      const item = document.createElement('div');
+      item.className = 'code-item';
+      
+      const info = document.createElement('div');
+      info.innerHTML = `<span class="code-name">${code}</span> <span class="code-type">${data.type}</span>`;
+      
+      const delBtn = document.createElement('button');
+      delBtn.className = 'btn-danger';
+      delBtn.innerText = 'Delete';
+      delBtn.onclick = () => deleteCode(code);
+
+      item.appendChild(info);
+      item.appendChild(delBtn);
+      listDiv.appendChild(item);
+    }
+
+    // Update Text area with pretty JSON
+    textArea.value = JSON.stringify(currentDatabase, null, 2);
+  }
+
+  // Copy to clipboard
+  document.getElementById('copyBtn').addEventListener('click', () => {
+    const textArea = document.getElementById('jsonOutput');
+    textArea.select();
+    document.execCommand('copy');
+    
+    const btn = document.getElementById('copyBtn');
+    btn.innerText = "Copied!";
+    setTimeout(() => btn.innerText = "Copy JSON for GitHub", 2000);
+  });
+</script>
+
+</body>
+</html>
