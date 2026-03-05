@@ -55,11 +55,10 @@ input, select {
 }
 .btn-danger { background: #ff4757; color: white; width: auto; padding: 6px 12px; border-radius: 8px; font-size: 12px;}
 
-/* JSON Output */
-textarea {
-  width: 100%; height: 250px; padding: 15px; border-radius: 12px;
-  border: 1px solid rgba(255,255,255,.18); background: rgba(0,0,0,.4);
-  color: #a2ff9f; font-family: monospace; font-size: 13px; resize: vertical;
+/* API Token Area */
+.api-box {
+  background: rgba(0,0,0,.25); padding: 15px; border-radius: 12px; margin-top: 20px;
+  border: 1px solid rgba(255,255,255,.1);
 }
 
 /* Code List */
@@ -74,7 +73,6 @@ textarea {
 .code-item:last-child { border-bottom: none; }
 .code-name { font-weight: bold; color: #fff; }
 .code-type { font-size: 12px; color: var(--muted); background: rgba(255,255,255,.1); padding: 2px 8px; border-radius: 99px; }
-
 </style>
 </head>
 <body>
@@ -82,14 +80,10 @@ textarea {
 <a class="navBtn" href="redeem.html">Back to Redeem</a>
 
 <div class="container">
-  
   <div>
     <p class="kicker">Admin Dashboard</p>
     <h1>Code Manager</h1>
-    <p style="color: var(--muted); font-size: 14px; line-height: 1.5;">
-      Add or delete codes here. When you are finished, copy the JSON block on the right and paste it into your <code>codes.json</code> file on GitHub.
-    </p>
-
+    
     <form id="addCodeForm" style="margin-top: 25px;">
       <div class="form-group">
         <label>New Code (e.g. WAEL-TEA)</label>
@@ -109,40 +103,67 @@ textarea {
         <input type="text" id="newCodeValue" required autocomplete="off" placeholder="Enter message here...">
       </div>
 
-      <button type="submit" class="btn">Add Code to List</button>
+      <button type="submit" class="btn">Add / Update Code in List</button>
     </form>
   </div>
 
   <div>
     <h2>Current Codes</h2>
-    <div class="code-list" id="codeList">
+    <div class="code-list" id="codeList"></div>
+
+    <div class="api-box">
+      <div class="form-group" style="margin-bottom: 10px;">
+        <label>GitHub Personal Access Token (PAT)</label>
+        <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
       </div>
-
-    <h2 style="margin-top: 25px;">Final JSON Output</h2>
-    <textarea id="jsonOutput" readonly></textarea>
-    <button class="btn" id="copyBtn" style="background: #4ade80;">Copy JSON for GitHub</button>
+      <button class="btn" id="pushBtn" style="background: #4ade80;">Push Directly to GitHub</button>
+      <p id="apiStatus" style="font-size: 13px; margin: 10px 0 0; font-weight: bold;"></p>
+    </div>
   </div>
-
 </div>
 
 <script>
-  // This stores the codes while you are on the page
+  // ==========================================
+  // 1. CHANGE THESE TO YOUR GITHUB DETAILS
+  // ==========================================
+  const REPO_OWNER = "wa-el-az"; // e.g., "wael-dev"
+  const REPO_NAME = "wa-el-az.github.io";        // e.g., "wael-website"
+  const FILE_PATH = "codes.json";
+  
   let currentDatabase = {};
+  let fileSha = null; // GitHub requires the file's 'sha' to overwrite it
 
-  // Fetch the existing codes from GitHub when the page loads
   window.onload = async () => {
-    try {
-      const res = await fetch('codes.json');
-      if (res.ok) {
-        currentDatabase = await res.json();
-      }
-    } catch (e) {
-      console.log("No existing codes.json found or failed to fetch. Starting fresh.");
-    }
-    updateUI();
+    // Load saved token from browser storage
+    const savedToken = localStorage.getItem('gh_token');
+    if (savedToken) document.getElementById('githubToken').value = savedToken;
+
+    fetchCurrentCodes();
   };
 
-  // Change the input label based on what type is selected
+  async function fetchCurrentCodes() {
+    try {
+      const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`);
+      if (res.ok) {
+        const data = await res.json();
+        fileSha = data.sha; // Save the SHA for pushing later
+        
+        // GitHub API returns files in Base64 encoding. We must decode it.
+        const decodedContent = decodeURIComponent(escape(atob(data.content)));
+        currentDatabase = JSON.parse(decodedContent);
+      }
+    } catch (e) {
+      console.log("Could not fetch from GitHub API. Trying local file...", e);
+      // Fallback to local fetch if API fails
+      try {
+        const localRes = await fetch(FILE_PATH);
+        if (localRes.ok) currentDatabase = await localRes.json();
+      } catch (err) {}
+    }
+    updateUI();
+  }
+
+  // Handle Form UI switching
   document.getElementById('newCodeType').addEventListener('change', (e) => {
     const label = document.getElementById('valueLabel');
     const input = document.getElementById('newCodeValue');
@@ -158,19 +179,13 @@ textarea {
   // Add a new code
   document.getElementById('addCodeForm').addEventListener('submit', (e) => {
     e.preventDefault();
-    
     let codeId = document.getElementById('newCodeId').value.trim().toUpperCase();
     let type = document.getElementById('newCodeType').value;
     let value = document.getElementById('newCodeValue').value.trim();
 
-    // Create the object
-    if (type === 'redirect') {
-      currentDatabase[codeId] = { "type": "redirect", "url": value };
-    } else {
-      currentDatabase[codeId] = { "type": "popup", "message": value };
-    }
+    if (type === 'redirect') currentDatabase[codeId] = { "type": "redirect", "url": value };
+    else currentDatabase[codeId] = { "type": "popup", "message": value };
 
-    // Reset form and update UI
     document.getElementById('newCodeId').value = '';
     document.getElementById('newCodeValue').value = '';
     updateUI();
@@ -182,49 +197,78 @@ textarea {
     updateUI();
   }
 
-  // Update the visual list and the JSON text box
+  // Update UI List
   function updateUI() {
     const listDiv = document.getElementById('codeList');
-    const textArea = document.getElementById('jsonOutput');
-    
     listDiv.innerHTML = '';
-    
-    // Check if empty
     if (Object.keys(currentDatabase).length === 0) {
       listDiv.innerHTML = '<p style="color:#aaa; text-align:center;">No codes yet.</p>';
+      return;
     }
-
-    // Populate list
     for (const [code, data] of Object.entries(currentDatabase)) {
       const item = document.createElement('div');
       item.className = 'code-item';
-      
-      const info = document.createElement('div');
-      info.innerHTML = `<span class="code-name">${code}</span> <span class="code-type">${data.type}</span>`;
-      
-      const delBtn = document.createElement('button');
-      delBtn.className = 'btn-danger';
-      delBtn.innerText = 'Delete';
-      delBtn.onclick = () => deleteCode(code);
-
-      item.appendChild(info);
-      item.appendChild(delBtn);
+      item.innerHTML = `
+        <div><span class="code-name">${code}</span> <span class="code-type">${data.type}</span></div>
+        <button class="btn-danger" onclick="deleteCode('${code}')">Delete</button>
+      `;
       listDiv.appendChild(item);
     }
-
-    // Update Text area with pretty JSON
-    textArea.value = JSON.stringify(currentDatabase, null, 2);
   }
 
-  // Copy to clipboard
-  document.getElementById('copyBtn').addEventListener('click', () => {
-    const textArea = document.getElementById('jsonOutput');
-    textArea.select();
-    document.execCommand('copy');
+  // ==========================================
+  // PUSH TO GITHUB AUTOMATICALLY
+  // ==========================================
+  document.getElementById('pushBtn').addEventListener('click', async () => {
+    const token = document.getElementById('githubToken').value.trim();
+    const statusText = document.getElementById('apiStatus');
+
+    if (!token) {
+      statusText.style.color = "#ff6b6b";
+      statusText.innerText = "Please enter a GitHub Token.";
+      return;
+    }
+
+    // Save token securely in browser for next time
+    localStorage.setItem('gh_token', token);
     
-    const btn = document.getElementById('copyBtn');
-    btn.innerText = "Copied!";
-    setTimeout(() => btn.innerText = "Copy JSON for GitHub", 2000);
+    statusText.style.color = "#fff";
+    statusText.innerText = "Pushing to GitHub...";
+
+    const newJsonString = JSON.stringify(currentDatabase, null, 2);
+    // Encode to Base64 (Required by GitHub API)
+    const encodedContent = btoa(unescape(encodeURIComponent(newJsonString)));
+
+    const bodyData = {
+      message: "Admin Dashboard: Updated codes.json",
+      content: encodedContent,
+      sha: fileSha // Required to overwrite an existing file
+    };
+
+    try {
+      const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(bodyData)
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        fileSha = result.content.sha; // Update the SHA so you can edit again without refreshing
+        statusText.style.color = "#4ade80";
+        statusText.innerText = "✓ Successfully saved to GitHub! (Give Pages 1-2 mins to update)";
+      } else {
+        const errorData = await response.json();
+        throw new Error(errorData.message);
+      }
+    } catch (error) {
+      statusText.style.color = "#ff6b6b";
+      statusText.innerText = "✗ Error: " + error.message;
+      console.error(error);
+    }
   });
 </script>
 
