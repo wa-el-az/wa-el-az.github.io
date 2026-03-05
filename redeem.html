@@ -296,7 +296,10 @@ body{
       window.location.href = "admin.html";
       return;
     }
-
+    if (upperCode === "STATUS-EDIT") {
+      window.location.href = "status-admin.html";
+      return;
+    }
     try {
       // Fetch the database (Make sure codes.json is in your GitHub repo)
       const response = await fetch('codes.json');
