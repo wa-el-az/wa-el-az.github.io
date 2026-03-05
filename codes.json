@@ -1,0 +1,14 @@
+{
+  "YT": {
+    "type": "redirect",
+    "url": "https://www.youtube.com/@The.Morocco"
+  },
+  "SECRET-TEA": {
+    "type": "popup",
+    "message": "You successfully unlocked the secret Moroccan mint tea!"
+  },
+  "About": {
+    "type": "redirect",
+    "url": "About.html"
+  }
+}
