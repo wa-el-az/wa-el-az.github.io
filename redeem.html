@@ -290,6 +290,13 @@ body{
 
     if (!codeInput) return;
 
+    // --- SECRET ADMIN BYPASS ---
+    const upperCode = codeInput.toUpperCase();
+    if (upperCode === "ADMIN-EDIT") {
+      window.location.href = "admin.html";
+      return;
+    }
+
     try {
       // Fetch the database (Make sure codes.json is in your GitHub repo)
       const response = await fetch('codes.json');
@@ -299,9 +306,6 @@ body{
       }
       
       const database = await response.json();
-      
-      // Convert input to uppercase so it's not case-sensitive
-      const upperCode = codeInput.toUpperCase();
       const codeData = database[upperCode];
 
       if (codeData) {
