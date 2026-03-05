@@ -17,276 +17,133 @@
 
 *{box-sizing:border-box;}
 html,body{
-  height:100%;
-  margin:0;
+  height:100%; margin:0;
   font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-  background:#0b0b0b;
-  color:var(--text);
-  scroll-behavior: smooth;
+  background:#0b0b0b; color:var(--text); scroll-behavior: smooth;
 }
 
-/* Layout */
-.wrap{
-  position:relative;
-}
+.wrap{ position:relative; }
 
-/* The top section containing your intro and Morocco card */
 .hero-container {
-  position: relative;
-  min-height: 100vh;
-  width: 100%;
-  overflow: hidden; 
-  /* We will fade this out with JS */
-  transition: opacity 0.1s ease-out; 
+  position: relative; min-height: 100vh; width: 100%;
+  overflow: hidden; transition: opacity 0.1s ease-out; 
 }
 
-/* Panels */
-.left,.right{
-  position:absolute;
-  top:0;
-  bottom:0;
-}
+.left,.right{ position:absolute; top:0; bottom:0; }
 
 .left{
-  left:0;
-  width:58%;
+  left:0; width:58%;
   background:linear-gradient(135deg,#052e21 0%,#063826 60%,#052b1f 100%);
-  padding:110px 7vw;
-  display:flex;
-  align-items:center;
-  z-index:2;
+  padding:110px 7vw; display:flex; align-items:center; z-index:2;
 }
 
 .right{
-  right:0;
-  width:52%;
+  right:0; width:52%;
   background:linear-gradient(135deg,#4a0707 0%,#5b0b0b 60%,#360606 100%);
   z-index:1;
 }
 
-/* Diagonal split (desktop) */
 .right::before{
-  content:"";
-  position:absolute;
-  left:-140px;
-  top:-10%;
-  width:280px;
-  height:120%;
-  background:inherit;
-  transform:skewX(-14deg);
-  box-shadow:-20px 0 50px rgba(0,0,0,.35);
+  content:""; position:absolute; left:-140px; top:-10%; width:280px; height:120%;
+  background:inherit; transform:skewX(-14deg); box-shadow:-20px 0 50px rgba(0,0,0,.35);
 }
 
-/* Redeem button pinned to top-right corner */
 .redeem{
-  position:absolute;
-  top:20px;
-  right:20px;
-  z-index:10;
-  padding:12px 22px;
-  border-radius:var(--radius);
-  background:rgba(255,255,255,.12);
-  border:1px solid rgba(255,255,255,.25);
-  backdrop-filter:blur(10px);
-  color:#fff;
-  font-weight:700;
-  text-decoration:none;
-  transition:.2s ease;
+  position:absolute; top:20px; right:20px; z-index:10; padding:12px 22px;
+  border-radius:var(--radius); background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.25); backdrop-filter:blur(10px);
+  color:#fff; font-weight:700; text-decoration:none; transition:.2s ease;
 }
 .redeem:hover{ background:rgba(255,255,255,.2); }
 
-/* Content */
-.content{
-  max-width:560px;
-  animation:fadeUp .8s ease both;
-}
+.content{ max-width:560px; animation:fadeUp .8s ease both; }
+.hello{ font-size:26px; margin:0 0 16px; color:var(--muted); }
 
-.hello{
-  font-size:26px;
-  margin:0 0 16px;
-  color:var(--muted);
-}
-
-/* Typewriter Title Styles */
-.title{
-  margin:0;
-  font-size:clamp(40px,5vw,72px);
-  line-height:1.1;
-  min-height: 2.2em; 
-}
-@media (min-width: 861px) {
-  .title { min-height: 1.2em; }
-}
+.title{ margin:0; font-size:clamp(40px,5vw,72px); line-height:1.1; min-height: 2.2em; }
+@media (min-width: 861px) { .title { min-height: 1.2em; } }
 
 .cursor {
-  display: inline-block;
-  width: 4px;
-  height: 0.9em;
-  background-color: var(--text);
-  margin-left: 6px;
-  vertical-align: middle;
-  animation: blink 1s step-end infinite;
+  display: inline-block; width: 4px; height: 0.9em;
+  background-color: var(--text); margin-left: 6px;
+  vertical-align: middle; animation: blink 1s step-end infinite;
 }
-@keyframes blink {
-  50% { opacity: 0; }
-}
+@keyframes blink { 50% { opacity: 0; } }
 
 .cta{
-  display:inline-flex;
-  margin-top:24px;
-  padding:16px 28px;
-  border-radius:var(--radius);
-  background:#fff;
-  color:#111;
-  font-weight:800;
-  text-decoration:none;
-  min-width:230px;
-  justify-content:center;
-  transition:.2s ease;
+  display:inline-flex; margin-top:24px; padding:16px 28px; border-radius:var(--radius);
+  background:#fff; color:#111; font-weight:800; text-decoration:none;
+  min-width:230px; justify-content:center; transition:.2s ease;
 }
 .cta:hover{ transform:translateY(-2px); }
 
-/* Centered hero image */
-.heroImg{
-  position:absolute;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
+.heroImg{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
 
 .heroImg .frame{
-  width:420px;
-  height:420px;
-  max-width:80%;
-  max-height:80%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.15);
-  border-radius:28px;
-  backdrop-filter:blur(14px);
-  box-shadow:0 25px 70px rgba(0,0,0,.45);
-  animation:
-    fadeIn .9s ease .2s both,
-    float 6s ease-in-out infinite;
-}
-
-.heroImg img{
-  max-width:75%;
-  max-height:75%;
-  object-fit:contain;
-  display:block;
-  filter:drop-shadow(0 30px 60px rgba(0,0,0,.55));
-}
-
-/* --- NEW SECTIONS --- */
-
-.description-section {
-  min-height: 60vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 80px 5vw;
-  background: #0b0b0b;
-  text-align: center;
+  width:420px; height:420px; max-width:80%; max-height:80%;
+  display:flex; align-items:center; justify-content:center;
+  background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15);
+  border-radius:28px; backdrop-filter:blur(14px); box-shadow:0 25px 70px rgba(0,0,0,.45);
+  animation: fadeIn .9s ease .2s both, float 6s ease-in-out infinite;
   position: relative;
-  z-index: 5; /* Stays above the hero background when scrolling */
+}
+
+.status-badge {
+  position: absolute; top: -15px; left: -20px;
+  background: rgba(0, 0, 0, 0.7); border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 10px 18px; border-radius: 99px; backdrop-filter: blur(12px);
+  color: #fff; font-size: 14px; font-weight: 700;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+  display: flex; align-items: center; gap: 8px; z-index: 10;
+}
+
+.status-badge::before {
+  content: ""; display: inline-block; width: 10px; height: 10px;
+  background: #4ade80; border-radius: 50%; box-shadow: 0 0 10px #4ade80;
+}
+
+.heroImg img{ max-width:75%; max-height:75%; object-fit:contain; display:block; filter:drop-shadow(0 30px 60px rgba(0,0,0,.55)); }
+
+/* --- BACKGROUND COLORS FOR BOTTOM SECTIONS --- */
+.description-section {
+  min-height: 60vh; display: flex; align-items: center; justify-content: center;
+  padding: 80px 5vw; 
+  background: #2b0404; /* Dark Red */
+  text-align: center; position: relative; z-index: 5;
 }
 
 .desc-text {
-  font-size: clamp(32px, 5vw, 56px); /* Made it big as requested */
-  font-weight: 800;
-  line-height: 1.3;
-  color: var(--text);
-  max-width: 900px;
-  letter-spacing: -0.5px;
+  font-size: clamp(32px, 5vw, 56px); font-weight: 800; line-height: 1.3;
+  color: var(--text); max-width: 900px; letter-spacing: -0.5px;
 }
-
 .desc-text span {
-  display: block;
-  color: var(--muted);
-  font-size: clamp(20px, 3vw, 32px);
-  margin-top: 15px;
-  font-weight: 500;
+  display: block; color: var(--muted); font-size: clamp(20px, 3vw, 32px);
+  margin-top: 15px; font-weight: 500;
 }
 
 .footer-section {
-  background: #1f0303; /* Darker red area */
-  padding: 60px 20px;
-  text-align: center;
+  background: #110101; /* Even Darker Red (almost black) */
+  padding: 60px 20px; text-align: center;
   border-top: 1px solid rgba(255,255,255,0.05);
 }
+.footer-text { color: rgba(255,255,255,0.5); font-size: 16px; line-height: 1.8; margin: 0; }
+.footer-text strong { color: rgba(255,255,255,0.85); font-size: 18px; }
 
-.footer-text {
-  color: rgba(255,255,255,0.5);
-  font-size: 16px;
-  line-height: 1.8;
-  margin: 0;
-}
+@keyframes fadeUp{ from{opacity:0;transform:translateY(15px);} to{opacity:1;transform:translateY(0);} }
+@keyframes fadeIn{ from{opacity:0;transform:scale(.95);} to{opacity:1;transform:scale(1);} }
+@keyframes float{ 0%{ transform: translateY(0px); } 50%{ transform: translateY(-14px); } 100%{ transform: translateY(0px); } }
 
-.footer-text strong {
-  color: rgba(255,255,255,0.85);
-  font-size: 18px;
-}
-
-
-/* Animations */
-@keyframes fadeUp{
-  from{opacity:0;transform:translateY(15px);}
-  to{opacity:1;transform:translateY(0);}
-}
-@keyframes fadeIn{
-  from{opacity:0;transform:scale(.95);}
-  to{opacity:1;transform:scale(1);}
-}
-@keyframes float{
-  0%{ transform: translateY(0px); }
-  50%{ transform: translateY(-14px); }
-  100%{ transform: translateY(0px); }
-}
-
-/* Respect reduced motion */
 @media (prefers-reduced-motion: reduce){
-  .content{ animation:none !important; }
-  .heroImg .frame{ animation:none !important; }
-  .cta, .redeem{ transition:none !important; }
-  .cursor { animation: none !important; }
+  .content{ animation:none !important; } .heroImg .frame{ animation:none !important; }
+  .cta, .redeem{ transition:none !important; } .cursor { animation: none !important; }
 }
 
-/* Mobile */
 @media (max-width:860px){
-  .hero-container {
-    display: flex;
-    flex-direction: column;
-  }
-  .left,.right{
-    position:relative;
-    width:100%;
-  }
-  .right{
-    height:50vh;
-  }
-  .right::before{
-    display:none; 
-  }
-  .left{
-    text-align:center;
-    justify-content:center;
-    padding:120px 7vw 60px;
-  }
-  .content{
-    margin:0 auto;
-  }
-  .heroImg{
-    position:relative;
-    height:50vh;
-  }
-  .redeem{
-    top:15px;
-    right:15px;
-  }
+  .hero-container { display: flex; flex-direction: column; }
+  .left,.right{ position:relative; width:100%; } .right{ height:50vh; } .right::before{ display:none; }
+  .left{ text-align:center; justify-content:center; padding:120px 7vw 60px; }
+  .content{ margin:0 auto; } .heroImg{ position:relative; height:50vh; }
+  .redeem{ top:15px; right:15px; }
+  .status-badge { top: 10px; left: 50%; transform: translateX(-50%); font-size: 12px; }
 }
 </style>
 </head>
@@ -294,18 +151,15 @@ html,body{
 <body>
 
 <main class="wrap">
-
   <div id="hero" class="hero-container">
     <a class="redeem" href="redeem.html">Redeem</a>
 
     <section class="left">
       <div class="content">
         <p class="hello">Hi,</p>
-        
         <h1 class="title">
           <span id="typewriter-text">I am Wael.</span><span class="cursor"></span>
         </h1>
-        
         <a class="cta" href="about.html">About me</a>
       </div>
     </section>
@@ -313,6 +167,7 @@ html,body{
     <section class="right" aria-hidden="true">
       <div class="heroImg">
         <div class="frame">
+          <div class="status-badge" id="liveStatus">Loading status...</div>
           <img src="https://static.wikitide.net/ballsdexwiki/e/e4/Morocco.png" alt="Morocco" />
         </div>
       </div>
@@ -337,58 +192,47 @@ html,body{
 </main>
 
 <script>
+  // --- Fetch Status ---
+  window.addEventListener('DOMContentLoaded', async () => {
+    try {
+      const response = await fetch('status.json');
+      if (response.ok) {
+        const data = await response.json();
+        document.getElementById('liveStatus').innerText = data.status || "Online";
+      } else {
+        document.getElementById('liveStatus').innerText = "Online";
+      }
+    } catch (e) {
+      document.getElementById('liveStatus').innerText = "Online";
+    }
+  });
+
   // --- Scroll Fade Effect ---
   const hero = document.getElementById('hero');
   window.addEventListener('scroll', () => {
-    // Calculate how far down the user scrolled
-    const scrollY = window.scrollY;
-    // Calculate opacity (1 at the top, fades to 0 as you scroll down 80% of the screen)
-    let opacity = 1 - (scrollY / (window.innerHeight * 0.8));
-    
-    // Make sure opacity doesn't drop below 0
+    let opacity = 1 - (window.scrollY / (window.innerHeight * 0.8));
     if (opacity < 0) opacity = 0;
-    
     hero.style.opacity = opacity;
   });
 
   // --- Typewriter Effect ---
-  const phrases = [
-    "I am Wael.",
-    "I am a Moroccan.",
-    "I am a tech enthusiast."
-  ];
-  
-  let phraseIndex = 0;
-  let charIndex = phrases[0].length; 
-  let isDeleting = true;
-
+  const phrases = ["I am Wael.", "I am a Moroccan.", "I am a tech enthusiast."];
+  let phraseIndex = 0; let charIndex = phrases[0].length; let isDeleting = true;
   const typeNode = document.getElementById('typewriter-text');
 
   function typeEffect() {
     const currentPhrase = phrases[phraseIndex];
-    
-    if (isDeleting) {
-      charIndex--; 
-    } else {
-      charIndex++; 
-    }
-
+    if (isDeleting) charIndex--; else charIndex++;
     typeNode.textContent = currentPhrase.substring(0, charIndex);
 
     let typingSpeed = isDeleting ? 40 : 80;
-
     if (!isDeleting && charIndex === currentPhrase.length) {
-      typingSpeed = 2500; 
-      isDeleting = true;
+      typingSpeed = 2500; isDeleting = true;
     } else if (isDeleting && charIndex === 0) {
-      isDeleting = false;
-      phraseIndex = (phraseIndex + 1) % phrases.length; 
-      typingSpeed = 500; 
+      isDeleting = false; phraseIndex = (phraseIndex + 1) % phrases.length; typingSpeed = 500; 
     }
-
     setTimeout(typeEffect, typingSpeed);
   }
-
   setTimeout(typeEffect, 2500);
 </script>
 
