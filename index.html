@@ -22,45 +22,58 @@ html,body{
   background:#0b0b0b; color:var(--text); scroll-behavior: smooth;
 }
 
+/* Layout */
 .wrap{ position:relative; }
 
+/* Sticky Hero Container so the bottom sections slide gracefully OVER it */
 .hero-container {
-  position: relative; min-height: 100vh; width: 100%;
-  overflow: hidden; transition: opacity 0.1s ease-out; 
+  position: sticky; 
+  top: 0; 
+  min-height: 100vh; 
+  width: 100%;
+  overflow: hidden; 
 }
 
 .left,.right{ position:absolute; top:0; bottom:0; }
 
+/* Left panel sent to back (z-index: 1) */
 .left{
   left:0; width:58%;
   background:linear-gradient(135deg,#052e21 0%,#063826 60%,#052b1f 100%);
-  padding:110px 7vw; display:flex; align-items:center; z-index:2;
+  padding:110px 7vw; display:flex; align-items:center; z-index:1;
 }
 
+/* Right panel pulled forward (z-index: 2) so diagonal shows */
 .right{
   right:0; width:52%;
   background:linear-gradient(135deg,#4a0707 0%,#5b0b0b 60%,#360606 100%);
-  z-index:1;
+  z-index:2;
 }
 
+/* The beautiful angled split */
 .right::before{
   content:""; position:absolute; left:-140px; top:-10%; width:280px; height:120%;
   background:inherit; transform:skewX(-14deg); box-shadow:-20px 0 50px rgba(0,0,0,.35);
 }
 
 .redeem{
-  position:absolute; top:20px; right:20px; z-index:10; padding:12px 22px;
+  position:absolute; top:20px; right:20px; z-index:30; padding:12px 22px;
   border-radius:var(--radius); background:rgba(255,255,255,.12);
   border:1px solid rgba(255,255,255,.25); backdrop-filter:blur(10px);
   color:#fff; font-weight:700; text-decoration:none; transition:.2s ease;
 }
 .redeem:hover{ background:rgba(255,255,255,.2); }
 
-.content{ max-width:560px; animation:fadeUp .8s ease both; }
+/* Content pulled to the very front so the red shadow doesn't muddy the text */
+.content{ 
+  max-width:560px; animation:fadeUp .8s ease both; 
+  position: relative; z-index: 10; 
+}
+
 .hello{ font-size:26px; margin:0 0 16px; color:var(--muted); }
 
-.title{ margin:0; font-size:clamp(40px,5vw,72px); line-height:1.1; min-height: 2.2em; }
-@media (min-width: 861px) { .title { min-height: 1.2em; } }
+/* Fixed min-height so the button NEVER bounces when text wraps */
+.title{ margin:0; font-size:clamp(40px,5vw,72px); line-height:1.1; min-height: 2.4em; }
 
 .cursor {
   display: inline-block; width: 4px; height: 0.9em;
@@ -87,13 +100,14 @@ html,body{
   position: relative;
 }
 
+/* Status Badge popped to the highest z-index so nothing covers it */
 .status-badge {
   position: absolute; top: -15px; left: -20px;
   background: rgba(0, 0, 0, 0.7); border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 10px 18px; border-radius: 99px; backdrop-filter: blur(12px);
   color: #fff; font-size: 14px; font-weight: 700;
   box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-  display: flex; align-items: center; gap: 8px; z-index: 10;
+  display: flex; align-items: center; gap: 8px; z-index: 20;
 }
 
 .status-badge::before {
@@ -108,7 +122,8 @@ html,body{
   min-height: 60vh; display: flex; align-items: center; justify-content: center;
   padding: 80px 5vw; 
   background: #2b0404; /* Dark Red */
-  text-align: center; position: relative; z-index: 5;
+  text-align: center; position: relative; 
+  z-index: 5; /* Ensures this section slides OVER the sticky hero */
 }
 
 .desc-text {
@@ -124,6 +139,7 @@ html,body{
   background: #110101; /* Even Darker Red (almost black) */
   padding: 60px 20px; text-align: center;
   border-top: 1px solid rgba(255,255,255,0.05);
+  position: relative; z-index: 5;
 }
 .footer-text { color: rgba(255,255,255,0.5); font-size: 16px; line-height: 1.8; margin: 0; }
 .footer-text strong { color: rgba(255,255,255,0.85); font-size: 18px; }
@@ -138,12 +154,13 @@ html,body{
 }
 
 @media (max-width:860px){
-  .hero-container { display: flex; flex-direction: column; }
-  .left,.right{ position:relative; width:100%; } .right{ height:50vh; } .right::before{ display:none; }
+  .hero-container { position: relative; display: flex; flex-direction: column; }
+  .left,.right{ position:relative; width:100%; z-index: 1;} .right{ height:50vh; } .right::before{ display:none; }
   .left{ text-align:center; justify-content:center; padding:120px 7vw 60px; }
   .content{ margin:0 auto; } .heroImg{ position:relative; height:50vh; }
   .redeem{ top:15px; right:15px; }
   .status-badge { top: 10px; left: 50%; transform: translateX(-50%); font-size: 12px; }
+  .title { min-height: 3.3em; } /* Prevents bouncing on very narrow mobile screens */
 }
 </style>
 </head>
@@ -160,7 +177,7 @@ html,body{
         <h1 class="title">
           <span id="typewriter-text">I am Wael.</span><span class="cursor"></span>
         </h1>
-        <a class="cta" href="projects.html">My projects</a>
+        <a class="cta" href="projects.html">Projects</a>
       </div>
     </section>
 
