@@ -151,7 +151,7 @@ body{
   font-weight: 600;
   display: none;
 }
-.error-text { color: #ff6b6b; } /* Soft red for invalid codes */
+.error-text { color: #ff6b6b; }
 
 /* Decorative right-side frame */
 .heroImg{
@@ -183,7 +183,7 @@ body{
   filter:drop-shadow(0 30px 60px rgba(0,0,0,.55));
 }
 
-/* --- POPUP MODAL STYLES --- */
+/* Modal Styles */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -215,15 +215,8 @@ body{
 .modal-overlay.active .modal-card {
   transform: translateY(0);
 }
-.modal-title {
-  margin: 0 0 12px;
-  font-size: 26px;
-}
-.modal-text {
-  margin: 0 0 26px;
-  color: rgba(255, 255, 255, .85);
-  line-height: 1.5;
-}
+.modal-title { margin: 0 0 12px; font-size: 26px; }
+.modal-text { margin: 0 0 26px; color: rgba(255, 255, 255, .85); line-height: 1.5; }
 
 /* Mobile */
 @media (max-width:860px){
@@ -239,7 +232,6 @@ body{
 
 <body>
 <main class="wrap">
-
   <a class="navBtn" href="index.html">Home</a>
 
   <section class="left">
@@ -249,7 +241,7 @@ body{
 
       <form id="redeemForm" aria-label="Redeem form">
         <div class="formRow">
-          <input id="code" class="input" type="text" inputmode="text" autocomplete="off"
+          <input id="code" class="input" type="text" autocomplete="off"
                  placeholder="e.g. WAEL-1234" aria-label="Code" required />
           <button class="btn" type="submit">Redeem</button>
         </div>
@@ -266,32 +258,31 @@ body{
       </div>
     </div>
   </section>
-
 </main>
 
 <div class="modal-overlay" id="popupModal">
   <div class="modal-card">
     <h2 class="modal-title">Code Redeemed!</h2>
-    <p class="modal-text" id="popupText">Message goes here.</p>
+    <p class="modal-text" id="popupText"></p>
     <button class="btn" id="closePopup">Awesome</button>
   </div>
 </div>
 
 <script>
   document.getElementById('redeemForm').addEventListener('submit', async function(e) {
-    e.preventDefault(); // Stop page from reloading
+    e.preventDefault();
     
     const codeInput = document.getElementById('code').value.trim();
     const statusMsg = document.getElementById('statusMessage');
 
-    // Reset UI
     statusMsg.style.display = 'none';
     statusMsg.className = '';
 
     if (!codeInput) return;
 
-    // --- SECRET ADMIN BYPASS ---
     const upperCode = codeInput.toUpperCase();
+
+    // --- SECRET ADMIN BYPASSES ---
     if (upperCode === "ADMIN-EDIT") {
       window.location.href = "admin.html";
       return;
@@ -300,45 +291,33 @@ body{
       window.location.href = "status-admin.html";
       return;
     }
+    if (upperCode === "PROJECTS-EDIT") {
+      window.location.href = "projects-admin.html";
+      return;
+    }
+
     try {
-      // Fetch the database (Make sure codes.json is in your GitHub repo)
       const response = await fetch('codes.json');
-      
-      if (!response.ok) {
-        throw new Error("Could not load the code database.");
-      }
+      if (!response.ok) throw new Error("Database not found.");
       
       const database = await response.json();
       const codeData = database[upperCode];
 
       if (codeData) {
-        // CODE IS VALID - Switch based on the type
-        switch (codeData.type) {
-          case 'redirect':
-            window.location.href = codeData.url;
-            break;
-            
-          case 'popup':
-            showPopup(codeData.message);
-            document.getElementById('code').value = ''; // clear input
-            break;
-            
-          default:
-            console.log("Found an unknown code type setup:", codeData.type);
-            showError("Code valid, but setup is incomplete.");
+        if (codeData.type === 'redirect') {
+          window.location.href = codeData.url;
+        } else if (codeData.type === 'popup') {
+          showPopup(codeData.message);
+          document.getElementById('code').value = '';
         }
       } else {
-        // CODE IS INVALID
-        showError("Invalid code. Please check and try again.");
+        showError("Invalid code. Please try again.");
       }
-      
     } catch (error) {
-      console.error(error);
-      showError("System error: Unable to verify code right now.");
+      showError("Error: Unable to verify code.");
     }
   });
 
-  // Helper functions for UI
   function showError(msg) {
     const statusMsg = document.getElementById('statusMessage');
     statusMsg.textContent = msg;
@@ -355,6 +334,5 @@ body{
     document.getElementById('popupModal').classList.remove('active');
   });
 </script>
-
 </body>
 </html>
