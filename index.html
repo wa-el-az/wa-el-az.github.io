@@ -16,19 +16,28 @@
 }
 
 *{box-sizing:border-box;}
-html,body{height:100%;}
-body{
+html,body{
+  height:100%;
   margin:0;
   font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
   background:#0b0b0b;
   color:var(--text);
+  scroll-behavior: smooth;
 }
 
 /* Layout */
 .wrap{
-  min-height:100vh;
   position:relative;
-  overflow:hidden;
+}
+
+/* The top section containing your intro and Morocco card */
+.hero-container {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  overflow: hidden; 
+  /* We will fade this out with JS */
+  transition: opacity 0.1s ease-out; 
 }
 
 /* Panels */
@@ -103,7 +112,6 @@ body{
   margin:0;
   font-size:clamp(40px,5vw,72px);
   line-height:1.1;
-  /* Keep a minimum height so the button below doesn't jump up and down on mobile */
   min-height: 2.2em; 
 }
 @media (min-width: 861px) {
@@ -147,7 +155,6 @@ body{
   justify-content:center;
 }
 
-/* Morocco card (with subtle floating animation) */
 .heroImg .frame{
   width:420px;
   height:420px;
@@ -174,6 +181,57 @@ body{
   filter:drop-shadow(0 30px 60px rgba(0,0,0,.55));
 }
 
+/* --- NEW SECTIONS --- */
+
+.description-section {
+  min-height: 60vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 5vw;
+  background: #0b0b0b;
+  text-align: center;
+  position: relative;
+  z-index: 5; /* Stays above the hero background when scrolling */
+}
+
+.desc-text {
+  font-size: clamp(32px, 5vw, 56px); /* Made it big as requested */
+  font-weight: 800;
+  line-height: 1.3;
+  color: var(--text);
+  max-width: 900px;
+  letter-spacing: -0.5px;
+}
+
+.desc-text span {
+  display: block;
+  color: var(--muted);
+  font-size: clamp(20px, 3vw, 32px);
+  margin-top: 15px;
+  font-weight: 500;
+}
+
+.footer-section {
+  background: #1f0303; /* Darker red area */
+  padding: 60px 20px;
+  text-align: center;
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.footer-text {
+  color: rgba(255,255,255,0.5);
+  font-size: 16px;
+  line-height: 1.8;
+  margin: 0;
+}
+
+.footer-text strong {
+  color: rgba(255,255,255,0.85);
+  font-size: 18px;
+}
+
+
 /* Animations */
 @keyframes fadeUp{
   from{opacity:0;transform:translateY(15px);}
@@ -199,6 +257,10 @@ body{
 
 /* Mobile */
 @media (max-width:860px){
+  .hero-container {
+    display: flex;
+    flex-direction: column;
+  }
   .left,.right{
     position:relative;
     width:100%;
@@ -233,34 +295,63 @@ body{
 
 <main class="wrap">
 
-  <a class="redeem" href="redeem.html">Redeem</a>
+  <div id="hero" class="hero-container">
+    <a class="redeem" href="redeem.html">Redeem</a>
 
-  <section class="left">
-    <div class="content">
-      <p class="hello">Hi,</p>
-      
-      <h1 class="title">
-        <span id="typewriter-text">I am Wael.</span><span class="cursor"></span>
-      </h1>
-      
-      <a class="cta" href="about.html">About me</a>
-    </div>
-  </section>
-
-  <section class="right" aria-hidden="true">
-    <div class="heroImg">
-      <div class="frame">
-        <img
-          src="https://static.wikitide.net/ballsdexwiki/e/e4/Morocco.png"
-          alt="Morocco"
-        />
+    <section class="left">
+      <div class="content">
+        <p class="hello">Hi,</p>
+        
+        <h1 class="title">
+          <span id="typewriter-text">I am Wael.</span><span class="cursor"></span>
+        </h1>
+        
+        <a class="cta" href="about.html">About me</a>
       </div>
+    </section>
+
+    <section class="right" aria-hidden="true">
+      <div class="heroImg">
+        <div class="frame">
+          <img src="https://static.wikitide.net/ballsdexwiki/e/e4/Morocco.png" alt="Morocco" />
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <section class="description-section">
+    <div class="desc-text">
+      A proud Moroccan 🇲🇦 student who likes tea.
+      <span>Born in 2013.</span>
     </div>
   </section>
+
+  <footer class="footer-section">
+    <p class="footer-text">
+      <strong>Credits:</strong><br>
+      Wael Amrani Zerrifi<br>
+      Copyrights ©️ 2026
+    </p>
+  </footer>
 
 </main>
 
 <script>
+  // --- Scroll Fade Effect ---
+  const hero = document.getElementById('hero');
+  window.addEventListener('scroll', () => {
+    // Calculate how far down the user scrolled
+    const scrollY = window.scrollY;
+    // Calculate opacity (1 at the top, fades to 0 as you scroll down 80% of the screen)
+    let opacity = 1 - (scrollY / (window.innerHeight * 0.8));
+    
+    // Make sure opacity doesn't drop below 0
+    if (opacity < 0) opacity = 0;
+    
+    hero.style.opacity = opacity;
+  });
+
+  // --- Typewriter Effect ---
   const phrases = [
     "I am Wael.",
     "I am a Moroccan.",
@@ -268,7 +359,6 @@ body{
   ];
   
   let phraseIndex = 0;
-  // Start with the first phrase fully typed out
   let charIndex = phrases[0].length; 
   let isDeleting = true;
 
@@ -278,30 +368,27 @@ body{
     const currentPhrase = phrases[phraseIndex];
     
     if (isDeleting) {
-      charIndex--; // Erase a character
+      charIndex--; 
     } else {
-      charIndex++; // Type a character
+      charIndex++; 
     }
 
     typeNode.textContent = currentPhrase.substring(0, charIndex);
 
-    // Adjust typing speeds
     let typingSpeed = isDeleting ? 40 : 80;
 
-    // Logic for pausing at the ends
     if (!isDeleting && charIndex === currentPhrase.length) {
-      typingSpeed = 2500; // Pause when a phrase is fully typed
+      typingSpeed = 2500; 
       isDeleting = true;
     } else if (isDeleting && charIndex === 0) {
       isDeleting = false;
-      phraseIndex = (phraseIndex + 1) % phrases.length; // Move to next phrase
-      typingSpeed = 500; // Pause before starting the next phrase
+      phraseIndex = (phraseIndex + 1) % phrases.length; 
+      typingSpeed = 500; 
     }
 
     setTimeout(typeEffect, typingSpeed);
   }
 
-  // Wait 2.5 seconds before starting the deletion of the first phrase
   setTimeout(typeEffect, 2500);
 </script>
 
