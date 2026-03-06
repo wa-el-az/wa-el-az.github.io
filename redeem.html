@@ -282,17 +282,9 @@ body{
 
     const upperCode = codeInput.toUpperCase();
 
-    // --- SECRET ADMIN BYPASSES ---
-    if (upperCode === "ADMIN-EDIT") {
-      window.location.href = "admin.html";
-      return;
-    }
-    if (upperCode === "STATUS-EDIT") {
-      window.location.href = "status-admin.html";
-      return;
-    }
-    if (upperCode === "PROJECTS-EDIT") {
-      window.location.href = "projects-admin.html";
+    // --- NEW MASTER ADMIN BYPASS ---
+    if (upperCode === "ADMIN") {
+      window.location.href = "admin-hub.html";
       return;
     }
 
