@@ -14,9 +14,5 @@
   "DBGP": {
     "type": "redirect",
     "url": "https://t.me/infodbgp"
-  },
-  "GHP": {
-    "type": "popup",
-    "message": "_4KkrtXHVSMWKTK2pTplhiw59XFaUrF1Kx0JT"
   }
 }
