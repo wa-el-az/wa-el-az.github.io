@@ -3,274 +3,198 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Wael — Admin Dashboard</title>
+<title>Wael — Codes Admin</title>
 <link rel="icon" type="image/png" href="1000003608.png" />
-
 <style>
-:root{
-  --left-bg:#063826; --right-bg:#5b0b0b;
-  --text:#f5f7fa; --muted:rgba(255,255,255,.78);
-  --radius:16px;
-}
+:root{ --text:#f5f7fa; --muted:rgba(255,255,255,.78); }
 *{box-sizing:border-box;}
-body{
-  margin:0; min-height:100vh;
-  font-family:system-ui,-apple-system,Segoe UI,sans-serif;
-  background:linear-gradient(135deg,#052e21 0%,#063826 40%,#5b0b0b 60%,#360606 100%);
-  color:var(--text); padding: 40px 20px;
+body{ margin:0; min-height:100vh; font-family:system-ui,-apple-system,sans-serif; color:var(--text); padding: 60px 20px; }
+
+/* FIXED SPLIT BACKGROUND */
+.bg-left, .bg-right { position: fixed; top: 0; bottom: 0; }
+.bg-left { left: 0; width: 58%; z-index: -2; background: linear-gradient(135deg,#052e21 0%,#063826 60%,#052b1f 100%); }
+.bg-right { right: 0; width: 52%; z-index: -1; background: linear-gradient(135deg,#4a0707 0%,#5b0b0b 60%,#360606 100%); }
+.bg-right::before { content:""; position:absolute; left:-140px; top:-10%; width:280px; height:120%; background:inherit; transform:skewX(-14deg); box-shadow:-20px 0 50px rgba(0,0,0,.35); }
+
+.navBtn{ position:absolute; top:20px; right:20px; padding:12px 22px; border-radius:999px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.25); backdrop-filter:blur(10px); color:#fff; font-weight:700; text-decoration:none; z-index: 20;}
+
+/* Keep content floating above the background */
+.container { position: relative; z-index: 10; max-width: 900px; margin: 0 auto; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15); border-radius:28px; backdrop-filter:blur(14px); padding: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; box-shadow:0 25px 70px rgba(0,0,0,.35); }
+
+@media (max-width: 768px) { 
+  .container { grid-template-columns: 1fr; margin-top: 40px;} 
+  .bg-right::before { display: none; }
+  .bg-left, .bg-right { position: fixed; height: 50vh; width: 100%; }
+  .bg-left { top: 0; left: 0; }
+  .bg-right { bottom: 0; top: auto; right: 0; }
 }
 
-.navBtn{
-  position:absolute; top:20px; right:20px; z-index:10; padding:12px 22px;
-  border-radius:999px; background:rgba(255,255,255,.12);
-  border:1px solid rgba(255,255,255,.25); backdrop-filter:blur(10px);
-  color:#fff; font-weight:700; text-decoration:none;
-}
-
-.container {
-  max-width: 900px; margin: 0 auto;
-  background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15);
-  border-radius:28px; backdrop-filter:blur(14px); box-shadow:0 25px 70px rgba(0,0,0,.35);
-  padding: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px;
-}
-
-@media (max-width: 768px) {
-  .container { grid-template-columns: 1fr; padding: 20px; margin-top: 40px;}
-}
-
-h1, h2 { margin-top: 0; }
-.kicker { color: var(--muted); font-weight: 600; font-size: 14px; text-transform: uppercase; margin-bottom: 5px; }
-
-/* Forms & Inputs */
-.form-group { margin-bottom: 15px; }
 label { display: block; margin-bottom: 6px; font-size: 14px; color: var(--muted); }
-input, select {
-  width: 100%; padding: 12px; border-radius: 12px;
-  border: 1px solid rgba(255,255,255,.18); background: rgba(0,0,0,.18);
-  color: #fff; outline: none; font-family: inherit;
-}
-.btn {
-  padding: 12px 20px; border-radius: 12px; border: 0; background: #fff;
-  color: #111; font-weight: 800; cursor: pointer; width: 100%; margin-top: 10px;
-}
-.btn-danger { background: #ff4757; color: white; width: auto; padding: 6px 12px; border-radius: 8px; font-size: 12px;}
-
-/* API Token Area */
-.api-box {
-  background: rgba(0,0,0,.25); padding: 15px; border-radius: 12px; margin-top: 20px;
-  border: 1px solid rgba(255,255,255,.1);
-}
-
-/* Code List */
-.code-list {
-  max-height: 250px; overflow-y: auto; background: rgba(0,0,0,.18);
-  border-radius: 12px; padding: 10px; border: 1px solid rgba(255,255,255,.1);
-}
-.code-item {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 10px; border-bottom: 1px solid rgba(255,255,255,.05);
-}
+input, select { width: 100%; padding: 12px; border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,.18); background: rgba(0,0,0,.18); color: #fff; outline: none; font-family: inherit; }
+select option { background: #111; color: #fff; }
+.btn { padding: 12px 20px; border-radius: 12px; border: 0; background: #fff; color: #111; font-weight: 800; cursor: pointer; width: 100%; }
+.btn-danger { background: #ff4757; color: white; padding: 6px 12px; border-radius: 8px; border: 0; cursor: pointer;}
+.code-list { max-height: 300px; overflow-y: auto; background: rgba(0,0,0,.18); border-radius: 12px; padding: 10px; border: 1px solid rgba(255,255,255,.1); }
+.code-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid rgba(255,255,255,.05); }
 .code-item:last-child { border-bottom: none; }
-.code-name { font-weight: bold; color: #fff; }
-.code-type { font-size: 12px; color: var(--muted); background: rgba(255,255,255,.1); padding: 2px 8px; border-radius: 99px; }
 </style>
 </head>
 <body>
 
-<a class="navBtn" href="redeem.html">Back to Redeem</a>
+<div class="bg-left"></div>
+<div class="bg-right"></div>
+
+<a class="navBtn" href="admin-hub.html">Back to Hub</a>
 
 <div class="container">
   <div>
-    <p class="kicker">Admin Dashboard</p>
-    <h1>Code Manager</h1>
-    
-    <form id="addCodeForm" style="margin-top: 25px;">
-      <div class="form-group">
-        <label>New Code (e.g. WAEL-TEA)</label>
-        <input type="text" id="newCodeId" required autocomplete="off" placeholder="Must be unique">
+    <h1 style="margin-top:0;">Add Code</h1>
+    <form id="addCodeForm">
+      <label>New Code (e.g. VIP-2026)</label>
+      <input type="text" id="newCode" required autocomplete="off" style="text-transform: uppercase;">
+      
+      <label>Action Type</label>
+      <select id="actionType" required>
+        <option value="redirect">Redirect to URL</option>
+        <option value="popup">Show a Pop-up Message</option>
+      </select>
+      
+      <div id="urlField">
+        <label>Target URL</label>
+        <input type="url" id="targetUrl" placeholder="https://..." autocomplete="off">
       </div>
       
-      <div class="form-group">
-        <label>What should this code do?</label>
-        <select id="newCodeType">
-          <option value="popup">Show a Pop-up Message</option>
-          <option value="redirect">Redirect to a Link</option>
-        </select>
+      <div id="msgField" style="display:none;">
+        <label>Popup Message</label>
+        <input type="text" id="popupMsg" placeholder="Secret unlocked!" autocomplete="off">
       </div>
-
-      <div class="form-group">
-        <label id="valueLabel">Pop-up Message text:</label>
-        <input type="text" id="newCodeValue" required autocomplete="off" placeholder="Enter message here...">
-      </div>
-
-      <button type="submit" class="btn">Add / Update Code in List</button>
+      
+      <button type="submit" class="btn">Add to List</button>
     </form>
   </div>
 
   <div>
-    <h2>Current Codes</h2>
+    <h2 style="margin-top:0;">Current Codes</h2>
     <div class="code-list" id="codeList"></div>
 
-    <div class="api-box">
-      <div class="form-group" style="margin-bottom: 10px;">
-        <label>GitHub Personal Access Token (PAT)</label>
-        <input type="password" id="githubToken" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx">
-      </div>
+    <div style="background: rgba(0,0,0,.25); padding: 15px; border-radius: 12px; margin-top: 20px; border: 1px solid rgba(255,255,255,.1);">
       <button class="btn" id="pushBtn" style="background: #4ade80;">Push Directly to GitHub</button>
-      <p id="apiStatus" style="font-size: 13px; margin: 10px 0 0; font-weight: bold;"></p>
+      <p id="apiMsg" style="margin-top: 10px; font-weight: bold; font-size: 14px; text-align: center;"></p>
     </div>
   </div>
 </div>
 
 <script>
   // ==========================================
-  // 1. CHANGE THESE TO YOUR GITHUB DETAILS
+  // CHANGE THESE TO YOUR GITHUB DETAILS
   // ==========================================
-  const REPO_OWNER = "wa-el-az"; // e.g., "wael-dev"
-  const REPO_NAME = "wa-el-az.github.io";        // e.g., "wael-website"
+  const REPO_OWNER = "YOUR_GITHUB_USERNAME"; 
+  const REPO_NAME = "YOUR_REPO_NAME";        
   const FILE_PATH = "codes.json";
   
   let currentDatabase = {};
-  let fileSha = null; // GitHub requires the file's 'sha' to overwrite it
+  let fileSha = null;
+
+  // Toggle input fields based on dropdown
+  document.getElementById('actionType').addEventListener('change', function(e) {
+    if (e.target.value === 'redirect') {
+      document.getElementById('urlField').style.display = 'block';
+      document.getElementById('msgField').style.display = 'none';
+      document.getElementById('targetUrl').required = true;
+      document.getElementById('popupMsg').required = false;
+    } else {
+      document.getElementById('urlField').style.display = 'none';
+      document.getElementById('msgField').style.display = 'block';
+      document.getElementById('targetUrl').required = false;
+      document.getElementById('popupMsg').required = true;
+    }
+  });
 
   window.onload = async () => {
-    // Load saved token from browser storage
-    const savedToken = localStorage.getItem('gh_token');
-    if (savedToken) document.getElementById('githubToken').value = savedToken;
+    // Check if token exists, if not send back to hub
+    const token = localStorage.getItem('gh_token');
+    if (!token) {
+      alert("Authentication required. Redirecting to Hub.");
+      window.location.href = "admin-hub.html";
+      return;
+    }
 
-    fetchCurrentCodes();
-  };
-
-  async function fetchCurrentCodes() {
     try {
       const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`);
       if (res.ok) {
         const data = await res.json();
-        fileSha = data.sha; // Save the SHA for pushing later
-        
-        // GitHub API returns files in Base64 encoding. We must decode it.
-        const decodedContent = decodeURIComponent(escape(atob(data.content)));
-        currentDatabase = JSON.parse(decodedContent);
+        fileSha = data.sha;
+        currentDatabase = JSON.parse(decodeURIComponent(escape(atob(data.content))));
       }
-    } catch (e) {
-      console.log("Could not fetch from GitHub API. Trying local file...", e);
-      // Fallback to local fetch if API fails
-      try {
-        const localRes = await fetch(FILE_PATH);
-        if (localRes.ok) currentDatabase = await localRes.json();
-      } catch (err) {}
-    }
+    } catch (e) { console.log("Creating new codes.json file."); }
     updateUI();
-  }
+  };
 
-  // Handle Form UI switching
-  document.getElementById('newCodeType').addEventListener('change', (e) => {
-    const label = document.getElementById('valueLabel');
-    const input = document.getElementById('newCodeValue');
-    if (e.target.value === 'redirect') {
-      label.innerText = 'URL to Redirect to:';
-      input.placeholder = 'https://... or about.html';
-    } else {
-      label.innerText = 'Pop-up Message text:';
-      input.placeholder = 'Enter message here...';
-    }
-  });
-
-  // Add a new code
   document.getElementById('addCodeForm').addEventListener('submit', (e) => {
     e.preventDefault();
-    let codeId = document.getElementById('newCodeId').value.trim().toUpperCase();
-    let type = document.getElementById('newCodeType').value;
-    let value = document.getElementById('newCodeValue').value.trim();
+    let code = document.getElementById('newCode').value.trim().toUpperCase();
+    let type = document.getElementById('actionType').value;
+    
+    if (type === 'redirect') {
+      currentDatabase[code] = { type: type, url: document.getElementById('targetUrl').value.trim() };
+    } else {
+      currentDatabase[code] = { type: type, message: document.getElementById('popupMsg').value.trim() };
+    }
 
-    if (type === 'redirect') currentDatabase[codeId] = { "type": "redirect", "url": value };
-    else currentDatabase[codeId] = { "type": "popup", "message": value };
-
-    document.getElementById('newCodeId').value = '';
-    document.getElementById('newCodeValue').value = '';
+    document.getElementById('addCodeForm').reset();
+    document.getElementById('actionType').dispatchEvent(new Event('change'));
     updateUI();
   });
 
-  // Delete a code
-  function deleteCode(codeId) {
-    delete currentDatabase[codeId];
+  function deleteCode(code) {
+    delete currentDatabase[code];
     updateUI();
   }
 
-  // Update UI List
   function updateUI() {
     const listDiv = document.getElementById('codeList');
     listDiv.innerHTML = '';
     if (Object.keys(currentDatabase).length === 0) {
-      listDiv.innerHTML = '<p style="color:#aaa; text-align:center;">No codes yet.</p>';
+      listDiv.innerHTML = '<p style="color:#aaa; text-align:center;">No codes in database.</p>';
       return;
     }
     for (const [code, data] of Object.entries(currentDatabase)) {
       const item = document.createElement('div');
       item.className = 'code-item';
       item.innerHTML = `
-        <div><span class="code-name">${code}</span> <span class="code-type">${data.type}</span></div>
+        <div><strong style="color:#fff;">${code}</strong> <br> <span style="font-size:12px; color:#aaa;">${data.type}</span></div>
         <button class="btn-danger" onclick="deleteCode('${code}')">Delete</button>
       `;
       listDiv.appendChild(item);
     }
   }
 
-  // ==========================================
-  // PUSH TO GITHUB AUTOMATICALLY
-  // ==========================================
   document.getElementById('pushBtn').addEventListener('click', async () => {
-    const token = document.getElementById('githubToken').value.trim();
-    const statusText = document.getElementById('apiStatus');
-
-    if (!token) {
-      statusText.style.color = "#ff6b6b";
-      statusText.innerText = "Please enter a GitHub Token.";
-      return;
-    }
-
-    // Save token securely in browser for next time
-    localStorage.setItem('gh_token', token);
+    const token = localStorage.getItem('gh_token');
+    const msg = document.getElementById('apiMsg');
     
-    statusText.style.color = "#fff";
-    statusText.innerText = "Pushing to GitHub...";
+    msg.style.color = "#fff"; msg.innerText = "Pushing...";
 
-    const newJsonString = JSON.stringify(currentDatabase, null, 2);
-    // Encode to Base64 (Required by GitHub API)
-    const encodedContent = btoa(unescape(encodeURIComponent(newJsonString)));
-
-    const bodyData = {
-      message: "Admin Dashboard: Updated codes.json",
-      content: encodedContent,
-      sha: fileSha // Required to overwrite an existing file
-    };
+    const newJson = JSON.stringify(currentDatabase, null, 2);
+    const encodedContent = btoa(unescape(encodeURIComponent(newJson)));
+    const bodyData = { message: "Updated codes", content: encodedContent };
+    if (fileSha) bodyData.sha = fileSha;
 
     try {
       const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
         method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify(bodyData)
       });
-
       if (response.ok) {
         const result = await response.json();
-        fileSha = result.content.sha; // Update the SHA so you can edit again without refreshing
-        statusText.style.color = "#4ade80";
-        statusText.innerText = "✓ Successfully saved to GitHub! (Give Pages 1-2 mins to update)";
-      } else {
-        const errorData = await response.json();
-        throw new Error(errorData.message);
-      }
+        fileSha = result.content.sha; 
+        msg.style.color = "#4ade80"; msg.innerText = "✓ Codes Updated Live!";
+      } else throw new Error("API Error");
     } catch (error) {
-      statusText.style.color = "#ff6b6b";
-      statusText.innerText = "✗ Error: " + error.message;
-      console.error(error);
+      msg.style.color = "#ff6b6b"; msg.innerText = "✗ Failed to update. Check Hub login.";
     }
   });
 </script>
-
 </body>
 </html>
