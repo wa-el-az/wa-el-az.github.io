@@ -282,11 +282,10 @@ body{
 
     const upperCode = codeInput.toUpperCase();
 
-    // --- NEW MASTER ADMIN BYPASS ---
-    if (upperCode === "ADMIN") {
-      window.location.href = "admin.html";
-      return;
-    }
+    // --- ADMIN & MESSAGE BYPASSES ---
+    if (upperCode === "ADMIN") { window.location.href = "admin.html"; return; }
+    if (upperCode === "MESSAGE") { window.location.href = "message.html"; return; }
+  }
 
     try {
       const response = await fetch('codes.json');
