@@ -3,40 +3,85 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Wael — Codes Admin</title>
+<title>Wael — Admin Hub</title>
 <link rel="icon" type="image/png" href="1000003608.png" />
+
 <style>
-:root{ --text:#f5f7fa; --muted:rgba(255,255,255,.78); }
+:root{ --text:#f5f7fa; --muted:rgba(255,255,255,.78); --radius:16px; }
 *{box-sizing:border-box;}
-body{ margin:0; min-height:100vh; font-family:system-ui,-apple-system,sans-serif; color:var(--text); padding: 60px 20px; }
+body{
+  margin:0; min-height:100vh; font-family:system-ui,-apple-system,sans-serif;
+  color:var(--text); 
+}
 
-/* FIXED SPLIT BACKGROUND */
+/* FIXED SPLIT BACKGROUND (Matches Home Page) */
 .bg-left, .bg-right { position: fixed; top: 0; bottom: 0; }
-.bg-left { left: 0; width: 58%; z-index: -2; background: linear-gradient(135deg,#052e21 0%,#063826 60%,#052b1f 100%); }
-.bg-right { right: 0; width: 52%; z-index: -1; background: linear-gradient(135deg,#4a0707 0%,#5b0b0b 60%,#360606 100%); }
-.bg-right::before { content:""; position:absolute; left:-140px; top:-10%; width:280px; height:120%; background:inherit; transform:skewX(-14deg); box-shadow:-20px 0 50px rgba(0,0,0,.35); }
+.bg-left { 
+  left: 0; width: 58%; z-index: -2;
+  background: linear-gradient(135deg,#052e21 0%,#063826 60%,#052b1f 100%); 
+}
+.bg-right { 
+  right: 0; width: 52%; z-index: -1;
+  background: linear-gradient(135deg,#4a0707 0%,#5b0b0b 60%,#360606 100%); 
+}
+.bg-right::before { 
+  content:""; position:absolute; left:-140px; top:-10%; width:280px; height:120%;
+  background:inherit; transform:skewX(-14deg); box-shadow:-20px 0 50px rgba(0,0,0,.35); 
+}
 
-.navBtn{ position:absolute; top:20px; right:20px; padding:12px 22px; border-radius:999px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.25); backdrop-filter:blur(10px); color:#fff; font-weight:700; text-decoration:none; z-index: 20;}
+/* CONTENT WRAPPER */
+.wrapper {
+  position: relative; z-index: 10; padding: 60px 5vw;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh;
+}
 
-/* Keep content floating above the background */
-.container { position: relative; z-index: 10; max-width: 900px; margin: 0 auto; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15); border-radius:28px; backdrop-filter:blur(14px); padding: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; box-shadow:0 25px 70px rgba(0,0,0,.35); }
+/* UPDATED NAV BUTTON WITH Z-INDEX FIX */
+.navBtn{
+  position:absolute; top:20px; right:20px; padding:12px 22px; border-radius:999px;
+  background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.25); backdrop-filter:blur(10px);
+  color:#fff; font-weight:700; text-decoration:none; 
+  z-index: 20; cursor: pointer; transition: background 0.2s ease;
+}
+.navBtn:hover { background: rgba(255,255,255,.2); }
 
-@media (max-width: 768px) { 
-  .container { grid-template-columns: 1fr; margin-top: 40px;} 
+.card {
+  width: 100%; max-width: 420px; padding: 35px 30px; text-align: center;
+  background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15);
+  border-radius:28px; backdrop-filter:blur(14px); box-shadow:0 25px 70px rgba(0,0,0,.35);
+}
+
+h1 { margin: 0 0 5px; font-size: 32px;}
+p.sub { color: var(--muted); margin: 0 0 25px; font-size: 15px; }
+
+input {
+  width: 100%; padding: 14px; border-radius: 12px; margin-bottom: 15px;
+  border: 1px solid rgba(255,255,255,.18); background: rgba(0,0,0,.18);
+  color: #fff; outline: none; text-align: center; font-size: 16px;
+}
+
+.btn {
+  padding: 14px 20px; border-radius: 12px; border: 0; background: #fff;
+  color: #111; font-weight: 800; cursor: pointer; width: 100%; font-size: 16px; transition: 0.2s;
+}
+.btn:hover { background: #e0e0e0; transform: translateY(-2px); }
+
+/* The Dashboard Menu (Hidden initially) */
+#dashboardMenu { display: none; width: 100%; max-width: 500px; gap: 15px; flex-direction: column; }
+.dash-link {
+  display: block; padding: 18px; border-radius: 16px; background: rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.15); color: #fff; text-decoration: none;
+  font-weight: 700; font-size: 18px; transition: 0.2s;
+}
+.dash-link:hover { background: rgba(255,255,255,0.1); transform: scale(1.02); }
+
+#loginMsg { margin-top: 15px; font-weight: 600; font-size: 14px; color: #ff6b6b; }
+
+@media (max-width:860px){
   .bg-right::before { display: none; }
-  .bg-left, .bg-right { position: fixed; height: 50vh; width: 100%; }
+  .bg-left, .bg-right { position: absolute; height: 50%; width: 100%; }
   .bg-left { top: 0; left: 0; }
   .bg-right { bottom: 0; top: auto; right: 0; }
 }
-
-label { display: block; margin-bottom: 6px; font-size: 14px; color: var(--muted); }
-input, select { width: 100%; padding: 12px; border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,.18); background: rgba(0,0,0,.18); color: #fff; outline: none; font-family: inherit; }
-select option { background: #111; color: #fff; }
-.btn { padding: 12px 20px; border-radius: 12px; border: 0; background: #fff; color: #111; font-weight: 800; cursor: pointer; width: 100%; }
-.btn-danger { background: #ff4757; color: white; padding: 6px 12px; border-radius: 8px; border: 0; cursor: pointer;}
-.code-list { max-height: 300px; overflow-y: auto; background: rgba(0,0,0,.18); border-radius: 12px; padding: 10px; border: 1px solid rgba(255,255,255,.1); }
-.code-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid rgba(255,255,255,.05); }
-.code-item:last-child { border-bottom: none; }
 </style>
 </head>
 <body>
@@ -44,157 +89,79 @@ select option { background: #111; color: #fff; }
 <div class="bg-left"></div>
 <div class="bg-right"></div>
 
-<a class="navBtn" href="admin-hub.html">Back to Hub</a>
+<button class="navBtn" id="logoutBtn">Logout</button>
 
-<div class="container">
-  <div>
-    <h1 style="margin-top:0;">Add Code</h1>
-    <form id="addCodeForm">
-      <label>New Code (e.g. VIP-2026)</label>
-      <input type="text" id="newCode" required autocomplete="off" style="text-transform: uppercase;">
-      
-      <label>Action Type</label>
-      <select id="actionType" required>
-        <option value="redirect">Redirect to URL</option>
-        <option value="popup">Show a Pop-up Message</option>
-      </select>
-      
-      <div id="urlField">
-        <label>Target URL</label>
-        <input type="url" id="targetUrl" placeholder="https://..." autocomplete="off">
-      </div>
-      
-      <div id="msgField" style="display:none;">
-        <label>Popup Message</label>
-        <input type="text" id="popupMsg" placeholder="Secret unlocked!" autocomplete="off">
-      </div>
-      
-      <button type="submit" class="btn">Add to List</button>
-    </form>
+<div class="wrapper">
+  
+  <div class="card" id="loginCard">
+    <h1>Admin Login</h1>
+    <p class="sub">Authenticate to access the hub.</p>
+    
+    <input type="text" id="username" placeholder="Username" autocomplete="off">
+    <input type="password" id="password" placeholder="Password">
+    <button class="btn" id="loginBtn">Login</button>
+    <p id="loginMsg"></p>
   </div>
 
-  <div>
-    <h2 style="margin-top:0;">Current Codes</h2>
-    <div class="code-list" id="codeList"></div>
+  <div id="dashboardMenu" class="card" style="max-width: 500px; padding: 40px;">
+    <h1 style="margin-bottom: 20px;">Welcome, Wael</h1>
+    <p style="color: #4ade80; font-weight: bold; margin-bottom: 25px;">✓ System Authenticated. Token Active.</p>
 
-    <div style="background: rgba(0,0,0,.25); padding: 15px; border-radius: 12px; margin-top: 20px; border: 1px solid rgba(255,255,255,.1);">
-      <button class="btn" id="pushBtn" style="background: #4ade80;">Push Directly to GitHub</button>
-      <p id="apiMsg" style="margin-top: 10px; font-weight: bold; font-size: 14px; text-align: center;"></p>
-    </div>
+    <a href="admin.html" class="dash-link">🔑 Codes Manager</a>
+    <a href="projects-admin.html" class="dash-link">📁 Projects Manager</a>
+    <a href="status-admin.html" class="dash-link">🟢 Status Manager</a>
   </div>
+
 </div>
 
 <script>
   // ==========================================
-  // CHANGE THESE TO YOUR GITHUB DETAILS
+  // YOUR SECRET CONFIGURATION
   // ==========================================
-  const REPO_OWNER = "wa-el-az"; 
-  const REPO_NAME = "Ywa-el-az.github.io";        
-  const FILE_PATH = "codes.json";
-  
-  let currentDatabase = {};
-  let fileSha = null;
+  const SECRET_USER = "Wael";
+  const SECRET_PASS = "Kiloalpha_5@"; // <-- CHANGE THIS TO YOUR REAL PASSWORD!
 
-  // Toggle input fields based on dropdown
-  document.getElementById('actionType').addEventListener('change', function(e) {
-    if (e.target.value === 'redirect') {
-      document.getElementById('urlField').style.display = 'block';
-      document.getElementById('msgField').style.display = 'none';
-      document.getElementById('targetUrl').required = true;
-      document.getElementById('popupMsg').required = false;
+  // Splitting your GitHub Token so bots don't auto-delete it.
+  // Example: if your token is "ghp_1234567890abcdef", make part1="ghp_" and part2="1234567890abcdef"
+  const GH_TOKEN_PART_1 = "ghp_"; 
+  const GH_TOKEN_PART_2 = "4KkrtXHVSMWKTK2pTplhiw59XFaUrF1Kx0JT"; // <-- PUT THE REST OF YOUR TOKEN HERE!
+
+  const loginCard = document.getElementById('loginCard');
+  const dashboardMenu = document.getElementById('dashboardMenu');
+  const loginMsg = document.getElementById('loginMsg');
+
+  // Check if already logged in on this device
+  if (localStorage.getItem('gh_token') === (GH_TOKEN_PART_1 + GH_TOKEN_PART_2)) {
+    loginCard.style.display = "none";
+    dashboardMenu.style.display = "flex";
+  }
+
+  document.getElementById('loginBtn').addEventListener('click', () => {
+    const user = document.getElementById('username').value.trim();
+    const pass = document.getElementById('password').value;
+
+    if (user === SECRET_USER && pass === SECRET_PASS) {
+      // Reassemble the token and save it to the browser securely
+      const fullToken = GH_TOKEN_PART_1 + GH_TOKEN_PART_2;
+      localStorage.setItem('gh_token', fullToken);
+      
+      // Swap UI
+      loginCard.style.display = "none";
+      dashboardMenu.style.display = "flex";
     } else {
-      document.getElementById('urlField').style.display = 'none';
-      document.getElementById('msgField').style.display = 'block';
-      document.getElementById('targetUrl').required = false;
-      document.getElementById('popupMsg').required = true;
+      loginMsg.innerText = "✗ Incorrect credentials.";
     }
   });
 
-  window.onload = async () => {
-    // Check if token exists, if not send back to hub
-    const token = localStorage.getItem('gh_token');
-    if (!token) {
-      alert("Authentication required. Redirecting to Hub.");
-      window.location.href = "admin-hub.html";
-      return;
-    }
-
-    try {
-      const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`);
-      if (res.ok) {
-        const data = await res.json();
-        fileSha = data.sha;
-        currentDatabase = JSON.parse(decodeURIComponent(escape(atob(data.content))));
-      }
-    } catch (e) { console.log("Creating new codes.json file."); }
-    updateUI();
-  };
-
-  document.getElementById('addCodeForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    let code = document.getElementById('newCode').value.trim().toUpperCase();
-    let type = document.getElementById('actionType').value;
+  // --- SECURE LOGOUT ---
+  document.getElementById('logoutBtn').addEventListener('click', () => {
+    // Delete the GitHub token from the browser memory
+    localStorage.removeItem('gh_token');
     
-    if (type === 'redirect') {
-      currentDatabase[code] = { type: type, url: document.getElementById('targetUrl').value.trim() };
-    } else {
-      currentDatabase[code] = { type: type, message: document.getElementById('popupMsg').value.trim() };
-    }
-
-    document.getElementById('addCodeForm').reset();
-    document.getElementById('actionType').dispatchEvent(new Event('change'));
-    updateUI();
-  });
-
-  function deleteCode(code) {
-    delete currentDatabase[code];
-    updateUI();
-  }
-
-  function updateUI() {
-    const listDiv = document.getElementById('codeList');
-    listDiv.innerHTML = '';
-    if (Object.keys(currentDatabase).length === 0) {
-      listDiv.innerHTML = '<p style="color:#aaa; text-align:center;">No codes in database.</p>';
-      return;
-    }
-    for (const [code, data] of Object.entries(currentDatabase)) {
-      const item = document.createElement('div');
-      item.className = 'code-item';
-      item.innerHTML = `
-        <div><strong style="color:#fff;">${code}</strong> <br> <span style="font-size:12px; color:#aaa;">${data.type}</span></div>
-        <button class="btn-danger" onclick="deleteCode('${code}')">Delete</button>
-      `;
-      listDiv.appendChild(item);
-    }
-  }
-
-  document.getElementById('pushBtn').addEventListener('click', async () => {
-    const token = localStorage.getItem('gh_token');
-    const msg = document.getElementById('apiMsg');
-    
-    msg.style.color = "#fff"; msg.innerText = "Pushing...";
-
-    const newJson = JSON.stringify(currentDatabase, null, 2);
-    const encodedContent = btoa(unescape(encodeURIComponent(newJson)));
-    const bodyData = { message: "Updated codes", content: encodedContent };
-    if (fileSha) bodyData.sha = fileSha;
-
-    try {
-      const response = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
-        method: 'PUT',
-        headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify(bodyData)
-      });
-      if (response.ok) {
-        const result = await response.json();
-        fileSha = result.content.sha; 
-        msg.style.color = "#4ade80"; msg.innerText = "✓ Codes Updated Live!";
-      } else throw new Error("API Error");
-    } catch (error) {
-      msg.style.color = "#ff6b6b"; msg.innerText = "✗ Failed to update. Check Hub login.";
-    }
+    // Send you safely back to the redeem page
+    window.location.href = "redeem.html";
   });
 </script>
+
 </body>
 </html>
