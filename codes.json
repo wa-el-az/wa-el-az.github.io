@@ -10,5 +10,9 @@
   "WAEL-1234": {
     "type": "popup",
     "message": "Try another Code, for exemple SECRET-TEA 🫖."
+  },
+  "DBGP": {
+    "type": "redirect",
+    "url": "https://t.me/infodbgp"
   }
 }
