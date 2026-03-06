@@ -7,29 +7,41 @@
 <link rel="icon" type="image/png" href="1000003608.png" />
 
 <style>
-:root{
-  --text:#f5f7fa; --muted:rgba(255,255,255,.78);
-}
+:root{ --text:#f5f7fa; --muted:rgba(255,255,255,.78); }
 *{box-sizing:border-box;}
 body{
   margin:0; min-height:100vh; display: flex; align-items: center; justify-content: center;
   font-family:system-ui,-apple-system,sans-serif;
-  background:linear-gradient(135deg,#052e21 0%,#063826 40%,#5b0b0b 60%,#360606 100%);
   color:var(--text); padding: 20px;
 }
 
+/* FIXED SPLIT BACKGROUND */
+.bg-left, .bg-right { position: fixed; top: 0; bottom: 0; }
+.bg-left { left: 0; width: 58%; z-index: -2; background: linear-gradient(135deg,#052e21 0%,#063826 60%,#052b1f 100%); }
+.bg-right { right: 0; width: 52%; z-index: -1; background: linear-gradient(135deg,#4a0707 0%,#5b0b0b 60%,#360606 100%); }
+.bg-right::before { content:""; position:absolute; left:-140px; top:-10%; width:280px; height:120%; background:inherit; transform:skewX(-14deg); box-shadow:-20px 0 50px rgba(0,0,0,.35); }
+
 .navBtn{
-  position:absolute; top:20px; right:20px; padding:12px 22px;
+  position:absolute; top:20px; right:20px; padding:12px 22px; z-index: 20;
   border-radius:999px; background:rgba(255,255,255,.12);
   border:1px solid rgba(255,255,255,.25); backdrop-filter:blur(10px);
   color:#fff; font-weight:700; text-decoration:none;
 }
 
+/* Keep content floating above the background */
 .card {
+  position: relative; z-index: 10;
   width: 100%; max-width: 500px;
   background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15);
   border-radius:28px; backdrop-filter:blur(14px); box-shadow:0 25px 70px rgba(0,0,0,.35);
   padding: 30px; text-align: center;
+}
+
+@media (max-width:860px){
+  .bg-right::before { display: none; }
+  .bg-left, .bg-right { position: fixed; height: 50vh; width: 100%; }
+  .bg-left { top: 0; left: 0; }
+  .bg-right { bottom: 0; top: auto; right: 0; }
 }
 
 h1 { margin: 0 0 5px; }
@@ -50,14 +62,16 @@ input {
 </head>
 <body>
 
-<a class="navBtn" href="redeem.html">Back to Redeem</a>
+<div class="bg-left"></div>
+<div class="bg-right"></div>
+
+<a class="navBtn" href="admin-hub.html">Back to Hub</a>
 
 <div class="card">
   <h1>Update Status</h1>
-  <p class="sub">This updates the badge on your Home Page.</p>
+  <p class="sub">This updates the green badge on your Home Page.</p>
   
   <input type="text" id="statusInput" placeholder="e.g. Playing Asphalt 8" autocomplete="off">
-  <input type="password" id="githubToken" placeholder="GitHub PAT (ghp_...)">
   
   <button class="btn" id="pushBtn">Update Live Status</button>
   <p id="apiMsg"></p>
@@ -67,15 +81,20 @@ input {
   // ==========================================
   // CHANGE THESE TO YOUR GITHUB DETAILS
   // ==========================================
-  const REPO_OWNER = "wa-el-az"; 
-  const REPO_NAME = "wa-el-az.github.io";        
+  const REPO_OWNER = "YOUR_GITHUB_USERNAME"; 
+  const REPO_NAME = "YOUR_REPO_NAME";        
   const FILE_PATH = "status.json";
   
   let fileSha = null;
 
   window.onload = async () => {
-    const savedToken = localStorage.getItem('gh_token');
-    if (savedToken) document.getElementById('githubToken').value = savedToken;
+    // Check if token exists, if not send back to hub
+    const token = localStorage.getItem('gh_token');
+    if (!token) {
+      alert("Authentication required. Redirecting to Hub.");
+      window.location.href = "admin-hub.html";
+      return;
+    }
 
     // Fetch current status
     try {
@@ -90,12 +109,9 @@ input {
   };
 
   document.getElementById('pushBtn').addEventListener('click', async () => {
-    const token = document.getElementById('githubToken').value.trim();
+    const token = localStorage.getItem('gh_token');
     const newStatus = document.getElementById('statusInput').value.trim();
     const msg = document.getElementById('apiMsg');
-
-    if (!token) return msg.innerText = "Please enter your GitHub Token.";
-    localStorage.setItem('gh_token', token);
     
     msg.style.color = "#fff";
     msg.innerText = "Pushing...";
@@ -121,7 +137,7 @@ input {
       } else throw new Error("API Error");
     } catch (error) {
       msg.style.color = "#ff6b6b";
-      msg.innerText = "✗ Failed to update.";
+      msg.innerText = "✗ Failed to update. Check Hub login.";
     }
   });
 </script>
