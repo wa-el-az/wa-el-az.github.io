@@ -8,10 +8,27 @@
 <style>
 :root{ --text:#f5f7fa; --muted:rgba(255,255,255,.78); }
 *{box-sizing:border-box;}
-body{ margin:0; min-height:100vh; font-family:system-ui,-apple-system,sans-serif; background:linear-gradient(135deg,#052e21 0%,#063826 40%,#5b0b0b 60%,#360606 100%); color:var(--text); padding: 40px 20px; }
-.navBtn{ position:absolute; top:20px; right:20px; padding:12px 22px; border-radius:999px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.25); backdrop-filter:blur(10px); color:#fff; font-weight:700; text-decoration:none; }
-.container { max-width: 900px; margin: 0 auto; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15); border-radius:28px; backdrop-filter:blur(14px); padding: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-@media (max-width: 768px) { .container { grid-template-columns: 1fr; margin-top: 40px;} }
+body{ margin:0; min-height:100vh; font-family:system-ui,-apple-system,sans-serif; color:var(--text); padding: 40px 20px; }
+
+/* FIXED SPLIT BACKGROUND */
+.bg-left, .bg-right { position: fixed; top: 0; bottom: 0; }
+.bg-left { left: 0; width: 58%; z-index: -2; background: linear-gradient(135deg,#052e21 0%,#063826 60%,#052b1f 100%); }
+.bg-right { right: 0; width: 52%; z-index: -1; background: linear-gradient(135deg,#4a0707 0%,#5b0b0b 60%,#360606 100%); }
+.bg-right::before { content:""; position:absolute; left:-140px; top:-10%; width:280px; height:120%; background:inherit; transform:skewX(-14deg); box-shadow:-20px 0 50px rgba(0,0,0,.35); }
+
+.navBtn{ position:absolute; top:20px; right:20px; padding:12px 22px; border-radius:999px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.25); backdrop-filter:blur(10px); color:#fff; font-weight:700; text-decoration:none; z-index: 20;}
+
+/* Keep content floating above the background */
+.container { position: relative; z-index: 10; max-width: 900px; margin: 0 auto; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15); border-radius:28px; backdrop-filter:blur(14px); padding: 30px; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; box-shadow:0 25px 70px rgba(0,0,0,.35);}
+
+@media (max-width: 768px) { 
+  .container { grid-template-columns: 1fr; margin-top: 40px;} 
+  .bg-right::before { display: none; }
+  .bg-left, .bg-right { position: fixed; height: 50vh; width: 100%; }
+  .bg-left { top: 0; left: 0; }
+  .bg-right { bottom: 0; top: auto; right: 0; }
+}
+
 label { display: block; margin-bottom: 6px; font-size: 14px; color: var(--muted); }
 input, textarea { width: 100%; padding: 12px; border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,.18); background: rgba(0,0,0,.18); color: #fff; outline: none; font-family: inherit; }
 textarea { resize: vertical; min-height: 80px; }
@@ -24,7 +41,10 @@ textarea { resize: vertical; min-height: 80px; }
 </head>
 <body>
 
-<a class="navBtn" href="redeem.html">Back to Redeem</a>
+<div class="bg-left"></div>
+<div class="bg-right"></div>
+
+<a class="navBtn" href="admin-hub.html">Back to Hub</a>
 
 <div class="container">
   <div>
@@ -51,10 +71,8 @@ textarea { resize: vertical; min-height: 80px; }
     <div class="proj-list" id="projList"></div>
 
     <div style="background: rgba(0,0,0,.25); padding: 15px; border-radius: 12px; margin-top: 20px; border: 1px solid rgba(255,255,255,.1);">
-      <label>GitHub PAT</label>
-      <input type="password" id="githubToken" placeholder="ghp_...">
       <button class="btn" id="pushBtn" style="background: #4ade80;">Push to GitHub</button>
-      <p id="apiMsg" style="margin-top: 10px; font-weight: bold; font-size: 14px;"></p>
+      <p id="apiMsg" style="margin-top: 10px; font-weight: bold; font-size: 14px; text-align: center;"></p>
     </div>
   </div>
 </div>
@@ -63,16 +81,21 @@ textarea { resize: vertical; min-height: 80px; }
   // ==========================================
   // CHANGE THESE TO YOUR GITHUB DETAILS
   // ==========================================
-  const REPO_OWNER = "wa-el-az"; 
-  const REPO_NAME = "wa-el-az.github.io";        
+  const REPO_OWNER = "YOUR_GITHUB_USERNAME"; 
+  const REPO_NAME = "YOUR_REPO_NAME";        
   const FILE_PATH = "projects.json";
   
   let currentDatabase = {};
   let fileSha = null;
 
   window.onload = async () => {
-    const savedToken = localStorage.getItem('gh_token');
-    if (savedToken) document.getElementById('githubToken').value = savedToken;
+    // Check if token exists, if not send back to hub
+    const token = localStorage.getItem('gh_token');
+    if (!token) {
+      alert("Authentication required. Redirecting to Hub.");
+      window.location.href = "admin-hub.html";
+      return;
+    }
 
     try {
       const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`);
@@ -123,11 +146,9 @@ textarea { resize: vertical; min-height: 80px; }
   }
 
   document.getElementById('pushBtn').addEventListener('click', async () => {
-    const token = document.getElementById('githubToken').value.trim();
+    const token = localStorage.getItem('gh_token');
     const msg = document.getElementById('apiMsg');
 
-    if (!token) return msg.innerText = "Please enter your Token.";
-    localStorage.setItem('gh_token', token);
     msg.style.color = "#fff"; msg.innerText = "Pushing...";
 
     const newJson = JSON.stringify(currentDatabase, null, 2);
@@ -147,7 +168,7 @@ textarea { resize: vertical; min-height: 80px; }
         msg.style.color = "#4ade80"; msg.innerText = "✓ Projects Updated!";
       } else throw new Error("API Error");
     } catch (error) {
-      msg.style.color = "#ff6b6b"; msg.innerText = "✗ Failed to update.";
+      msg.style.color = "#ff6b6b"; msg.innerText = "✗ Failed to update. Check Hub login.";
     }
   });
 </script>
