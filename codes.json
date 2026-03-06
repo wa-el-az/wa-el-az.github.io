@@ -14,9 +14,5 @@
   "WAEL-1234": {
     "type": "popup",
     "message": "Try another Code, for exemple SECRET-TEA 🫖."
-  },
-  "WIFI": {
-    "type": "redirect",
-    "url": "WIFI:S:AZ Fibre 2.4GHz;T:WPA;P:Kiloalpha_5@;;"
   }
 }
