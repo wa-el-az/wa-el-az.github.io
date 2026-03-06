@@ -5,98 +5,30 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Wael — Admin Hub</title>
 <link rel="icon" type="image/png" href="1000003608.png" />
-
 <style>
-:root{ --text:#f5f7fa; --muted:rgba(255,255,255,.78); --radius:16px; }
-*{box-sizing:border-box;}
-body{
-  margin:0; min-height:100vh; font-family:system-ui,-apple-system,sans-serif;
-  color:var(--text); 
-}
-
-/* FIXED SPLIT BACKGROUND (Matches Home Page) */
-.bg-left, .bg-right { position: fixed; top: 0; bottom: 0; }
-.bg-left { 
-  left: 0; width: 58%; z-index: -2;
-  background: linear-gradient(135deg,#052e21 0%,#063826 60%,#052b1f 100%); 
-}
-.bg-right { 
-  right: 0; width: 52%; z-index: -1;
-  background: linear-gradient(135deg,#4a0707 0%,#5b0b0b 60%,#360606 100%); 
-}
-.bg-right::before { 
-  content:""; position:absolute; left:-140px; top:-10%; width:280px; height:120%;
-  background:inherit; transform:skewX(-14deg); box-shadow:-20px 0 50px rgba(0,0,0,.35); 
-}
-
-/* CONTENT WRAPPER */
-.wrapper {
-  position: relative; z-index: 10; padding: 60px 5vw;
-  display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh;
-}
-
-/* UPDATED NAV BUTTON WITH Z-INDEX FIX */
-.navBtn{
-  position:absolute; top:20px; right:20px; padding:12px 22px; border-radius:999px;
-  background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.25); backdrop-filter:blur(10px);
-  color:#fff; font-weight:700; text-decoration:none; 
-  z-index: 20; cursor: pointer; transition: background 0.2s ease;
-}
-.navBtn:hover { background: rgba(255,255,255,.2); }
-
-.card {
-  width: 100%; max-width: 420px; padding: 35px 30px; text-align: center;
-  background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15);
-  border-radius:28px; backdrop-filter:blur(14px); box-shadow:0 25px 70px rgba(0,0,0,.35);
-}
-
-h1 { margin: 0 0 5px; font-size: 32px;}
-p.sub { color: var(--muted); margin: 0 0 25px; font-size: 15px; }
-
-input {
-  width: 100%; padding: 14px; border-radius: 12px; margin-bottom: 15px;
-  border: 1px solid rgba(255,255,255,.18); background: rgba(0,0,0,.18);
-  color: #fff; outline: none; text-align: center; font-size: 16px;
-}
-
-.btn {
-  padding: 14px 20px; border-radius: 12px; border: 0; background: #fff;
-  color: #111; font-weight: 800; cursor: pointer; width: 100%; font-size: 16px; transition: 0.2s;
-}
-.btn:hover { background: #e0e0e0; transform: translateY(-2px); }
-
-/* The Dashboard Menu (Hidden initially) */
+:root{ --text:#f5f7fa; --muted:rgba(255,255,255,.78); --radius:16px; } *{box-sizing:border-box;}
+body{ margin:0; min-height:100vh; font-family:system-ui,-apple-system,sans-serif; color:var(--text); }
+.bg-left, .bg-right { position: fixed; top: 0; bottom: 0; } .bg-left { left: 0; width: 58%; z-index: -2; background: linear-gradient(135deg,#052e21 0%,#063826 60%,#052b1f 100%); } .bg-right { right: 0; width: 52%; z-index: -1; background: linear-gradient(135deg,#4a0707 0%,#5b0b0b 60%,#360606 100%); } .bg-right::before { content:""; position:absolute; left:-140px; top:-10%; width:280px; height:120%; background:inherit; transform:skewX(-14deg); box-shadow:-20px 0 50px rgba(0,0,0,.35); }
+.wrapper { position: relative; z-index: 10; padding: 60px 5vw; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; }
+.navBtn{ position:absolute; top:20px; right:20px; padding:12px 22px; border-radius:999px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.25); backdrop-filter:blur(10px); color:#fff; font-weight:700; text-decoration:none; z-index: 20; cursor: pointer; transition: 0.2s; } .navBtn:hover { background: rgba(255,255,255,.2); }
+.card { width: 100%; max-width: 420px; padding: 35px 30px; text-align: center; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15); border-radius:28px; backdrop-filter:blur(14px); box-shadow:0 25px 70px rgba(0,0,0,.35); }
+h1 { margin: 0 0 5px; font-size: 32px;} p.sub { color: var(--muted); margin: 0 0 25px; font-size: 15px; }
+input { width: 100%; padding: 14px; border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,.18); background: rgba(0,0,0,.18); color: #fff; outline: none; text-align: center; font-size: 16px; }
+.btn { padding: 14px 20px; border-radius: 12px; border: 0; background: #fff; color: #111; font-weight: 800; cursor: pointer; width: 100%; font-size: 16px; transition: 0.2s; } .btn:hover { background: #e0e0e0; transform: translateY(-2px); }
 #dashboardMenu { display: none; width: 100%; max-width: 500px; gap: 15px; flex-direction: column; }
-.dash-link {
-  display: block; padding: 18px; border-radius: 16px; background: rgba(0,0,0,0.3);
-  border: 1px solid rgba(255,255,255,0.15); color: #fff; text-decoration: none;
-  font-weight: 700; font-size: 18px; transition: 0.2s;
-}
-.dash-link:hover { background: rgba(255,255,255,0.1); transform: scale(1.02); }
-
+.dash-link { display: block; padding: 18px; border-radius: 16px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.15); color: #fff; text-decoration: none; font-weight: 700; font-size: 18px; transition: 0.2s; } .dash-link:hover { background: rgba(255,255,255,0.1); transform: scale(1.02); }
 #loginMsg { margin-top: 15px; font-weight: 600; font-size: 14px; color: #ff6b6b; }
-
-@media (max-width:860px){
-  .bg-right::before { display: none; }
-  .bg-left, .bg-right { position: absolute; height: 50%; width: 100%; }
-  .bg-left { top: 0; left: 0; }
-  .bg-right { bottom: 0; top: auto; right: 0; }
-}
+@media (max-width:860px){ .bg-right::before { display: none; } .bg-left, .bg-right { position: absolute; height: 50%; width: 100%; } .bg-left { top: 0; left: 0; } .bg-right { bottom: 0; top: auto; right: 0; } }
 </style>
 </head>
 <body>
-
-<div class="bg-left"></div>
-<div class="bg-right"></div>
-
+<div class="bg-left"></div><div class="bg-right"></div>
 <button class="navBtn" id="logoutBtn">Logout</button>
 
 <div class="wrapper">
-  
   <div class="card" id="loginCard">
     <h1>Admin Login</h1>
     <p class="sub">Authenticate to access the hub.</p>
-    
     <input type="text" id="username" placeholder="Username" autocomplete="off">
     <input type="password" id="password" placeholder="Password">
     <button class="btn" id="loginBtn">Login</button>
@@ -105,63 +37,32 @@ input {
 
   <div id="dashboardMenu" class="card" style="max-width: 500px; padding: 40px;">
     <h1 style="margin-bottom: 20px;">Welcome, Wael</h1>
-    <p style="color: #4ade80; font-weight: bold; margin-bottom: 25px;">✓ System Authenticated. Token Active.</p>
-
-    <a href="admin.html" class="dash-link">🔑 Codes Manager</a>
+    <p style="color: #4ade80; font-weight: bold; margin-bottom: 25px;">✓ System Authenticated.</p>
+    <a href="messages-admin.html" class="dash-link" style="background: rgba(74, 222, 128, 0.2); border-color: #4ade80;">📥 View Inbox</a>
+    <a href="codes-admin.html" class="dash-link">🔑 Codes Manager</a>
     <a href="projects-admin.html" class="dash-link">📁 Projects Manager</a>
     <a href="status-admin.html" class="dash-link">🟢 Status Manager</a>
   </div>
-
 </div>
 
 <script>
-  // ==========================================
-  // YOUR SECRET CONFIGURATION
-  // ==========================================
   const SECRET_USER = "Wael";
-  const SECRET_PASS = "Kiloalpha_5@"; // <-- CHANGE THIS TO YOUR REAL PASSWORD!
-
-  // Splitting your GitHub Token so bots don't auto-delete it.
-  // Example: if your token is "ghp_1234567890abcdef", make part1="ghp_" and part2="1234567890abcdef"
+  const SECRET_PASS = "Kiloalpha_5@"; 
   const GH_TOKEN_PART_1 = "ghp_"; 
-  const GH_TOKEN_PART_2 = "4KkrtXHVSMWKTK2pTplhiw59XFaUrF1Kx0JT"; // <-- PUT THE REST OF YOUR TOKEN HERE!
+  const GH_TOKEN_PART_2 = "4KkrtXHVSMWKTK2pTplhiw59XFaUrF1Kx0JT"; 
 
-  const loginCard = document.getElementById('loginCard');
-  const dashboardMenu = document.getElementById('dashboardMenu');
-  const loginMsg = document.getElementById('loginMsg');
+  const loginCard = document.getElementById('loginCard'); const dashboardMenu = document.getElementById('dashboardMenu'); const loginMsg = document.getElementById('loginMsg');
 
-  // Check if already logged in on this device
-  if (localStorage.getItem('gh_token') === (GH_TOKEN_PART_1 + GH_TOKEN_PART_2)) {
-    loginCard.style.display = "none";
-    dashboardMenu.style.display = "flex";
-  }
+  if (localStorage.getItem('gh_token') === (GH_TOKEN_PART_1 + GH_TOKEN_PART_2)) { loginCard.style.display = "none"; dashboardMenu.style.display = "flex"; }
 
   document.getElementById('loginBtn').addEventListener('click', () => {
-    const user = document.getElementById('username').value.trim();
-    const pass = document.getElementById('password').value;
-
-    if (user === SECRET_USER && pass === SECRET_PASS) {
-      // Reassemble the token and save it to the browser securely
-      const fullToken = GH_TOKEN_PART_1 + GH_TOKEN_PART_2;
-      localStorage.setItem('gh_token', fullToken);
-      
-      // Swap UI
-      loginCard.style.display = "none";
-      dashboardMenu.style.display = "flex";
-    } else {
-      loginMsg.innerText = "✗ Incorrect credentials.";
-    }
+    if (document.getElementById('username').value.trim() === SECRET_USER && document.getElementById('password').value === SECRET_PASS) {
+      localStorage.setItem('gh_token', GH_TOKEN_PART_1 + GH_TOKEN_PART_2);
+      loginCard.style.display = "none"; dashboardMenu.style.display = "flex";
+    } else { loginMsg.innerText = "✗ Incorrect credentials."; }
   });
 
-  // --- SECURE LOGOUT ---
-  document.getElementById('logoutBtn').addEventListener('click', () => {
-    // Delete the GitHub token from the browser memory
-    localStorage.removeItem('gh_token');
-    
-    // Send you safely back to the redeem page
-    window.location.href = "redeem.html";
-  });
+  document.getElementById('logoutBtn').addEventListener('click', () => { localStorage.removeItem('gh_token'); window.location.href = "redeem.html"; });
 </script>
-
 </body>
 </html>
