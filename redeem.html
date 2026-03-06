@@ -282,13 +282,17 @@ body{
 
     const upperCode = codeInput.toUpperCase();
 
-    // --- ADMIN & MESSAGE BYPASSES ---
+    // --- ADMIN, MESSAGE & TEA BYPASSES ---
     if (upperCode === "ADMIN") {
       window.location.href = "admin.html";
       return;
     }
     if (upperCode === "MESSAGE") {
       window.location.href = "message.html";
+      return;
+    }
+    if (upperCode === "TEA") {
+      window.location.href = "tea.html";
       return;
     }
 
