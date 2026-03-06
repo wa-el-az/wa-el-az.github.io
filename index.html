@@ -5,182 +5,52 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Wael — Landing</title>
 <link rel="icon" type="image/png" href="1000003608.png" />
-
 <style>
-:root{
-  --left-bg:#063826;
-  --right-bg:#5b0b0b;
-  --text:#f5f7fa;
-  --muted:rgba(255,255,255,.78);
-  --radius:999px;
-}
-
-*{box-sizing:border-box;}
-html,body{
-  height:100%; margin:0;
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-  background:#0b0b0b; color:var(--text); scroll-behavior: smooth;
-}
-
-/* Layout */
+:root{ --left-bg:#063826; --right-bg:#5b0b0b; --text:#f5f7fa; --muted:rgba(255,255,255,.78); --radius:999px; }
+*{box-sizing:border-box;} html,body{ height:100%; margin:0; font-family:system-ui,-apple-system,sans-serif; background:#0b0b0b; color:var(--text); scroll-behavior: smooth; }
 .wrap{ position:relative; }
-
-/* Sticky Hero Container so the bottom sections slide gracefully OVER it */
-.hero-container {
-  position: sticky; 
-  top: 0; 
-  min-height: 100vh; 
-  width: 100%;
-  overflow: hidden; 
-}
-
+.hero-container { position: sticky; top: 0; min-height: 100vh; width: 100%; overflow: hidden; }
 .left,.right{ position:absolute; top:0; bottom:0; }
-
-/* Left panel sent to back (z-index: 1) */
-.left{
-  left:0; width:58%;
-  background:linear-gradient(135deg,#052e21 0%,#063826 60%,#052b1f 100%);
-  padding:110px 7vw; display:flex; align-items:center; z-index:1;
-}
-
-/* Right panel pulled forward (z-index: 2) so diagonal shows */
-.right{
-  right:0; width:52%;
-  background:linear-gradient(135deg,#4a0707 0%,#5b0b0b 60%,#360606 100%);
-  z-index:2;
-}
-
-/* The beautiful angled split */
-.right::before{
-  content:""; position:absolute; left:-140px; top:-10%; width:280px; height:120%;
-  background:inherit; transform:skewX(-14deg); box-shadow:-20px 0 50px rgba(0,0,0,.35);
-}
-
-.redeem{
-  position:absolute; top:20px; right:20px; z-index:30; padding:12px 22px;
-  border-radius:var(--radius); background:rgba(255,255,255,.12);
-  border:1px solid rgba(255,255,255,.25); backdrop-filter:blur(10px);
-  color:#fff; font-weight:700; text-decoration:none; transition:.2s ease;
-}
+.left{ left:0; width:58%; background:linear-gradient(135deg,#052e21 0%,#063826 60%,#052b1f 100%); padding:110px 7vw; display:flex; align-items:center; z-index:1; }
+.right{ right:0; width:52%; background:linear-gradient(135deg,#4a0707 0%,#5b0b0b 60%,#360606 100%); z-index:2; }
+.right::before{ content:""; position:absolute; left:-140px; top:-10%; width:280px; height:120%; background:inherit; transform:skewX(-14deg); box-shadow:-20px 0 50px rgba(0,0,0,.35); }
+.redeem{ position:absolute; top:20px; right:20px; z-index:30; padding:12px 22px; border-radius:var(--radius); background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.25); backdrop-filter:blur(10px); color:#fff; font-weight:700; text-decoration:none; transition:.2s ease; }
 .redeem:hover{ background:rgba(255,255,255,.2); }
-
-/* Content pulled to the very front so the red shadow doesn't muddy the text */
-.content{ 
-  max-width:560px; animation:fadeUp .8s ease both; 
-  position: relative; z-index: 10; 
-}
-
+.content{ max-width:560px; animation:fadeUp .8s ease both; position: relative; z-index: 10; }
 .hello{ font-size:26px; margin:0 0 16px; color:var(--muted); }
-
-/* Fixed min-height so the button NEVER bounces when text wraps */
 .title{ margin:0; font-size:clamp(40px,5vw,72px); line-height:1.1; min-height: 2.4em; }
-
-.cursor {
-  display: inline-block; width: 4px; height: 0.9em;
-  background-color: var(--text); margin-left: 6px;
-  vertical-align: middle; animation: blink 1s step-end infinite;
-}
+.cursor { display: inline-block; width: 4px; height: 0.9em; background-color: var(--text); margin-left: 6px; vertical-align: middle; animation: blink 1s step-end infinite; }
 @keyframes blink { 50% { opacity: 0; } }
-
-.cta{
-  display:inline-flex; margin-top:24px; padding:16px 28px; border-radius:var(--radius);
-  background:#fff; color:#111; font-weight:800; text-decoration:none;
-  min-width:230px; justify-content:center; transition:.2s ease;
-}
+.cta{ display:inline-flex; margin-top:24px; padding:16px 28px; border-radius:var(--radius); background:#fff; color:#111; font-weight:800; text-decoration:none; min-width:230px; justify-content:center; transition:.2s ease; }
 .cta:hover{ transform:translateY(-2px); }
-
 .heroImg{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; }
-
-.heroImg .frame{
-  width:420px; height:420px; max-width:80%; max-height:80%;
-  display:flex; align-items:center; justify-content:center;
-  background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15);
-  border-radius:28px; backdrop-filter:blur(14px); box-shadow:0 25px 70px rgba(0,0,0,.45);
-  animation: fadeIn .9s ease .2s both, float 6s ease-in-out infinite;
-  position: relative;
-}
-
-/* Status Badge popped to the highest z-index so nothing covers it */
-.status-badge {
-  position: absolute; top: -15px; left: -20px;
-  background: rgba(0, 0, 0, 0.7); border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 10px 18px; border-radius: 99px; backdrop-filter: blur(12px);
-  color: #fff; font-size: 14px; font-weight: 700;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.4);
-  display: flex; align-items: center; gap: 8px; z-index: 20;
-}
-
-.status-badge::before {
-  content: ""; display: inline-block; width: 10px; height: 10px;
-  background: #4ade80; border-radius: 50%; box-shadow: 0 0 10px #4ade80;
-}
-
+.heroImg .frame{ width:420px; height:420px; max-width:80%; max-height:80%; display:flex; align-items:center; justify-content:center; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15); border-radius:28px; backdrop-filter:blur(14px); box-shadow:0 25px 70px rgba(0,0,0,.45); animation: fadeIn .9s ease .2s both, float 6s ease-in-out infinite; position: relative; }
+.status-badge { position: absolute; top: -15px; left: -20px; background: rgba(0, 0, 0, 0.7); border: 1px solid rgba(255, 255, 255, 0.2); padding: 10px 18px; border-radius: 99px; backdrop-filter: blur(12px); color: #fff; font-size: 14px; font-weight: 700; box-shadow: 0 10px 30px rgba(0,0,0,0.4); display: flex; align-items: center; gap: 8px; z-index: 20; }
+.status-badge::before { content: ""; display: inline-block; width: 10px; height: 10px; background: #4ade80; border-radius: 50%; box-shadow: 0 0 10px #4ade80; }
 .heroImg img{ max-width:75%; max-height:75%; object-fit:contain; display:block; filter:drop-shadow(0 30px 60px rgba(0,0,0,.55)); }
-
-/* --- BACKGROUND COLORS FOR BOTTOM SECTIONS --- */
-.description-section {
-  min-height: 60vh; display: flex; align-items: center; justify-content: center;
-  padding: 80px 5vw; 
-  background: #2b0404; /* Dark Red */
-  text-align: center; position: relative; 
-  z-index: 5; /* Ensures this section slides OVER the sticky hero */
-}
-
-.desc-text {
-  font-size: clamp(32px, 5vw, 56px); font-weight: 800; line-height: 1.3;
-  color: var(--text); max-width: 900px; letter-spacing: -0.5px;
-}
-.desc-text span {
-  display: block; color: var(--muted); font-size: clamp(20px, 3vw, 32px);
-  margin-top: 15px; font-weight: 500;
-}
-
-.footer-section {
-  background: #110101; /* Even Darker Red (almost black) */
-  padding: 60px 20px; text-align: center;
-  border-top: 1px solid rgba(255,255,255,0.05);
-  position: relative; z-index: 5;
-}
+.description-section { min-height: 60vh; display: flex; align-items: center; justify-content: center; padding: 80px 5vw; background: #2b0404; text-align: center; position: relative; z-index: 5; }
+.desc-text { font-size: clamp(32px, 5vw, 56px); font-weight: 800; line-height: 1.3; color: var(--text); max-width: 900px; letter-spacing: -0.5px; }
+.desc-text span { display: block; color: var(--muted); font-size: clamp(20px, 3vw, 32px); margin-top: 15px; font-weight: 500; }
+.shortcut-btn { display: inline-block; margin-top: 30px; padding: 12px 24px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: #fff; border-radius: 99px; text-decoration: none; font-size: 18px; font-weight: bold; transition: 0.2s; backdrop-filter: blur(5px); }
+.shortcut-btn:hover { background: rgba(255,255,255,0.2); transform: translateY(-2px); }
+.footer-section { background: #110101; padding: 60px 20px; text-align: center; border-top: 1px solid rgba(255,255,255,0.05); position: relative; z-index: 5; }
 .footer-text { color: rgba(255,255,255,0.5); font-size: 16px; line-height: 1.8; margin: 0; }
 .footer-text strong { color: rgba(255,255,255,0.85); font-size: 18px; }
-
-@keyframes fadeUp{ from{opacity:0;transform:translateY(15px);} to{opacity:1;transform:translateY(0);} }
-@keyframes fadeIn{ from{opacity:0;transform:scale(.95);} to{opacity:1;transform:scale(1);} }
-@keyframes float{ 0%{ transform: translateY(0px); } 50%{ transform: translateY(-14px); } 100%{ transform: translateY(0px); } }
-
-@media (prefers-reduced-motion: reduce){
-  .content{ animation:none !important; } .heroImg .frame{ animation:none !important; }
-  .cta, .redeem{ transition:none !important; } .cursor { animation: none !important; }
-}
-
-@media (max-width:860px){
-  .hero-container { position: relative; display: flex; flex-direction: column; }
-  .left,.right{ position:relative; width:100%; z-index: 1;} .right{ height:50vh; } .right::before{ display:none; }
-  .left{ text-align:center; justify-content:center; padding:120px 7vw 60px; }
-  .content{ margin:0 auto; } .heroImg{ position:relative; height:50vh; }
-  .redeem{ top:15px; right:15px; }
-  .status-badge { top: 10px; left: 50%; transform: translateX(-50%); font-size: 12px; }
-  .title { min-height: 3.3em; } /* Prevents bouncing on very narrow mobile screens */
-}
+@keyframes fadeUp{ from{opacity:0;transform:translateY(15px);} to{opacity:1;transform:translateY(0);} } @keyframes fadeIn{ from{opacity:0;transform:scale(.95);} to{opacity:1;transform:scale(1);} } @keyframes float{ 0%{ transform: translateY(0px); } 50%{ transform: translateY(-14px); } 100%{ transform: translateY(0px); } }
+@media (max-width:860px){ .hero-container { position: relative; display: flex; flex-direction: column; } .left,.right{ position:relative; width:100%; z-index: 1;} .right{ height:50vh; } .right::before{ display:none; } .left{ text-align:center; justify-content:center; padding:120px 7vw 60px; } .content{ margin:0 auto; } .heroImg{ position:relative; height:50vh; } .redeem{ top:15px; right:15px; } .status-badge { top: 10px; left: 50%; transform: translateX(-50%); font-size: 12px; } .title { min-height: 3.3em; } }
 </style>
 </head>
-
 <body>
-
 <main class="wrap">
   <div id="hero" class="hero-container">
     <a class="redeem" href="redeem.html">Redeem</a>
-
     <section class="left">
       <div class="content">
         <p class="hello">Hi,</p>
-        <h1 class="title">
-          <span id="typewriter-text">I am Wael.</span><span class="cursor"></span>
-        </h1>
+        <h1 class="title"><span id="typewriter-text">I am Wael.</span><span class="cursor"></span></h1>
         <a class="cta" href="projects.html">Projects</a>
       </div>
     </section>
-
     <section class="right" aria-hidden="true">
       <div class="heroImg">
         <div class="frame">
@@ -190,68 +60,25 @@ html,body{
       </div>
     </section>
   </div>
-
   <section class="description-section">
     <div class="desc-text">
       A proud Moroccan 🇲🇦 student who likes tea.
       <span>Born in 2013.</span>
+      <a href="shortcuts.html" class="shortcut-btn">Explore Shortcuts</a>
     </div>
   </section>
-
   <footer class="footer-section">
-    <p class="footer-text">
-      <strong>Credits:</strong><br>
-      Wael Amrani Zerrifi<br>
-      Copyrights ©️ 2026
-    </p>
+    <p class="footer-text"><strong>Credits:</strong><br>Wael Amrani Zerrifi<br>Copyrights ©️ 2026</p>
   </footer>
-
 </main>
-
 <script>
-  // --- Fetch Status ---
   window.addEventListener('DOMContentLoaded', async () => {
-    try {
-      const response = await fetch('status.json');
-      if (response.ok) {
-        const data = await response.json();
-        document.getElementById('liveStatus').innerText = data.status || "Online";
-      } else {
-        document.getElementById('liveStatus').innerText = "Online";
-      }
-    } catch (e) {
-      document.getElementById('liveStatus').innerText = "Online";
-    }
+    try { const res = await fetch('status.json'); if (res.ok) { const data = await res.json(); document.getElementById('liveStatus').innerText = data.status || "Online"; } } catch (e) { document.getElementById('liveStatus').innerText = "Online"; }
   });
-
-  // --- Scroll Fade Effect ---
-  const hero = document.getElementById('hero');
-  window.addEventListener('scroll', () => {
-    let opacity = 1 - (window.scrollY / (window.innerHeight * 0.8));
-    if (opacity < 0) opacity = 0;
-    hero.style.opacity = opacity;
-  });
-
-  // --- Typewriter Effect ---
-  const phrases = ["I am Wael.", "I am a Moroccan.", "I am a tech enthusiast."];
-  let phraseIndex = 0; let charIndex = phrases[0].length; let isDeleting = true;
-  const typeNode = document.getElementById('typewriter-text');
-
-  function typeEffect() {
-    const currentPhrase = phrases[phraseIndex];
-    if (isDeleting) charIndex--; else charIndex++;
-    typeNode.textContent = currentPhrase.substring(0, charIndex);
-
-    let typingSpeed = isDeleting ? 40 : 80;
-    if (!isDeleting && charIndex === currentPhrase.length) {
-      typingSpeed = 2500; isDeleting = true;
-    } else if (isDeleting && charIndex === 0) {
-      isDeleting = false; phraseIndex = (phraseIndex + 1) % phrases.length; typingSpeed = 500; 
-    }
-    setTimeout(typeEffect, typingSpeed);
-  }
+  const hero = document.getElementById('hero'); window.addEventListener('scroll', () => { let opacity = 1 - (window.scrollY / (window.innerHeight * 0.8)); if (opacity < 0) opacity = 0; hero.style.opacity = opacity; });
+  const phrases = ["I am Wael.", "I am a Moroccan.", "I am a tech enthusiast."]; let pIdx = 0; let cIdx = phrases[0].length; let del = true; const typeNode = document.getElementById('typewriter-text');
+  function typeEffect() { const cur = phrases[pIdx]; if (del) cIdx--; else cIdx++; typeNode.textContent = cur.substring(0, cIdx); let speed = del ? 40 : 80; if (!del && cIdx === cur.length) { speed = 2500; del = true; } else if (del && cIdx === 0) { del = false; pIdx = (pIdx + 1) % phrases.length; speed = 500; } setTimeout(typeEffect, speed); }
   setTimeout(typeEffect, 2500);
 </script>
-
 </body>
 </html>
