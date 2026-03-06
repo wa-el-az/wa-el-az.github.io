@@ -232,7 +232,7 @@ body{
 
 <body>
 <main class="wrap">
-  <a class="navBtn" href="index.html">Home</a>
+  <a class="navBtn" href="shortcuts.html">Shortcuts</a>
 
   <section class="left">
     <div class="card" role="region" aria-label="Redeem code">
@@ -283,10 +283,16 @@ body{
     const upperCode = codeInput.toUpperCase();
 
     // --- ADMIN & MESSAGE BYPASSES ---
-    if (upperCode === "ADMIN") { window.location.href = "admin.html"; return; }
-    if (upperCode === "MESSAGE") { window.location.href = "message.html"; return; }
-  }
+    if (upperCode === "ADMIN") {
+      window.location.href = "admin.html";
+      return;
+    }
+    if (upperCode === "MESSAGE") {
+      window.location.href = "message.html";
+      return;
+    }
 
+    // --- REGULAR CODE FETCHING ---
     try {
       const response = await fetch('codes.json');
       if (!response.ok) throw new Error("Database not found.");
@@ -305,7 +311,7 @@ body{
         showError("Invalid code. Please try again.");
       }
     } catch (error) {
-      showError("Error: Unable to verify code.");
+      showError("Error: Unable to verify code right now.");
     }
   });
 
