@@ -110,8 +110,6 @@ async function loadTraffic() {
     const token = GH_TOKEN_PART_1 + GH_TOKEN_PART_2;
 
     try {
-        // We removed 'Cache-Control' because GitHub's CORS policy blocks it
-        // We added a random number (?v=) to the URL to bypass the cache instead!
         const res = await fetch(`https://api.github.com/repos/${REPO}/contents/traffic.json?t=${Date.now()}`, {
             method: 'GET',
             headers: {
@@ -123,11 +121,16 @@ async function loadTraffic() {
         if (res.ok) {
             const data = await res.json();
             const content = decodeURIComponent(escape(atob(data.content)));
-            const logs = JSON.parse(content).reverse();
+            
+            // SAFETY CHECK: If file is {} or empty, make it an empty array []
+            let logs = JSON.parse(content);
+            if (!Array.isArray(logs)) logs = []; 
+
+            logs = logs.reverse();
             
             term.innerHTML = "";
             if (logs.length === 0) {
-                term.innerHTML = "> [SYSTEM] Logs are empty. Waiting for visitors...";
+                term.innerHTML = "> [SYSTEM] Status: Online<br>> [SYSTEM] Logs: Empty. Waiting for first visitor...";
                 return;
             }
 
@@ -143,11 +146,11 @@ async function loadTraffic() {
                 `;
             });
         } else {
-            term.innerHTML = `[ERROR] GitHub Rejected Request: ${res.status}`;
+            term.innerHTML = `[ERROR] GitHub Status: ${res.status}`;
         }
     } catch(e) { 
         console.error("Fetch Connection Error:", e);
-        term.innerHTML = "[ERROR] CORS/Network Blocked.<br>> Check console for Preflight errors."; 
+        term.innerHTML = "[ERROR] Terminal malfunction.<br>> Check if traffic.json is []"; 
     }
   }
 </script>
