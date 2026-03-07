@@ -5,61 +5,31 @@
     <meta content="width=device-width, initial-scale=1" name="viewport"/>
     <title>Wael — Tic-Tac-Toe AI</title>
     <link rel="icon" type="image/png" href="1000003608.png" />
+    <link rel="stylesheet" href="style.css">
     <style>
-        :root { --text: #f5f7fa; --muted: rgba(255, 255, 255, .78); }
-        * { box-sizing: border-box; }
-        body { margin: 0; min-height: 100vh; font-family: system-ui, -apple-system, sans-serif; color: var(--text); padding: 60px 5vw; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-
-        .bg-left, .bg-right { position: fixed; top: 0; bottom: 0; }
-        .bg-left { left: 0; width: 58%; z-index: -2; background: linear-gradient(135deg,#052e21 0%,#063826 60%,#052b1f 100%); }
-        .bg-right { right: 0; width: 52%; z-index: -1; background: linear-gradient(135deg,#4a0707 0%,#5b0b0b 60%,#360606 100%); }
-        .bg-right::before { content: ""; position: absolute; left: -140px; top: -10%; width: 280px; height: 120%; background: inherit; transform: skewX(-14deg); box-shadow: -20px 0 50px rgba(0,0,0,.35); }
-
-        .navBtn { position: absolute; top: 20px; right: 20px; padding: 12px 22px; z-index: 20; border-radius: 999px; background: rgba(255, 255, 255, .12); border: 1px solid rgba(255, 255, 255, .25); backdrop-filter: blur(10px); color: #fff; font-weight: 700; text-decoration: none; transition: 0.2s; }
-        .navBtn:hover { background: rgba(255, 255, 255, 0.2); transform: translateY(-1px); }
-
-        .card { position: relative; z-index: 10; width: 100%; max-width: 450px; background: rgba(255, 255, 255, .08); border: 1px solid rgba(255, 255, 255, .15); border-radius: 28px; backdrop-filter: blur(14px); padding: 35px; box-shadow: 0 25px 70px rgba(0,0,0,.35); text-align: center; }
-        
-        h1 { margin: 0 0 5px; font-size: 32px; }
-        
+        body { padding: 60px 5vw; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .card { max-width: 450px; text-align: center; }
         select { width: 100%; padding: 10px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,.18); background: rgba(0,0,0,.3); color: #fff; outline: none; font-size: 16px; font-weight: bold; text-align: center;}
         select option { background: #111; color: #fff; }
-
         #statusText { font-size: 20px; font-weight: bold; margin-bottom: 20px; height: 24px; color: #4ade80; }
-
         .board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 25px; }
         .cell { aspect-ratio: 1; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 48px; font-weight: 900; cursor: pointer; transition: 0.2s; user-select: none; }
         .cell:hover { background: rgba(255, 255, 255, 0.1); transform: scale(1.02); }
         .cell.x { color: #fff; }
         .cell.o { color: #ff6b6b; }
-
-        .btn { padding: 14px 20px; border-radius: 12px; border: 0; background: #fff; color: #111; font-weight: 800; cursor: pointer; width: 100%; font-size: 16px; transition: 0.2s; }
-        .btn:hover { background: #e0e0e0; transform: translateY(-2px); }
-
-@media (max-width: 860px) {
-        .container { grid-template-columns: 1fr; margin-top: 40px; }
-        .bg-right::before { display: none; }
-        .bg-left, .bg-right { position: fixed; height: 50vh; width: 100%; }
-        .bg-left { top: 0; left: 0; }
-        .bg-right { bottom: 0; top: auto; right: 0; }
-    }
     </style>
 </head>
 <body>
     <div class="bg-left"></div><div class="bg-right"></div>
-    <a class="navBtn" href="shortcuts.html">Back</a>
-
+    <a class="navBtn" href="shortcuts">Back</a>
     <div class="card">
         <h1>Tic-Tac-Toe</h1>
-        
         <select id="difficulty" onchange="resetGame()">
             <option value="easy">Difficulty: Easy</option>
             <option value="medium">Difficulty: Medium</option>
             <option value="hard" selected>Difficulty: Unbeatable (AI)</option>
         </select>
-        
         <div id="statusText">Your turn! (You are X)</div>
-
         <div class="board" id="board">
             <div class="cell" onclick="makeMove(0)"></div>
             <div class="cell" onclick="makeMove(1)"></div>
@@ -71,7 +41,6 @@
             <div class="cell" onclick="makeMove(7)"></div>
             <div class="cell" onclick="makeMove(8)"></div>
         </div>
-
         <button class="btn" onclick="resetGame()">Restart Game</button>
     </div>
 
@@ -130,20 +99,14 @@
 
         function emptySquares() { return origBoard.filter(s => typeof s == 'number'); }
 
-        // --- NEW DIFFICULTY LOGIC ---
         function bestSpot() {
             const diff = document.getElementById('difficulty').value;
             const avail = emptySquares();
-            
-            if (diff === 'easy') {
-                return avail[Math.floor(Math.random() * avail.length)];
-            } else if (diff === 'medium') {
-                // 50% chance to play randomly, 50% chance to use pure Minimax
+            if (diff === 'easy') return avail[Math.floor(Math.random() * avail.length)];
+            else if (diff === 'medium') {
                 if (Math.random() > 0.5) return avail[Math.floor(Math.random() * avail.length)];
                 else return minimax(origBoard, aiPlayer).index;
-            } else {
-                return minimax(origBoard, aiPlayer).index;
-            }
+            } else return minimax(origBoard, aiPlayer).index;
         }
 
         function checkTie() {
