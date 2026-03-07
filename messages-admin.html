@@ -1,79 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Wael — Inbox</title>
-<style>
-:root{ --text:#f5f7fa; --muted:rgba(255,255,255,.78); } *{box-sizing:border-box;}
-body{ margin:0; min-height:100vh; font-family:system-ui,-apple-system,sans-serif; color:var(--text); padding: 80px 5vw; }
-.bg-left, .bg-right { position: fixed; top: 0; bottom: 0; } .bg-left { left: 0; width: 58%; z-index: -2; background: linear-gradient(135deg,#052e21 0%,#063826 60%,#052b1f 100%); } .bg-right { right: 0; width: 52%; z-index: -1; background: linear-gradient(135deg,#4a0707 0%,#5b0b0b 60%,#360606 100%); } .bg-right::before { content:""; position:absolute; left:-140px; top:-10%; width:280px; height:120%; background:inherit; transform:skewX(-14deg); box-shadow:-20px 0 50px rgba(0,0,0,.35); }
-.navBtn{ position:absolute; top:20px; right:20px; padding:12px 22px; z-index: 20; border-radius:999px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.25); backdrop-filter:blur(10px); color:#fff; font-weight:700; text-decoration:none; }
-.wrapper { position: relative; z-index: 10; max-width: 800px; margin: 0 auto; }
-h1 { margin-bottom: 30px; }
-.msg-card { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 16px; padding: 20px; margin-bottom: 20px; backdrop-filter: blur(10px); }
-.msg-header { display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 10px; }
-.msg-title { font-weight: bold; font-size: 18px; } .msg-date { color: var(--muted); font-size: 14px; }
-.msg-email { color: #4ade80; font-size: 14px; margin-bottom: 15px; display: block; }
-.msg-body { line-height: 1.5; white-space: pre-wrap; margin-bottom: 15px; }
-.btn-del { background: #ff4757; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-weight: bold; }
-@media (max-width:860px){ .bg-right::before { display: none; } .bg-left, .bg-right { position: fixed; height: 50vh; width: 100%; } .bg-left { top: 0; left: 0; } .bg-right { bottom: 0; top: auto; right: 0; } }
-</style>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wael — Inbox</title>
+    <link rel="icon" type="image/png" href="assets/icon.png" />
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+        body { padding: 80px 5vw; }
+        .wrapper { position: relative; z-index: 10; max-width: 800px; margin: 0 auto; }
+        h1 { margin-bottom: 30px; }
+        .msg-card { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 16px; padding: 20px; margin-bottom: 20px; backdrop-filter: blur(10px); }
+        .msg-header { display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 10px; }
+        .msg-title { font-weight: bold; font-size: 18px; }
+        .msg-date { color: var(--muted); font-size: 14px; }
+        .msg-email { color: #4ade80; font-size: 14px; margin-bottom: 15px; display: block; }
+        .msg-body { line-height: 1.5; white-space: pre-wrap; margin-bottom: 15px; }
+    </style>
 </head>
 <body>
-<div class="bg-left"></div><div class="bg-right"></div>
-<a class="navBtn" href="admin">Back to Hub</a>
+    <div class="bg-left"></div>
+    <div class="bg-right"></div>
+    <a class="navBtn" href="admin">Back to Hub</a>
 
-<div class="wrapper">
-  <h1>Inbox</h1>
-  <div id="inboxList"><p style="color: var(--muted);">Loading messages...</p></div>
-</div>
+    <div class="wrapper">
+        <h1>Inbox</h1>
+        <div id="inboxList">
+            <p style="color: var(--muted);">Loading messages...</p>
+        </div>
+    </div>
 
-<script>
-  const OWNER = "wa-el-az"; const REPO = "wa-el-az.github.io"; const FILE = "messages.json";
-  let db = {}; let fSha = null;
+    <script src="js/config.js"></script>
+    <script>
+        let db = {};
+        let fileSha = null;
 
-  window.onload = async () => {
-    if (!localStorage.getItem('gh_token')) { window.location.href = "admin.html"; return; }
-    loadMessages();
-  };
+        window.onload = async () => {
+            if (!localStorage.getItem('gh_token')) {
+                window.location.href = "admin";
+                return;
+            }
+            try {
+                const res = await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/messages.json`);
+                if (res.ok) {
+                    const data = await res.json();
+                    fileSha = data.sha;
+                    db = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+                    render();
+                } else {
+                    document.getElementById('inboxList').innerHTML = "<p>No messages found.</p>";
+                }
+            } catch (e) {
+                document.getElementById('inboxList').innerHTML = "<p>Inbox is empty.</p>";
+            }
+        };
 
-  async function loadMessages() {
-    try {
-      const res = await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE}`);
-      if (res.ok) {
-        const data = await res.json(); fSha = data.sha;
-        db = JSON.parse(decodeURIComponent(escape(atob(data.content)))); render();
-      } else { document.getElementById('inboxList').innerHTML = "<p>No messages found.</p>"; }
-    } catch(e) { document.getElementById('inboxList').innerHTML = "<p>Inbox is empty.</p>"; }
-  }
+        function render() {
+            const list = document.getElementById('inboxList');
+            list.innerHTML = '';
+            const keys = Object.keys(db).reverse();
+            
+            if (keys.length === 0) {
+                list.innerHTML = "<p>No messages found.</p>";
+                return;
+            }
+            
+            keys.forEach(id => {
+                const msg = db[id];
+                list.innerHTML += `
+                    <div class="msg-card">
+                        <div class="msg-header">
+                            <span class="msg-title">${msg.name}</span>
+                            <span class="msg-date">${msg.date}</span>
+                        </div>
+                        <span class="msg-email">${msg.email}</span>
+                        <div class="msg-body">${msg.message}</div>
+                        <button class="btn-danger" onclick="deleteMsg('${id}')">Delete Message</button>
+                    </div>`;
+            });
+        }
 
-  function render() {
-    const list = document.getElementById('inboxList'); list.innerHTML = '';
-    const keys = Object.keys(db).reverse(); // Newest first
-    if (keys.length === 0) return list.innerHTML = "<p>No messages found.</p>";
-    
-    keys.forEach(id => {
-      const msg = db[id];
-      list.innerHTML += `
-        <div class="msg-card">
-          <div class="msg-header"><span class="msg-title">${msg.name}</span><span class="msg-date">${msg.date}</span></div>
-          <span class="msg-email">${msg.email}</span>
-          <div class="msg-body">${msg.message}</div>
-          <button class="btn-del" onclick="deleteMsg('${id}')">Delete Message</button>
-        </div>`;
-    });
-  }
+        async function deleteMsg(id) {
+            if (!confirm("Delete this message?")) return;
+            
+            delete db[id];
+            
+            const payload = {
+                message: "Deleted message",
+                content: btoa(unescape(encodeURIComponent(JSON.stringify(db, null, 2)))),
+                sha: fileSha
+            };
 
-  async function deleteMsg(id) {
-    if(!confirm("Delete this message?")) return;
-    delete db[id];
-    const payload = { message: "Deleted message", content: btoa(unescape(encodeURIComponent(JSON.stringify(db, null, 2)))), sha: fSha };
-    await fetch(`https://api.github.com/repos/${OWNER}/${REPO}/contents/${FILE}`, {
-      method: 'PUT', headers: { 'Authorization': `Bearer ${localStorage.getItem('gh_token')}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
-    });
-    loadMessages();
-  }
-</script>
+            await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/messages.json`, {
+                method: 'PUT',
+                headers: { 'Authorization': `Bearer ${CONFIG.GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            
+            location.reload();
+        }
+    </script>
 </body>
 </html>
