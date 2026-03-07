@@ -8,22 +8,45 @@
 <style>
 :root{ --text:#f5f7fa; --muted:rgba(255,255,255,.78); --radius:16px; } *{box-sizing:border-box;}
 body{ margin:0; min-height:100vh; font-family:system-ui,-apple-system,sans-serif; color:var(--text); }
-.bg-left, .bg-right { position: fixed; top: 0; bottom: 0; } .bg-left { left: 0; width: 58%; z-index: -2; background: linear-gradient(135deg,#052e21 0%,#063826 60%,#052b1f 100%); } .bg-right { right: 0; width: 52%; z-index: -1; background: linear-gradient(135deg,#4a0707 0%,#5b0b0b 60%,#360606 100%); } .bg-right::before { content:""; position:absolute; left:-140px; top:-10%; width:280px; height:120%; background:inherit; transform:skewX(-14deg); box-shadow:-20px 0 50px rgba(0,0,0,.35); }
+
+/* FIXED SPLIT BACKGROUND */
+.bg-left, .bg-right { position: fixed; top: 0; bottom: 0; } 
+.bg-left { left: 0; width: 58%; z-index: -2; background: linear-gradient(135deg,#052e21 0%,#063826 60%,#052b1f 100%); } 
+.bg-right { right: 0; width: 52%; z-index: -1; background: linear-gradient(135deg,#4a0707 0%,#5b0b0b 60%,#360606 100%); } 
+.bg-right::before { content:""; position:absolute; left:-140px; top:-10%; width:280px; height:120%; background:inherit; transform:skewX(-14deg); box-shadow:-20px 0 50px rgba(0,0,0,.35); }
+
 .wrapper { position: relative; z-index: 10; padding: 60px 5vw; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; }
-.navBtn{ position:absolute; top:20px; right:20px; padding:12px 22px; border-radius:999px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.25); backdrop-filter:blur(10px); color:#fff; font-weight:700; text-decoration:none; z-index: 20; cursor: pointer; transition: 0.2s; } .navBtn:hover { background: rgba(255,255,255,.2); }
+
+/* TOP NAV CONTAINER FOR SIDE-BY-SIDE BUTTONS */
+.top-nav { position: absolute; top: 20px; right: 20px; z-index: 20; display: flex; gap: 12px; }
+.navBtn{ padding:10px 20px; border-radius:999px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.25); backdrop-filter:blur(10px); color:#fff; font-weight:700; text-decoration:none; cursor: pointer; transition: 0.2s; font-size: 15px; font-family: inherit; } 
+.navBtn:hover { background: rgba(255,255,255,.2); transform: translateY(-1px); }
+
 .card { width: 100%; max-width: 420px; padding: 35px 30px; text-align: center; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15); border-radius:28px; backdrop-filter:blur(14px); box-shadow:0 25px 70px rgba(0,0,0,.35); }
 h1 { margin: 0 0 5px; font-size: 32px;} p.sub { color: var(--muted); margin: 0 0 25px; font-size: 15px; }
 input { width: 100%; padding: 14px; border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,.18); background: rgba(0,0,0,.18); color: #fff; outline: none; text-align: center; font-size: 16px; }
 .btn { padding: 14px 20px; border-radius: 12px; border: 0; background: #fff; color: #111; font-weight: 800; cursor: pointer; width: 100%; font-size: 16px; transition: 0.2s; } .btn:hover { background: #e0e0e0; transform: translateY(-2px); }
+
 #dashboardMenu { display: none; width: 100%; max-width: 500px; gap: 15px; flex-direction: column; }
 .dash-link { display: block; padding: 18px; border-radius: 16px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.15); color: #fff; text-decoration: none; font-weight: 700; font-size: 18px; transition: 0.2s; } .dash-link:hover { background: rgba(255,255,255,0.1); transform: scale(1.02); }
 #loginMsg { margin-top: 15px; font-weight: 600; font-size: 14px; color: #ff6b6b; }
-@media (max-width:860px){ .bg-right::before { display: none; } .bg-left, .bg-right { position: absolute; height: 50%; width: 100%; } .bg-left { top: 0; left: 0; } .bg-right { bottom: 0; top: auto; right: 0; } }
+
+@media (max-width:860px){ 
+  .bg-right::before { display: none; } 
+  .bg-left, .bg-right { position: absolute; height: 50%; width: 100%; } 
+  .bg-left { top: 0; left: 0; } 
+  .bg-right { bottom: 0; top: auto; right: 0; } 
+  .top-nav { top: 15px; right: 15px; }
+}
 </style>
 </head>
 <body>
 <div class="bg-left"></div><div class="bg-right"></div>
-<button class="navBtn" id="logoutBtn">Logout</button>
+
+<div class="top-nav">
+  <a class="navBtn" href="shortcuts.html">Exit</a>
+  <button class="navBtn" id="logoutBtn">Logout</button>
+</div>
 
 <div class="wrapper">
   <div class="card" id="loginCard">
@@ -51,9 +74,14 @@ input { width: 100%; padding: 14px; border-radius: 12px; margin-bottom: 15px; bo
   const GH_TOKEN_PART_1 = "ghp_"; 
   const GH_TOKEN_PART_2 = "ZbXmiQPNZdww3806lwmSXtNN6zK2uW2rWk9a"; 
 
-  const loginCard = document.getElementById('loginCard'); const dashboardMenu = document.getElementById('dashboardMenu'); const loginMsg = document.getElementById('loginMsg');
+  const loginCard = document.getElementById('loginCard'); 
+  const dashboardMenu = document.getElementById('dashboardMenu'); 
+  const loginMsg = document.getElementById('loginMsg');
 
-  if (localStorage.getItem('gh_token') === (GH_TOKEN_PART_1 + GH_TOKEN_PART_2)) { loginCard.style.display = "none"; dashboardMenu.style.display = "flex"; }
+  if (localStorage.getItem('gh_token') === (GH_TOKEN_PART_1 + GH_TOKEN_PART_2)) { 
+    loginCard.style.display = "none"; 
+    dashboardMenu.style.display = "flex"; 
+  }
 
   document.getElementById('loginBtn').addEventListener('click', () => {
     if (document.getElementById('username').value.trim() === SECRET_USER && document.getElementById('password').value === SECRET_PASS) {
@@ -62,7 +90,10 @@ input { width: 100%; padding: 14px; border-radius: 12px; margin-bottom: 15px; bo
     } else { loginMsg.innerText = "✗ Incorrect credentials."; }
   });
 
-  document.getElementById('logoutBtn').addEventListener('click', () => { localStorage.removeItem('gh_token'); window.location.href = "redeem.html"; });
+  document.getElementById('logoutBtn').addEventListener('click', () => { 
+    localStorage.removeItem('gh_token'); 
+    window.location.href = "redeem.html"; 
+  });
 </script>
 </body>
 </html>
