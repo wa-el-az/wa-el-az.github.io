@@ -10,7 +10,6 @@
         * { box-sizing: border-box; }
         body { margin: 0; min-height: 100vh; font-family: system-ui, -apple-system, sans-serif; color: var(--text); padding: 60px 5vw; display: flex; flex-direction: column; align-items: center; justify-content: center; }
 
-        /* FIXED SPLIT BACKGROUND */
         .bg-left, .bg-right { position: fixed; top: 0; bottom: 0; }
         .bg-left { left: 0; width: 58%; z-index: -2; background: linear-gradient(135deg,#052e21 0%,#063826 60%,#052b1f 100%); }
         .bg-right { right: 0; width: 52%; z-index: -1; background: linear-gradient(135deg,#4a0707 0%,#5b0b0b 60%,#360606 100%); }
@@ -22,11 +21,12 @@
         .card { position: relative; z-index: 10; width: 100%; max-width: 450px; background: rgba(255, 255, 255, .08); border: 1px solid rgba(255, 255, 255, .15); border-radius: 28px; backdrop-filter: blur(14px); padding: 35px; box-shadow: 0 25px 70px rgba(0,0,0,.35); text-align: center; }
         
         h1 { margin: 0 0 5px; font-size: 32px; }
-        p.sub { color: var(--muted); margin: 0 0 25px; font-size: 16px; }
+        
+        select { width: 100%; padding: 10px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,.18); background: rgba(0,0,0,.3); color: #fff; outline: none; font-size: 16px; font-weight: bold; text-align: center;}
+        select option { background: #111; color: #fff; }
 
         #statusText { font-size: 20px; font-weight: bold; margin-bottom: 20px; height: 24px; color: #4ade80; }
 
-        /* THE GAME BOARD */
         .board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 25px; }
         .cell { aspect-ratio: 1; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 48px; font-weight: 900; cursor: pointer; transition: 0.2s; user-select: none; }
         .cell:hover { background: rgba(255, 255, 255, 0.1); transform: scale(1.02); }
@@ -39,8 +39,6 @@
         @media (max-width: 860px) {
             .bg-right::before { display: none; }
             .bg-left, .bg-right { position: fixed; height: 50vh; width: 100%; }
-            .bg-left { top: 0; left: 0; }
-            .bg-right { bottom: 0; top: auto; right: 0; }
         }
     </style>
 </head>
@@ -50,7 +48,12 @@
 
     <div class="card">
         <h1>Tic-Tac-Toe</h1>
-        <p class="sub">Play against the Unbeatable Minimax AI.</p>
+        
+        <select id="difficulty" onchange="resetGame()">
+            <option value="easy">Difficulty: Easy (Random)</option>
+            <option value="medium">Difficulty: Medium</option>
+            <option value="hard" selected>Difficulty: Unbeatable (AI)</option>
+        </select>
         
         <div id="statusText">Your turn! (You are X)</div>
 
@@ -71,14 +74,8 @@
 
     <script>
         let origBoard;
-        const huPlayer = 'X';
-        const aiPlayer = 'O';
-        const winCombos = [
-            [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
-            [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
-            [0, 4, 8], [6, 4, 2]             // Diagonals
-        ];
-
+        const huPlayer = 'X'; const aiPlayer = 'O';
+        const winCombos = [ [0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8], [0,4,8], [6,4,2] ];
         const cells = document.querySelectorAll('.cell');
         const statusText = document.getElementById('statusText');
         let gameActive = true;
@@ -91,9 +88,7 @@
             statusText.style.color = "#4ade80";
             origBoard = Array.from(Array(9).keys());
             for (let i = 0; i < cells.length; i++) {
-                cells[i].innerText = '';
-                cells[i].classList.remove('x', 'o');
-                cells[i].style.cursor = 'pointer';
+                cells[i].innerText = ''; cells[i].classList.remove('x', 'o'); cells[i].style.cursor = 'pointer';
             }
         }
 
@@ -101,85 +96,63 @@
             if (gameActive && typeof origBoard[squareId] == 'number') {
                 turn(squareId, huPlayer);
                 if (!checkWin(origBoard, huPlayer) && !checkTie()) {
-                    statusText.innerText = "AI is thinking...";
-                    statusText.style.color = "#fff";
-                    
-                    // Small delay so it feels like the AI is "thinking"
-                    setTimeout(() => {
-                        turn(bestSpot(), aiPlayer);
-                    }, 300);
+                    statusText.innerText = "AI is thinking..."; statusText.style.color = "#fff";
+                    setTimeout(() => { turn(bestSpot(), aiPlayer); }, 300);
                 }
             }
         }
 
         function turn(squareId, player) {
             origBoard[squareId] = player;
-            cells[squareId].innerText = player;
-            cells[squareId].classList.add(player.toLowerCase());
-            cells[squareId].style.cursor = 'default';
-            
+            cells[squareId].innerText = player; cells[squareId].classList.add(player.toLowerCase()); cells[squareId].style.cursor = 'default';
             let gameWon = checkWin(origBoard, player);
             if (gameWon) gameOver(gameWon);
-            else if (player === aiPlayer && gameActive) {
-                statusText.innerText = "Your turn! (You are X)";
-                statusText.style.color = "#4ade80";
-            }
+            else if (player === aiPlayer && gameActive) { statusText.innerText = "Your turn! (You are X)"; statusText.style.color = "#4ade80"; }
         }
 
         function checkWin(board, player) {
             let plays = board.reduce((a, e, i) => (e === player) ? a.concat(i) : a, []);
             let gameWon = null;
             for (let [index, win] of winCombos.entries()) {
-                if (win.every(elem => plays.indexOf(elem) > -1)) {
-                    gameWon = { index: index, player: player };
-                    break;
-                }
+                if (win.every(elem => plays.indexOf(elem) > -1)) { gameWon = { index: index, player: player }; break; }
             }
             return gameWon;
         }
 
         function gameOver(gameWon) {
             gameActive = false;
-            if (gameWon.player == huPlayer) {
-                statusText.innerText = "You Win! (Wait, that's impossible...)";
-                statusText.style.color = "#4ade80";
-            } else {
-                statusText.innerText = "AI Wins! Better luck next time.";
-                statusText.style.color = "#ff6b6b";
-            }
+            if (gameWon.player == huPlayer) { statusText.innerText = "You Win!"; statusText.style.color = "#4ade80"; } 
+            else { statusText.innerText = "AI Wins!"; statusText.style.color = "#ff6b6b"; }
         }
 
-        function emptySquares() {
-            return origBoard.filter(s => typeof s == 'number');
-        }
+        function emptySquares() { return origBoard.filter(s => typeof s == 'number'); }
 
+        // --- NEW DIFFICULTY LOGIC ---
         function bestSpot() {
-            return minimax(origBoard, aiPlayer).index;
+            const diff = document.getElementById('difficulty').value;
+            const avail = emptySquares();
+            
+            if (diff === 'easy') {
+                return avail[Math.floor(Math.random() * avail.length)];
+            } else if (diff === 'medium') {
+                // 50% chance to play randomly, 50% chance to use pure Minimax
+                if (Math.random() > 0.5) return avail[Math.floor(Math.random() * avail.length)];
+                else return minimax(origBoard, aiPlayer).index;
+            } else {
+                return minimax(origBoard, aiPlayer).index;
+            }
         }
 
         function checkTie() {
-            if (emptySquares().length == 0) {
-                gameActive = false;
-                statusText.innerText = "It's a Tie!";
-                statusText.style.color = "#f5f7fa";
-                return true;
-            }
+            if (emptySquares().length == 0) { gameActive = false; statusText.innerText = "It's a Tie!"; statusText.style.color = "#f5f7fa"; return true; }
             return false;
         }
 
-        // ==========================================
-        // THE UNBEATABLE MINIMAX ALGORITHM
-        // ==========================================
         function minimax(newBoard, player) {
             var availSpots = emptySquares();
-
-            if (checkWin(newBoard, huPlayer)) {
-                return { score: -10 };
-            } else if (checkWin(newBoard, aiPlayer)) {
-                return { score: 10 };
-            } else if (availSpots.length === 0) {
-                return { score: 0 };
-            }
+            if (checkWin(newBoard, huPlayer)) return { score: -10 };
+            else if (checkWin(newBoard, aiPlayer)) return { score: 10 };
+            else if (availSpots.length === 0) return { score: 0 };
             
             var moves = [];
             for (var i = 0; i < availSpots.length; i++) {
@@ -187,13 +160,8 @@
                 move.index = newBoard[availSpots[i]];
                 newBoard[availSpots[i]] = player;
 
-                if (player == aiPlayer) {
-                    var result = minimax(newBoard, huPlayer);
-                    move.score = result.score;
-                } else {
-                    var result = minimax(newBoard, aiPlayer);
-                    move.score = result.score;
-                }
+                if (player == aiPlayer) move.score = minimax(newBoard, huPlayer).score;
+                else move.score = minimax(newBoard, aiPlayer).score;
 
                 newBoard[availSpots[i]] = move.index;
                 moves.push(move);
@@ -202,28 +170,15 @@
             var bestMove;
             if (player === aiPlayer) {
                 var bestScore = -10000;
-                for (var i = 0; i < moves.length; i++) {
-                    if (moves[i].score > bestScore) {
-                        bestScore = moves[i].score;
-                        bestMove = i;
-                    }
-                }
+                for (var i = 0; i < moves.length; i++) { if (moves[i].score > bestScore) { bestScore = moves[i].score; bestMove = i; } }
             } else {
                 var bestScore = 10000;
-                for (var i = 0; i < moves.length; i++) {
-                    if (moves[i].score < bestScore) {
-                        bestScore = moves[i].score;
-                        bestMove = i;
-                    }
-                }
+                for (var i = 0; i < moves.length; i++) { if (moves[i].score < bestScore) { bestScore = moves[i].score; bestMove = i; } }
             }
-
             return moves[bestMove];
         }
 
-        function resetGame() {
-            startGame();
-        }
+        function resetGame() { startGame(); }
     </script>
 </body>
 </html>
