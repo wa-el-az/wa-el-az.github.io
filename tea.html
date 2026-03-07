@@ -56,10 +56,12 @@
     #syncControls { display: none; }
     #loggedInAs { color: #4ade80; font-weight: bold; font-size: 18px; margin-bottom: 15px; display: none;}
 
-    @media (max-width: 860px) {
+@media (max-width: 860px) {
         .container { grid-template-columns: 1fr; margin-top: 40px; }
         .bg-right::before { display: none; }
         .bg-left, .bg-right { position: fixed; height: 50vh; width: 100%; }
+        .bg-left { top: 0; left: 0; }
+        .bg-right { bottom: 0; top: auto; right: 0; }
     }
 </style>
 </head>
