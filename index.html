@@ -80,52 +80,5 @@
   function typeEffect() { const cur = phrases[pIdx]; if (del) cIdx--; else cIdx++; typeNode.textContent = cur.substring(0, cIdx); let speed = del ? 40 : 80; if (!del && cIdx === cur.length) { speed = 2500; del = true; } else if (del && cIdx === 0) { del = false; pIdx = (pIdx + 1) % phrases.length; speed = 500; } setTimeout(typeEffect, speed); }
   setTimeout(typeEffect, 2500);
 </script>
-<script>
-  // --- INVISIBLE TRAFFIC TRACKER ---
-  (async function trackVisitor() {
-    // Don't track if the Admin is logged in (saves API calls)
-    if (localStorage.getItem('gh_token')) return;
-
-    try {
-      const ipRes = await fetch('https://ipapi.co/json/');
-      const ipData = await ipRes.json();
-      
-      const visitData = {
-        time: new Date().toLocaleString('en-GB', { timeZone: 'Africa/Casablanca' }),
-        ip: ipData.ip,
-        loc: `${ipData.city}, ${ipData.country_name}`,
-        isp: ipData.org,
-        device: navigator.userAgent.split(') ')[0].split(' (')[1] || "Unknown Device",
-        platform: navigator.platform
-      };
-
-      // Push to GitHub traffic.json (We re-use your split token logic here)
-      // Since this is public index.html, we use the same split method as message.html
-      const P1 = "ghp_";
-      const P2 = "ZbXmiQPNZdww3806lwmSXtNN6zK2uW2rWk9a"; 
-      
-      const repoRes = await fetch('https://api.github.com/repos/wa-el-az/wa-el-az.github.io/contents/traffic.json');
-      let sha = null; let currentLog = [];
-      if (repoRes.ok) {
-        const fileData = await repoRes.json();
-        sha = fileData.sha;
-        currentLog = JSON.parse(atob(fileData.content));
-      }
-
-      currentLog.push(visitData);
-      if (currentLog.length > 100) currentLog.shift(); // Keep only last 100 visits
-
-      await fetch('https://api.github.com/repos/wa-el-az/wa-el-az.github.io/contents/traffic.json', {
-        method: 'PUT',
-        headers: { 'Authorization': `Bearer ${P1+P2}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: "System Log: Visitor Detected",
-          content: btoa(JSON.stringify(currentLog, null, 2)),
-          sha: sha
-        })
-      });
-    } catch (e) { console.log("Tracker Silenced."); }
-  })();
-</script>
 </body>
 </html>
