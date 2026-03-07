@@ -34,6 +34,7 @@
     </div>
 
     <script src="js/config.js"></script>
+    <script src="js/achievements.js"></script>
     <script>
         document.getElementById('msgForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -79,6 +80,7 @@
                 if (push.ok) {
                     msgOut.style.color = "#4ade80";
                     msgOut.innerText = "✓ Message sent! I'll read it soon.";
+                    window.unlockAchievement('exp_mail');
                     document.getElementById('msgForm').reset();
                 } else { 
                     throw new Error(); 
