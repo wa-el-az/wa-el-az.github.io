@@ -42,6 +42,7 @@
         </div>
     </div>
     <script src="js/config.js"></script>
+    <script src="js/achievements.js"></script>
     <script>
         const loginCard = document.getElementById('loginCard'); 
         const dashboardMenu = document.getElementById('dashboardMenu'); 
@@ -59,6 +60,7 @@
                 dashboardMenu.style.display = "flex";
             } else { 
                 loginMsg.innerText = "✗ Incorrect credentials."; 
+                window.unlockAchievement('hack_denied');
             }
         });
 
