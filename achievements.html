@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wael — Trophy Room</title>
+    <link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+        body { padding: 80px 5vw; }
+        .header { text-align: center; margin-bottom: 40px; position: relative; z-index: 10; }
+        .header h1 { margin: 0; font-size: clamp(36px, 5vw, 56px); }
+        .progress-text { color: #4ade80; font-size: 18px; font-weight: bold; margin-top: 10px; }
+        
+        .ach-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; max-width: 1000px; margin: 0 auto; position: relative; z-index: 10; }
+        
+        .ach-card { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); border-radius: 20px; padding: 20px; display: flex; align-items: center; gap: 18px; backdrop-filter: blur(14px); box-shadow: 0 10px 30px rgba(0,0,0,0.2); transition: 0.3s; }
+        .ach-card:hover { transform: translateY(-3px); background: rgba(255,255,255,.12); }
+        
+        .ach-icon { font-size: 42px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2)); }
+        .ach-info h3 { margin: 0 0 4px; font-size: 18px; color: #fff; }
+        .ach-info p { margin: 0; font-size: 13px; color: var(--muted); line-height: 1.4; }
+        
+        /* The Locked State (Greyed out) */
+        .ach-card.locked { filter: grayscale(100%) opacity(0.4); border-color: rgba(255,255,255,0.05); box-shadow: none; cursor: not-allowed; }
+        .ach-card.locked:hover { transform: none; background: rgba(255,255,255,.08); }
+        .ach-card.locked .ach-info h3 { color: #888; }
+        
+        @media (max-width: 768px) { .ach-grid { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <div class="bg-left"></div>
+    <div class="bg-right"></div>
+    <a class="navBtn" href="shortcuts">Back</a>
+
+    <div class="header">
+        <h1>Trophy Room</h1>
+        <div class="progress-text" id="progressDisplay">Loading progress...</div>
+    </div>
+
+    <div class="ach-grid" id="achGrid"></div>
+
+    <script src="js/config.js"></script>
+    <script src="js/achievements.js"></script>
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const grid = document.getElementById('achGrid');
+            const progressDisplay = document.getElementById('progressDisplay');
+            
+            // ACHIEVEMENTS and unlocked are globally pulled from js/achievements.js!
+            const allKeys = Object.keys(ACHIEVEMENTS);
+            const total = allKeys.length;
+            
+            // Count how many we actually have unlocked
+            const unlockedCount = unlocked.filter(key => ACHIEVEMENTS[key]).length;
+            progressDisplay.innerText = `Unlocked: ${unlockedCount} / ${total}`;
+
+            // Generate the cards
+            allKeys.forEach(key => {
+                const ach = ACHIEVEMENTS[key];
+                const isUnlocked = unlocked.includes(key);
+                
+                const card = document.createElement('div');
+                card.className = `ach-card ${isUnlocked ? '' : 'locked'}`;
+                
+                card.innerHTML = `
+                    <div class="ach-icon">${ach.icon}</div>
+                    <div class="ach-info">
+                        <h3>${ach.title}</h3>
+                        <p>${ach.desc}</p>
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+            });
+        });
+    </script>
+</body>
+</html>
