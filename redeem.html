@@ -1,339 +1,146 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Wael — Redeem</title>
-<link rel="icon" type="image/png" href="1000003608.png" />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wael — Redeem</title>
+    <link rel="icon" type="image/png" href="assets/icon.png" />
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+        .wrap { min-height: 100vh; position: relative; overflow: hidden; }
+        .left, .right { position: absolute; top: 0; bottom: 0; }
+        .left { left: 0; width: 58%; background: linear-gradient(135deg, #052e21 0%, #063826 60%, #052b1f 100%); padding: 110px 7vw; display: flex; align-items: center; z-index: 2; }
+        .right { right: 0; width: 52%; background: linear-gradient(135deg, #4a0707 0%, #5b0b0b 60%, #360606 100%); z-index: 1; }
+        .right::before { content: ""; position: absolute; left: -140px; top: -10%; width: 280px; height: 120%; background: inherit; transform: skewX(-14deg); box-shadow: -20px 0 50px rgba(0,0,0,.35); }
+        
+        .kicker { margin: 0 0 10px; color: var(--muted); font-weight: 650; letter-spacing: 0.2px; }
+        .title { margin: 0 0 18px; font-size: clamp(28px, 3vw, 40px); line-height: 1.1; }
+        .formRow { display: flex; gap: 12px; flex-wrap: wrap; }
+        
+        .input { flex: 1 1 260px; min-width: 220px; padding: 14px 16px; border-radius: 16px; border: 1px solid rgba(255,255,255,.18); background: rgba(0,0,0,.18); color: #fff; outline: none; }
+        .input::placeholder { color: rgba(255,255,255,.55); }
+        
+        .btn-red { flex: 0 0 auto; padding: 14px 22px; border-radius: 999px; border: 0; background: #fff; color: #111; font-weight: 850; cursor: pointer; }
+        .help { margin: 14px 0 0; font-size: 13px; color: rgba(255,255,255,.72); }
+        
+        #statusMessage { margin: 14px 0 0; font-size: 14px; font-weight: 600; display: none; }
+        .error-text { color: #ff6b6b; }
+        
+        .heroImg { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
+        .heroImg .frame { width: 420px; height: 420px; max-width: 80%; max-height: 80%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); border-radius: 28px; backdrop-filter: blur(14px); box-shadow: 0 25px 70px rgba(0,0,0,.45); }
+        .heroImg img { max-width: 75%; max-height: 75%; object-fit: contain; display: block; filter: drop-shadow(0 30px 60px rgba(0,0,0,.55)); }
+        
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.6); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 999; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-card { width: min(420px, 90%); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); border-radius: 28px; padding: 32px 26px; text-align: center; box-shadow: 0 25px 70px rgba(0,0,0,.55); transform: translateY(20px); transition: transform 0.3s ease; }
+        .modal-overlay.active .modal-card { transform: translateY(0); }
+        .modal-title { margin: 0 0 12px; font-size: 26px; }
+        .modal-text { margin: 0 0 26px; color: rgba(255,255,255,.85); line-height: 1.5; }
 
-<style>
-:root{
-  --left-bg:#063826;
-  --right-bg:#5b0b0b;
-  --text:#f5f7fa;
-  --muted:rgba(255,255,255,.78);
-  --radius:999px;
-}
-
-*{box-sizing:border-box;}
-html,body{height:100%;}
-body{
-  margin:0;
-  font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
-  background:#0b0b0b;
-  color:var(--text);
-}
-
-/* Layout */
-.wrap{
-  min-height:100vh;
-  position:relative;
-  overflow:hidden;
-}
-
-/* Panels */
-.left,.right{
-  position:absolute;
-  top:0;
-  bottom:0;
-}
-
-.left{
-  left:0;
-  width:58%;
-  background:linear-gradient(135deg,#052e21 0%,#063826 60%,#052b1f 100%);
-  padding:110px 7vw;
-  display:flex;
-  align-items:center;
-  z-index:2;
-}
-
-.right{
-  right:0;
-  width:52%;
-  background:linear-gradient(135deg,#4a0707 0%,#5b0b0b 60%,#360606 100%);
-  z-index:1;
-}
-
-/* Diagonal split (desktop) */
-.right::before{
-  content:"";
-  position:absolute;
-  left:-140px;
-  top:-10%;
-  width:280px;
-  height:120%;
-  background:inherit;
-  transform:skewX(-14deg);
-  box-shadow:-20px 0 50px rgba(0,0,0,.35);
-}
-
-/* Top-right nav button */
-.navBtn{
-  position:absolute;
-  top:20px;
-  right:20px;
-  z-index:10;
-  padding:12px 22px;
-  border-radius:var(--radius);
-  background:rgba(255,255,255,.12);
-  border:1px solid rgba(255,255,255,.25);
-  backdrop-filter:blur(10px);
-  color:#fff;
-  font-weight:700;
-  text-decoration:none;
-}
-.navBtn:active{ transform:translateY(1px); }
-
-/* Card */
-.card{
-  width:min(560px,100%);
-  background:rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.15);
-  border-radius:28px;
-  backdrop-filter:blur(14px);
-  box-shadow:0 25px 70px rgba(0,0,0,.35);
-  padding:26px;
-}
-
-.kicker{
-  margin:0 0 10px;
-  color:var(--muted);
-  font-weight:650;
-  letter-spacing:.2px;
-}
-
-.title{
-  margin:0 0 18px;
-  font-size:clamp(28px,3vw,40px);
-  line-height:1.1;
-}
-
-.formRow{
-  display:flex;
-  gap:12px;
-  flex-wrap:wrap;
-}
-
-.input{
-  flex:1 1 260px;
-  min-width:220px;
-  padding:14px 16px;
-  border-radius:16px;
-  border:1px solid rgba(255,255,255,.18);
-  background:rgba(0,0,0,.18);
-  color:#fff;
-  outline:none;
-}
-.input::placeholder{ color:rgba(255,255,255,.55); }
-
-.btn{
-  flex:0 0 auto;
-  padding:14px 22px;
-  border-radius:var(--radius);
-  border:0;
-  background:#fff;
-  color:#111;
-  font-weight:850;
-  cursor:pointer;
-}
-
-.help{
-  margin:14px 0 0;
-  font-size:13px;
-  color:rgba(255,255,255,.72);
-}
-
-/* Status Message */
-#statusMessage {
-  margin: 14px 0 0;
-  font-size: 14px;
-  font-weight: 600;
-  display: none;
-}
-.error-text { color: #ff6b6b; }
-
-/* Decorative right-side frame */
-.heroImg{
-  position:absolute;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-.heroImg .frame{
-  width:420px;
-  height:420px;
-  max-width:80%;
-  max-height:80%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.15);
-  border-radius:28px;
-  backdrop-filter:blur(14px);
-  box-shadow:0 25px 70px rgba(0,0,0,.45);
-}
-.heroImg img{
-  max-width:75%;
-  max-height:75%;
-  object-fit:contain;
-  display:block;
-  filter:drop-shadow(0 30px 60px rgba(0,0,0,.55));
-}
-
-/* Modal Styles */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 999;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
-}
-.modal-overlay.active {
-  opacity: 1;
-  pointer-events: auto;
-}
-.modal-card {
-  width: min(420px, 90%);
-  background: rgba(255, 255, 255, .08);
-  border: 1px solid rgba(255, 255, 255, .15);
-  border-radius: 28px;
-  padding: 32px 26px;
-  text-align: center;
-  box-shadow: 0 25px 70px rgba(0, 0, 0, .55);
-  transform: translateY(20px);
-  transition: transform 0.3s ease;
-}
-.modal-overlay.active .modal-card {
-  transform: translateY(0);
-}
-.modal-title { margin: 0 0 12px; font-size: 26px; }
-.modal-text { margin: 0 0 26px; color: rgba(255, 255, 255, .85); line-height: 1.5; }
-
-/* Mobile */
-@media (max-width:860px){
-  .left,.right{ position:relative; width:100%; }
-  .right{ height:44vh; }
-  .right::before{ display:none; }
-  .left{ justify-content:center; padding:110px 7vw 60px; }
-  .navBtn{ top:15px; right:15px; }
-  .heroImg{ position:relative; height:44vh; }
-}
-</style>
-</head>
-
-<body>
-<main class="wrap">
-  <a class="navBtn" href="shortcuts">Shortcuts</a>
-
-  <section class="left">
-    <div class="card" role="region" aria-label="Redeem code">
-      <p class="kicker">Redeem</p>
-      <h1 class="title">Enter your code</h1>
-
-      <form id="redeemForm" aria-label="Redeem form">
-        <div class="formRow">
-          <input id="code" class="input" type="text" autocomplete="off"
-                 placeholder="e.g. WAEL-1234" aria-label="Code" required />
-          <button class="btn" type="submit">Redeem</button>
-        </div>
-        <p id="statusMessage"></p>
-        <p class="help">Tip: paste your code exactly as you received it.</p>
-      </form>
-    </div>
-  </section>
-
-  <section class="right" aria-hidden="true">
-    <div class="heroImg">
-      <div class="frame">
-        <img src="https://static.wikitide.net/ballsdexwiki/e/e4/Morocco.png" alt="" />
-      </div>
-    </div>
-  </section>
-</main>
-
-<div class="modal-overlay" id="popupModal">
-  <div class="modal-card">
-    <h2 class="modal-title">Code Redeemed!</h2>
-    <p class="modal-text" id="popupText"></p>
-    <button class="btn" id="closePopup">Awesome</button>
-  </div>
-</div>
-
-<script>
-  document.getElementById('redeemForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
-    
-    const codeInput = document.getElementById('code').value.trim();
-    const statusMsg = document.getElementById('statusMessage');
-
-    statusMsg.style.display = 'none';
-    statusMsg.className = '';
-
-    if (!codeInput) return;
-
-    const upperCode = codeInput.toUpperCase();
-
-    // --- ADMIN, MESSAGE & TEA BYPASSES ---
-    if (upperCode === "ADMIN") {
-      window.location.href = "admin.html";
-      return;
-    }
-    if (upperCode === "MESSAGE") {
-      window.location.href = "message.html";
-      return;
-    }
-    if (upperCode === "TEA") {
-      window.location.href = "tea.html";
-      return;
-    }
-
-    // --- REGULAR CODE FETCHING ---
-    try {
-      const response = await fetch('codes.json');
-      if (!response.ok) throw new Error("Database not found.");
-      
-      const database = await response.json();
-      const codeData = database[upperCode];
-
-      if (codeData) {
-        if (codeData.type === 'redirect') {
-          window.location.href = codeData.url;
-        } else if (codeData.type === 'popup') {
-          showPopup(codeData.message);
-          document.getElementById('code').value = '';
+        @media (max-width: 860px) {
+            .left, .right { position: relative; width: 100%; }
+            .right { height: 44vh; }
+            .right::before { display: none; }
+            .left { justify-content: center; padding: 110px 7vw 60px; }
+            .navBtn { top: 15px; right: 15px; }
+            .heroImg { position: relative; height: 44vh; }
         }
-      } else {
-        showError("Invalid code. Please try again.");
-      }
-    } catch (error) {
-      showError("Error: Unable to verify code right now.");
-    }
-  });
+    </style>
+</head>
+<body>
+    <main class="wrap">
+        <a class="navBtn" href="shortcuts">Shortcuts</a>
 
-  function showError(msg) {
-    const statusMsg = document.getElementById('statusMessage');
-    statusMsg.textContent = msg;
-    statusMsg.className = 'error-text';
-    statusMsg.style.display = 'block';
-  }
+        <section class="left">
+            <div class="card" role="region" aria-label="Redeem code">
+                <p class="kicker">Redeem</p>
+                <h1 class="title">Enter your code</h1>
 
-  function showPopup(message) {
-    document.getElementById('popupText').textContent = message;
-    document.getElementById('popupModal').classList.add('active');
-  }
+                <form id="redeemForm" aria-label="Redeem form">
+                    <div class="formRow">
+                        <input id="code" class="input" type="text" autocomplete="off" placeholder="e.g. WAEL-1234" aria-label="Code" required />
+                        <button class="btn-red" type="submit">Redeem</button>
+                    </div>
+                    <p id="statusMessage"></p>
+                    <p class="help">Tip: paste your code exactly as you received it.</p>
+                </form>
+            </div>
+        </section>
 
-  document.getElementById('closePopup').addEventListener('click', () => {
-    document.getElementById('popupModal').classList.remove('active');
-  });
-</script>
+        <section class="right" aria-hidden="true">
+            <div class="heroImg">
+                <div class="frame">
+                    <img src="https://static.wikitide.net/ballsdexwiki/e/e4/Morocco.png" alt="" />
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div class="modal-overlay" id="popupModal">
+        <div class="modal-card">
+            <h2 class="modal-title">Code Redeemed!</h2>
+            <p class="modal-text" id="popupText"></p>
+            <button class="btn" id="closePopup">Awesome</button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('redeemForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const codeInput = document.getElementById('code').value.trim();
+            const statusMsg = document.getElementById('statusMessage');
+
+            statusMsg.style.display = 'none';
+            statusMsg.className = '';
+
+            if (!codeInput) return;
+
+            const upperCode = codeInput.toUpperCase();
+
+            if (upperCode === "ADMIN") {
+                window.location.href = "admin";
+                return;
+            }
+            if (upperCode === "MESSAGE") {
+                window.location.href = "message";
+                return;
+            }
+            if (upperCode === "TEA") {
+                window.location.href = "tea";
+                return;
+            }
+
+            try {
+                const response = await fetch('codes.json');
+                if (!response.ok) throw new Error("Database not found.");
+                
+                const database = await response.json();
+                const codeData = database[upperCode];
+
+                if (codeData) {
+                    if (codeData.type === 'redirect') {
+                        window.location.href = codeData.url;
+                    } else if (codeData.type === 'popup') {
+                        document.getElementById('popupText').textContent = codeData.message;
+                        document.getElementById('popupModal').classList.add('active');
+                        document.getElementById('code').value = '';
+                    }
+                } else {
+                    statusMsg.textContent = "Invalid code. Please try again.";
+                    statusMsg.className = 'error-text';
+                    statusMsg.style.display = 'block';
+                }
+            } catch (error) {
+                statusMsg.textContent = "Error: Unable to verify code right now.";
+                statusMsg.className = 'error-text';
+                statusMsg.style.display = 'block';
+            }
+        });
+
+        document.getElementById('closePopup').addEventListener('click', () => {
+            document.getElementById('popupModal').classList.remove('active');
+        });
+    </script>
 </body>
 </html>
