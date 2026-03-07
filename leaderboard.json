@@ -1,3 +1,10 @@
 {
-  "Wael": 12987
+  "Wael": {
+    "score": 12987,
+    "pass": "1234"
+  },
+  "waela": {
+    "score": 24,
+    "pass": "aaaaa"
+  }
 }
