@@ -1,122 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Wael — Projects</title>
-<link rel="icon" type="image/png" href="1000003608.png" />
-
-<style>
-:root{
-  --text:#f5f7fa; --muted:rgba(255,255,255,.78);
-  --radius:999px; --card:rgba(255,255,255,.08); --card-border:rgba(255,255,255,.15);
-}
-*{box-sizing:border-box;}
-body{
-  margin:0; min-height:100vh; font-family:system-ui,-apple-system,sans-serif;
-  color:var(--text); padding: 100px 5vw;
-}
-
-/* FIXED SPLIT BACKGROUND */
-.bg-left, .bg-right { position: fixed; top: 0; bottom: 0; }
-.bg-left { left: 0; width: 58%; z-index: -2; background: linear-gradient(135deg,#052e21 0%,#063826 60%,#052b1f 100%); }
-.bg-right { right: 0; width: 52%; z-index: -1; background: linear-gradient(135deg,#4a0707 0%,#5b0b0b 60%,#360606 100%); }
-.bg-right::before { content:""; position:absolute; left:-140px; top:-10%; width:280px; height:120%; background:inherit; transform:skewX(-14deg); box-shadow:-20px 0 50px rgba(0,0,0,.35); }
-
-/* LAYER FIX: Keeps your text and cards ON TOP of the background */
-.header, .grid, #loading { position: relative; z-index: 10; }
-
-.navBtn{
-  position:absolute; top:20px; right:20px; padding:12px 22px; z-index: 20;
-  border-radius:var(--radius); background:rgba(255,255,255,.12);
-  border:1px solid rgba(255,255,255,.25); backdrop-filter:blur(10px);
-  color:#fff; font-weight:700; text-decoration:none;
-}
-
-.header { text-align: center; margin-bottom: 50px; }
-.header h1 { margin: 0; font-size: clamp(40px, 5vw, 64px); }
-.header p { color: var(--muted); font-size: 18px; margin-top: 10px; }
-
-.grid {
-  display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 25px; max-width: 1000px; margin: 0 auto;
-}
-
-.card {
-  background: var(--card); border: 1px solid var(--card-border);
-  border-radius: 24px; padding: 25px; backdrop-filter: blur(14px);
-  box-shadow: 0 25px 70px rgba(0,0,0,.22); display: flex; flex-direction: column;
-}
-
-.card h2 { margin: 0 0 10px; font-size: 22px; }
-.card p { color: var(--muted); line-height: 1.5; margin: 0 0 20px; flex-grow: 1; }
-
-.card-link {
-  display: inline-block; padding: 12px 20px; border-radius: 12px;
-  background: #fff; color: #111; font-weight: 800; text-decoration: none;
-  text-align: center; transition: transform 0.2s ease;
-}
-.card-link:hover { transform: translateY(-2px); }
-
-#loading { text-align: center; color: var(--muted); font-size: 18px; }
-
-/* MOBILE BACKGROUND ADJUSTMENT */
-@media (max-width:860px){
-  .bg-right::before { display: none; }
-  .bg-left, .bg-right { position: fixed; height: 50vh; width: 100%; }
-  .bg-left { top: 0; left: 0; }
-  .bg-right { bottom: 0; top: auto; right: 0; }
-}
-</style>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wael — Projects</title>
+    <link rel="icon" type="image/png" href="assets/icon.png" />
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+        body { padding: 100px 5vw; }
+        .header, .grid, #loading { position: relative; z-index: 10; }
+        .header { text-align: center; margin-bottom: 50px; }
+        .header h1 { margin: 0; font-size: clamp(40px, 5vw, 64px); }
+        .header p { color: var(--muted); font-size: 18px; margin-top: 10px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; max-width: 1000px; margin: 0 auto; }
+        .card-p { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); border-radius: 24px; padding: 25px; backdrop-filter: blur(14px); box-shadow: 0 25px 70px rgba(0,0,0,.22); display: flex; flex-direction: column; }
+        .card-p h2 { margin: 0 0 10px; font-size: 22px; }
+        .card-p p { color: var(--muted); line-height: 1.5; margin: 0 0 20px; flex-grow: 1; }
+        .card-link { display: inline-block; padding: 12px 20px; border-radius: 12px; background: #fff; color: #111; font-weight: 800; text-decoration: none; text-align: center; transition: transform 0.2s ease; }
+        .card-link:hover { transform: translateY(-2px); }
+        #loading { text-align: center; color: var(--muted); font-size: 18px; }
+    </style>
 </head>
 <body>
+    <div class="bg-left"></div>
+    <div class="bg-right"></div>
+    <a class="navBtn" href="index">Home</a>
 
-<div class="bg-left"></div>
-<div class="bg-right"></div>
+    <div class="header">
+        <p style="text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin: 0 0 5px; font-size: 14px; font-weight: 700;">Portfolio</p>
+        <h1>My projects</h1>
+        <p>Things I've built.</p>
+    </div>
 
-<a class="navBtn" href="index.html">Home</a>
+    <div id="loading">Loading projects...</div>
+    <div class="grid" id="projectGrid"></div>
 
-<div class="header">
-  <p style="text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin: 0 0 5px; font-size: 14px; font-weight: 700;">Portfolio</p>
-  <h1>My projects</h1>
-  <p>Things I've built.</p>
-</div>
+    <script>
+        window.addEventListener('DOMContentLoaded', async () => {
+            const grid = document.getElementById('projectGrid');
+            const loading = document.getElementById('loading');
+            
+            try {
+                const response = await fetch('projects.json');
+                if (!response.ok) throw new Error("File not found");
+                
+                const projects = await response.json();
+                loading.style.display = 'none';
 
-<div id="loading">Loading projects...</div>
-<div class="grid" id="projectGrid"></div>
+                if (Object.keys(projects).length === 0) {
+                    grid.innerHTML = '<p style="text-align:center; color:#aaa; grid-column: 1/-1;">No projects added yet!</p>';
+                    return;
+                }
 
-<script>
-  window.addEventListener('DOMContentLoaded', async () => {
-    const grid = document.getElementById('projectGrid');
-    const loading = document.getElementById('loading');
-    
-    try {
-      const response = await fetch('projects.json');
-      if (!response.ok) throw new Error("File not found");
-      
-      const projects = await response.json();
-      loading.style.display = 'none';
-
-      if (Object.keys(projects).length === 0) {
-        grid.innerHTML = '<p style="text-align:center; color:#aaa; grid-column: 1/-1;">No projects added yet!</p>';
-        return;
-      }
-
-      for (const [id, data] of Object.entries(projects)) {
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `
-          <h2>${data.title}</h2>
-          <p>${data.description}</p>
-          ${data.link ? `<a class="card-link" href="${data.link}" target="_blank">View Project</a>` : ''}
-        `;
-        grid.appendChild(card);
-      }
-    } catch (e) {
-      loading.innerText = "No projects found yet. Log into the Admin Hub to add some!";
-    }
-  });
-</script>
-
+                for (const [id, data] of Object.entries(projects)) {
+                    const card = document.createElement('div');
+                    card.className = 'card-p';
+                    card.innerHTML = `
+                        <h2>${data.title}</h2>
+                        <p>${data.description}</p>
+                        ${data.link ? `<a class="card-link" href="${data.link}" target="_blank">View Project</a>` : ''}
+                    `;
+                    grid.appendChild(card);
+                }
+            } catch (e) {
+                loading.innerText = "No projects found yet. Log into the Admin Hub to add some!";
+            }
+        });
+    </script>
 </body>
 </html>
