@@ -10,7 +10,6 @@
     * { box-sizing: border-box; }
     body { margin: 0; min-height: 100vh; font-family: system-ui, -apple-system, sans-serif; color: var(--text); padding: 60px 5vw; overflow-x: hidden; }
 
-    /* BACKGROUND */
     .bg-left, .bg-right { position: fixed; top: 0; bottom: 0; }
     .bg-left { left: 0; width: 58%; z-index: -2; background: linear-gradient(135deg,#052e21 0%,#063826 60%,#052b1f 100%); }
     .bg-right { right: 0; width: 52%; z-index: -1; background: linear-gradient(135deg,#4a0707 0%,#5b0b0b 60%,#360606 100%); }
@@ -19,11 +18,9 @@
     .navBtn { position: absolute; top: 20px; right: 20px; padding: 12px 22px; z-index: 20; border-radius: 999px; background: rgba(255, 255, 255, .12); border: 1px solid rgba(255, 255, 255, .25); backdrop-filter: blur(10px); color: #fff; font-weight: 700; text-decoration: none; transition: 0.2s; }
     .navBtn:hover { background: rgba(255, 255, 255, 0.2); }
 
-    /* LAYOUT */
     .container { position: relative; z-index: 10; max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
     .card { background: rgba(255, 255, 255, .08); border: 1px solid rgba(255, 255, 255, .15); border-radius: 28px; backdrop-filter: blur(14px); padding: 35px; box-shadow: 0 25px 70px rgba(0,0,0,.35); text-align: center; }
 
-    /* GAME UI */
     h1 { margin: 0 0 5px; font-size: 32px; }
     p.sub { color: var(--muted); margin: 0 0 20px; font-size: 16px; }
     .score-display { font-size: 48px; font-weight: 900; margin: 10px 0; text-shadow: 0 4px 20px rgba(0,0,0,0.5); }
@@ -32,34 +29,37 @@
     .tea-btn { font-size: 100px; background: none; border: none; cursor: pointer; transition: transform 0.1s; user-select: none; outline: none; -webkit-tap-highlight-color: transparent; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4)); }
     .tea-btn:active { transform: scale(0.9); }
 
-    /* FLOATING TEXT ANIMATION */
     .floating-text { position: fixed; font-size: 24px; font-weight: bold; color: #fff; pointer-events: none; animation: floatUp 1s ease-out forwards; z-index: 50; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
     @keyframes floatUp { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-50px) scale(1.5); } }
 
-    /* LEADERBOARD UI */
-    input { width: 100%; padding: 12px; border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(255, 255, 255, .18); background: rgba(0, 0, 0, .18); color: #fff; outline: none; text-align: center; font-size: 16px; }
+    /* Account UI */
+    .input-row { display: flex; gap: 10px; margin-bottom: 15px; }
+    input { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, .18); background: rgba(0, 0, 0, .18); color: #fff; outline: none; text-align: center; font-size: 16px; }
     .btn { padding: 12px 20px; border-radius: 12px; border: 0; background: #fff; color: #111; font-weight: 800; cursor: pointer; width: 100%; font-size: 16px; transition: 0.2s; }
     .btn:hover { background: #e0e0e0; transform: translateY(-2px); }
     .btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-    .leaderboard-list { margin-top: 20px; max-height: 300px; overflow-y: auto; text-align: left; background: rgba(0,0,0,.18); border-radius: 12px; padding: 10px; border: 1px solid rgba(255,255,255,.1); }
+    .warning { font-size: 12px; color: #ff6b6b; margin-top: 10px; margin-bottom: 10px; font-weight: bold; }
+
+    .leaderboard-list { margin-top: 20px; max-height: 250px; overflow-y: auto; text-align: left; background: rgba(0,0,0,.18); border-radius: 12px; padding: 10px; border: 1px solid rgba(255,255,255,.1); }
     .rank-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid rgba(255,255,255,.05); font-weight: bold; }
     .rank-item:last-child { border-bottom: none; }
     
-    /* TROPHY COLORS */
-    .rank-1 { color: #ffd700; font-size: 18px; text-shadow: 0 0 10px rgba(255,215,0,0.5); } /* Gold */
-    .rank-2 { color: #c0c0c0; font-size: 17px; } /* Silver */
-    .rank-3 { color: #cd7f32; font-size: 16px; } /* Bronze */
+    .rank-1 { color: #ffd700; font-size: 18px; text-shadow: 0 0 10px rgba(255,215,0,0.5); }
+    .rank-2 { color: #c0c0c0; font-size: 17px; }
+    .rank-3 { color: #cd7f32; font-size: 16px; }
     .rank-other { color: #fff; }
 
     #apiMsg { margin-top: 10px; font-size: 14px; font-weight: bold; }
+
+    /* Logged In State */
+    #syncControls { display: none; }
+    #loggedInAs { color: #4ade80; font-weight: bold; font-size: 18px; margin-bottom: 15px; display: none;}
 
     @media (max-width: 860px) {
         .container { grid-template-columns: 1fr; margin-top: 40px; }
         .bg-right::before { display: none; }
         .bg-left, .bg-right { position: fixed; height: 50vh; width: 100%; }
-        .bg-left { top: 0; left: 0; }
-        .bg-right { bottom: 0; top: auto; right: 0; }
     }
 </style>
 </head>
@@ -78,10 +78,21 @@
 
         <div class="card">
             <h2 style="margin-top:0;">Leaderboard</h2>
-            <p class="sub">Top 25 Brewers in the World</p>
             
-            <input type="text" id="usernameInput" placeholder="Choose a unique username" autocomplete="off" maxlength="15">
-            <button class="btn" id="submitScoreBtn">Submit My Score</button>
+            <div id="loginControls">
+                <p class="warning">⚠️ DO NOT use real passwords! Use a fun fake one.</p>
+                <div class="input-row">
+                    <input type="text" id="usernameInput" placeholder="Username" autocomplete="off" maxlength="15">
+                    <input type="password" id="passwordInput" placeholder="Fake Password">
+                </div>
+                <button class="btn" id="loginBtn">Login / Create Account</button>
+            </div>
+
+            <div id="loggedInAs"></div>
+            <div id="syncControls">
+                <button class="btn" id="syncBtn" style="background: #4ade80; color: #111;">Sync Current Score</button>
+            </div>
+            
             <p id="apiMsg"></p>
 
             <div class="leaderboard-list" id="lbList">
@@ -91,27 +102,20 @@
     </div>
 
     <script>
-        // ==========================================
-        // YOUR GITHUB DETAILS & SPLIT TOKEN
-        // ==========================================
         const GH_TOKEN_PART_1 = "ghp_"; 
-        const GH_TOKEN_PART_2 = "ZbXmiQPNZdww3806lwmSXtNN6zK2uW2rWk9a"; // <-- PASTE YOUR NEW TOKEN HERE!
+        const GH_TOKEN_PART_2 = "YOUR_NEW_TOKEN_ENDING_HERE"; // <-- PASTE YOUR SPLIT TOKEN HERE!
         
         const REPO_OWNER = "wa-el-az";
         const REPO_NAME = "wa-el-az.github.io";
         const FILE_PATH = "leaderboard.json";
 
-        // Game State
         let score = parseInt(localStorage.getItem('tea_score')) || 0;
-        let pointsPerClick = 1;
-        let currentEmoji = "🍵";
-
-        // Restore username if exists
-        const savedUser = localStorage.getItem('tea_username');
-        if (savedUser) document.getElementById('usernameInput').value = savedUser;
+        let pointsPerClick = 1; let currentEmoji = "🍵";
+        let fileSha = null;
+        let globalLB = {};
+        let loggedInUser = null;
 
         function updateGameUI() {
-            // Determine Upgrades based on score
             if (score < 10) { pointsPerClick = 1; currentEmoji = "🍵"; }
             else if (score < 100) { pointsPerClick = 2; currentEmoji = "☕"; }
             else if (score < 1000) { pointsPerClick = 4; currentEmoji = "🧋"; }
@@ -124,35 +128,23 @@
             document.getElementById('teaBtn').innerText = currentEmoji;
         }
 
-        // Initialize UI on load
         updateGameUI();
         loadLeaderboard();
 
-        // The Click Event
         document.getElementById('teaBtn').addEventListener('click', (e) => {
             score += pointsPerClick;
             localStorage.setItem('tea_score', score);
             updateGameUI();
 
-            // Create floating animation
             const floater = document.createElement('div');
             floater.className = 'floating-text';
             floater.innerText = `+${pointsPerClick} ${currentEmoji}`;
-            
-            // Randomize position slightly around the click
             const offsetX = (Math.random() - 0.5) * 40;
             floater.style.left = `${e.clientX + offsetX}px`;
             floater.style.top = `${e.clientY - 20}px`;
-            
             document.body.appendChild(floater);
             setTimeout(() => floater.remove(), 1000);
         });
-
-        // ==========================================
-        // LEADERBOARD LOGIC
-        // ==========================================
-        let fileSha = null;
-        let globalLB = {};
 
         async function loadLeaderboard() {
             try {
@@ -161,81 +153,102 @@
                     const data = await res.json();
                     fileSha = data.sha;
                     globalLB = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+                    
+                    // Backward Compatibility: Convert old number scores to objects
+                    for (let key in globalLB) {
+                        if (typeof globalLB[key] === 'number') {
+                            globalLB[key] = { score: globalLB[key], pass: "1234" }; // Default pass for legacy users
+                        }
+                    }
                     renderLeaderboard();
-                } else {
-                    document.getElementById('lbList').innerHTML = '<p style="text-align:center;">No scores yet!</p>';
-                }
+                } else { document.getElementById('lbList').innerHTML = '<p style="text-align:center;">No scores yet!</p>'; }
             } catch (e) { console.log("Initializing new leaderboard."); }
         }
 
         function renderLeaderboard() {
-            const listDiv = document.getElementById('lbList');
-            listDiv.innerHTML = '';
-
-            // Convert object to array, sort by score descending, take top 25
+            const listDiv = document.getElementById('lbList'); listDiv.innerHTML = '';
+            
+            // Sort by the nested score object
             const sortedArr = Object.entries(globalLB)
-                                    .sort((a, b) => b[1] - a[1])
+                                    .sort((a, b) => b[1].score - a[1].score)
                                     .slice(0, 25);
 
-            if (sortedArr.length === 0) {
-                listDiv.innerHTML = '<p style="text-align:center; color:#aaa;">No scores yet!</p>';
-                return;
-            }
+            if (sortedArr.length === 0) return listDiv.innerHTML = '<p style="text-align:center; color:#aaa;">No scores yet!</p>';
 
             sortedArr.forEach((user, index) => {
                 const rankClass = index === 0 ? 'rank-1' : (index === 1 ? 'rank-2' : (index === 2 ? 'rank-3' : 'rank-other'));
                 const prefix = index === 0 ? '🥇' : (index === 1 ? '🥈' : (index === 2 ? '🥉' : `${index + 1}.`));
-                
-                listDiv.innerHTML += `
-                    <div class="rank-item ${rankClass}">
-                        <span>${prefix} ${user[0]}</span>
-                        <span>${user[1].toLocaleString()}</span>
-                    </div>
-                `;
+                listDiv.innerHTML += `<div class="rank-item ${rankClass}"><span>${prefix} ${user[0]}</span><span>${user[1].score.toLocaleString()}</span></div>`;
             });
         }
 
-        document.getElementById('submitScoreBtn').addEventListener('click', async () => {
+        // --- ACCOUNT LOGIN LOGIC ---
+        document.getElementById('loginBtn').addEventListener('click', () => {
             const user = document.getElementById('usernameInput').value.trim();
+            const pass = document.getElementById('passwordInput').value.trim();
             const msg = document.getElementById('apiMsg');
             
-            if (!user) {
-                msg.style.color = "#ff6b6b"; msg.innerText = "Please enter a username!"; return;
-            }
+            if (!user || !pass) { msg.style.color = "#ff6b6b"; msg.innerText = "Please enter both fields!"; return; }
 
-            localStorage.setItem('tea_username', user);
-            const btn = document.getElementById('submitScoreBtn');
+            if (globalLB[user]) {
+                // User exists, check password
+                if (globalLB[user].pass === pass) {
+                    // Login Success: Load their score!
+                    score = globalLB[user].score;
+                    localStorage.setItem('tea_score', score);
+                    updateGameUI();
+                    setLoggedInState(user);
+                    msg.style.color = "#4ade80"; msg.innerText = "✓ Welcome back! Profile loaded.";
+                } else {
+                    msg.style.color = "#ff6b6b"; msg.innerText = "✗ Incorrect password!";
+                }
+            } else {
+                // User doesn't exist, create profile
+                globalLB[user] = { score: score, pass: pass };
+                setLoggedInState(user);
+                msg.style.color = "#4ade80"; msg.innerText = "✓ Account Created! Click Sync to save to DB.";
+            }
+        });
+
+        function setLoggedInState(username) {
+            loggedInUser = username;
+            document.getElementById('loginControls').style.display = 'none';
+            document.getElementById('syncControls').style.display = 'block';
+            document.getElementById('loggedInAs').style.display = 'block';
+            document.getElementById('loggedInAs').innerText = `Logged in as: ${username}`;
+        }
+
+        // --- SYNC SCORE LOGIC ---
+        document.getElementById('syncBtn').addEventListener('click', async () => {
+            const msg = document.getElementById('apiMsg');
+            const btn = document.getElementById('syncBtn');
             btn.disabled = true; btn.innerText = "Syncing..."; msg.innerText = "";
 
-            // If user exists, only update if new score is higher
-            if (!globalLB[user] || score > globalLB[user]) {
-                globalLB[user] = score;
-            }
+            // Update local memory
+            globalLB[loggedInUser].score = score;
 
             const token = GH_TOKEN_PART_1 + GH_TOKEN_PART_2;
             const payload = {
-                message: `Score update: ${user}`,
+                message: `Score sync: ${loggedInUser}`,
                 content: btoa(unescape(encodeURIComponent(JSON.stringify(globalLB, null, 2))))
             };
             if (fileSha) payload.sha = fileSha;
 
             try {
                 const push = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
-                    method: 'PUT',
-                    headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
+                    method: 'PUT', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
                 });
 
                 if (push.ok) {
                     const result = await push.json();
                     fileSha = result.content.sha;
-                    msg.style.color = "#4ade80"; msg.innerText = "✓ Score Synced to Leaderboard!";
+                    msg.style.color = "#4ade80"; msg.innerText = "✓ Score Synced to Global Leaderboard!";
                     renderLeaderboard();
                 } else throw new Error();
             } catch (err) {
                 msg.style.color = "#ff6b6b"; msg.innerText = "✗ Sync failed. Try again.";
             }
-            btn.disabled = false; btn.innerText = "Submit My Score";
+            btn.disabled = false; btn.innerText = "Sync Current Score";
         });
     </script>
 </body>
