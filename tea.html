@@ -1,74 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta content="width=device-width, initial-scale=1" name="viewport"/>
-<title>Wael — Tea Clicker</title>
-<link rel="icon" type="image/png" href="1000003608.png" />
-<style>
-    :root { --text: #f5f7fa; --muted: rgba(255, 255, 255, .78); }
-    * { box-sizing: border-box; }
-    body { margin: 0; min-height: 100vh; font-family: system-ui, -apple-system, sans-serif; color: var(--text); padding: 60px 5vw; overflow-x: hidden; }
-
-    .bg-left, .bg-right { position: fixed; top: 0; bottom: 0; }
-    .bg-left { left: 0; width: 58%; z-index: -2; background: linear-gradient(135deg,#052e21 0%,#063826 60%,#052b1f 100%); }
-    .bg-right { right: 0; width: 52%; z-index: -1; background: linear-gradient(135deg,#4a0707 0%,#5b0b0b 60%,#360606 100%); }
-    .bg-right::before { content: ""; position: absolute; left: -140px; top: -10%; width: 280px; height: 120%; background: inherit; transform: skewX(-14deg); box-shadow: -20px 0 50px rgba(0,0,0,.35); }
-
-    .navBtn { position: absolute; top: 20px; right: 20px; padding: 12px 22px; z-index: 20; border-radius: 999px; background: rgba(255, 255, 255, .12); border: 1px solid rgba(255, 255, 255, .25); backdrop-filter: blur(10px); color: #fff; font-weight: 700; text-decoration: none; transition: 0.2s; }
-    .navBtn:hover { background: rgba(255, 255, 255, 0.2); }
-
-    .container { position: relative; z-index: 10; max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-    .card { background: rgba(255, 255, 255, .08); border: 1px solid rgba(255, 255, 255, .15); border-radius: 28px; backdrop-filter: blur(14px); padding: 35px; box-shadow: 0 25px 70px rgba(0,0,0,.35); text-align: center; }
-
-    h1 { margin: 0 0 5px; font-size: 32px; }
-    p.sub { color: var(--muted); margin: 0 0 20px; font-size: 16px; }
-    .score-display { font-size: 48px; font-weight: 900; margin: 10px 0; text-shadow: 0 4px 20px rgba(0,0,0,0.5); }
-    .pc-info { font-size: 14px; color: #4ade80; font-weight: bold; margin-bottom: 20px; }
-    
-    .tea-btn { font-size: 100px; background: none; border: none; cursor: pointer; transition: transform 0.1s; user-select: none; outline: none; -webkit-tap-highlight-color: transparent; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4)); }
-    .tea-btn:active { transform: scale(0.9); }
-
-    .floating-text { position: fixed; font-size: 24px; font-weight: bold; color: #fff; pointer-events: none; animation: floatUp 1s ease-out forwards; z-index: 50; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
-    @keyframes floatUp { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-50px) scale(1.5); } }
-
-    /* Account UI */
-    .input-row { display: flex; gap: 10px; margin-bottom: 15px; }
-    input { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, .18); background: rgba(0, 0, 0, .18); color: #fff; outline: none; text-align: center; font-size: 16px; }
-    .btn { padding: 12px 20px; border-radius: 12px; border: 0; background: #fff; color: #111; font-weight: 800; cursor: pointer; width: 100%; font-size: 16px; transition: 0.2s; }
-    .btn:hover { background: #e0e0e0; transform: translateY(-2px); }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    .warning { font-size: 12px; color: #ff6b6b; margin-top: 10px; margin-bottom: 10px; font-weight: bold; }
-
-    .leaderboard-list { margin-top: 20px; max-height: 250px; overflow-y: auto; text-align: left; background: rgba(0,0,0,.18); border-radius: 12px; padding: 10px; border: 1px solid rgba(255,255,255,.1); }
-    .rank-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid rgba(255,255,255,.05); font-weight: bold; }
-    .rank-item:last-child { border-bottom: none; }
-    
-    .rank-1 { color: #ffd700; font-size: 18px; text-shadow: 0 0 10px rgba(255,215,0,0.5); }
-    .rank-2 { color: #c0c0c0; font-size: 17px; }
-    .rank-3 { color: #cd7f32; font-size: 16px; }
-    .rank-other { color: #fff; }
-
-    #apiMsg { margin-top: 10px; font-size: 14px; font-weight: bold; }
-
-    /* Logged In State */
-    #syncControls { display: none; }
-    #loggedInAs { color: #4ade80; font-weight: bold; font-size: 18px; margin-bottom: 15px; display: none;}
-
-@media (max-width: 860px) {
-        .container { grid-template-columns: 1fr; margin-top: 40px; }
-        .bg-right::before { display: none; }
-        .bg-left, .bg-right { position: fixed; height: 50vh; width: 100%; }
-        .bg-left { top: 0; left: 0; }
-        .bg-right { bottom: 0; top: auto; right: 0; }
-    }
-</style>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+    <title>Wael — Tea Clicker</title>
+    <link rel="icon" type="image/png" href="1000003608.png" />
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body { padding: 60px 5vw; overflow-x: hidden; }
+        .container { position: relative; z-index: 10; max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        .card { text-align: center; }
+        .score-display { font-size: 48px; font-weight: 900; margin: 10px 0; text-shadow: 0 4px 20px rgba(0,0,0,0.5); }
+        .pc-info { font-size: 14px; color: #4ade80; font-weight: bold; margin-bottom: 20px; }
+        .tea-btn { font-size: 100px; background: none; border: none; cursor: pointer; transition: transform 0.1s; user-select: none; outline: none; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4)); }
+        .tea-btn:active { transform: scale(0.9); }
+        .floating-text { position: fixed; font-size: 24px; font-weight: bold; color: #fff; pointer-events: none; animation: floatUp 1s ease-out forwards; z-index: 50; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        @keyframes floatUp { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-50px) scale(1.5); } }
+        .input-row { display: flex; gap: 10px; margin-bottom: 15px; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .warning { font-size: 12px; color: #ff6b6b; margin-top: 10px; margin-bottom: 10px; font-weight: bold; }
+        .leaderboard-list { margin-top: 20px; max-height: 250px; overflow-y: auto; text-align: left; background: rgba(0,0,0,.18); border-radius: 12px; padding: 10px; border: 1px solid rgba(255,255,255,.1); }
+        .rank-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid rgba(255,255,255,.05); font-weight: bold; }
+        .rank-item:last-child { border-bottom: none; }
+        .rank-1 { color: #ffd700; font-size: 18px; text-shadow: 0 0 10px rgba(255,215,0,0.5); }
+        .rank-2 { color: #c0c0c0; font-size: 17px; }
+        .rank-3 { color: #cd7f32; font-size: 16px; }
+        .rank-other { color: #fff; }
+        #apiMsg { margin-top: 10px; font-size: 14px; font-weight: bold; }
+        #syncControls { display: none; }
+        #loggedInAs { color: #4ade80; font-weight: bold; font-size: 18px; margin-bottom: 15px; display: none;}
+        @media (max-width: 860px) { .container { grid-template-columns: 1fr; margin-top: 40px; } }
+    </style>
 </head>
 <body>
     <div class="bg-left"></div><div class="bg-right"></div>
     <a class="navBtn" href="shortcuts">Back</a>
-
     <div class="container">
         <div class="card">
             <h1>Moroccan Tea</h1>
@@ -77,10 +43,8 @@
             <div class="pc-info" id="pcDisplay">1 point per click</div>
             <button class="tea-btn" id="teaBtn">🍵</button>
         </div>
-
         <div class="card">
             <h2 style="margin-top:0;">Leaderboard</h2>
-            
             <div id="loginControls">
                 <p class="warning">⚠️ DO NOT use real passwords!</p>
                 <div class="input-row">
@@ -89,30 +53,22 @@
                 </div>
                 <button class="btn" id="loginBtn">Login / Create Account</button>
             </div>
-
             <div id="loggedInAs"></div>
             <div id="syncControls">
                 <button class="btn" id="syncBtn" style="background: #4ade80; color: #111;">Sync Current Score</button>
             </div>
-            
             <p id="apiMsg"></p>
-
             <div class="leaderboard-list" id="lbList">
                 <p style="text-align:center; color:#aaa;">Loading ranks...</p>
             </div>
         </div>
     </div>
 
+    <script src="config.js"></script>
     <script>
-        const GH_TOKEN_PART_1 = "ghp_"; 
-        const GH_TOKEN_PART_2 = "ZbXmiQPNZdww3806lwmSXtNN6zK2uW2rWk9a"; // <-- PASTE YOUR SPLIT TOKEN HERE!
-        
-        const REPO_OWNER = "wa-el-az";
-        const REPO_NAME = "wa-el-az.github.io";
-        const FILE_PATH = "leaderboard.json";
-
         let score = parseInt(localStorage.getItem('tea_score')) || 0;
-        let pointsPerClick = 1; let currentEmoji = "🍵";
+        let pointsPerClick = 1; 
+        let currentEmoji = "🍵";
         let fileSha = null;
         let globalLB = {};
         let loggedInUser = null;
@@ -150,31 +106,26 @@
 
         async function loadLeaderboard() {
             try {
-                const res = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`);
+                const res = await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/leaderboard.json`);
                 if (res.ok) {
                     const data = await res.json();
                     fileSha = data.sha;
                     globalLB = JSON.parse(decodeURIComponent(escape(atob(data.content))));
-                    
-                    // Backward Compatibility: Convert old number scores to objects
                     for (let key in globalLB) {
                         if (typeof globalLB[key] === 'number') {
-                            globalLB[key] = { score: globalLB[key], pass: "1234" }; // Default pass for legacy users
+                            globalLB[key] = { score: globalLB[key], pass: "1234" };
                         }
                     }
                     renderLeaderboard();
                 } else { document.getElementById('lbList').innerHTML = '<p style="text-align:center;">No scores yet!</p>'; }
-            } catch (e) { console.log("Initializing new leaderboard."); }
+            } catch (e) { }
         }
 
         function renderLeaderboard() {
-            const listDiv = document.getElementById('lbList'); listDiv.innerHTML = '';
+            const listDiv = document.getElementById('lbList'); 
+            listDiv.innerHTML = '';
             
-            // Sort by the nested score object
-            const sortedArr = Object.entries(globalLB)
-                                    .sort((a, b) => b[1].score - a[1].score)
-                                    .slice(0, 25);
-
+            const sortedArr = Object.entries(globalLB).sort((a, b) => b[1].score - a[1].score).slice(0, 25);
             if (sortedArr.length === 0) return listDiv.innerHTML = '<p style="text-align:center; color:#aaa;">No scores yet!</p>';
 
             sortedArr.forEach((user, index) => {
@@ -184,7 +135,6 @@
             });
         }
 
-        // --- ACCOUNT LOGIN LOGIC ---
         document.getElementById('loginBtn').addEventListener('click', () => {
             const user = document.getElementById('usernameInput').value.trim();
             const pass = document.getElementById('passwordInput').value.trim();
@@ -193,9 +143,7 @@
             if (!user || !pass) { msg.style.color = "#ff6b6b"; msg.innerText = "Please enter both fields!"; return; }
 
             if (globalLB[user]) {
-                // User exists, check password
                 if (globalLB[user].pass === pass) {
-                    // Login Success: Load their score!
                     score = globalLB[user].score;
                     localStorage.setItem('tea_score', score);
                     updateGameUI();
@@ -205,7 +153,6 @@
                     msg.style.color = "#ff6b6b"; msg.innerText = "✗ Incorrect password!";
                 }
             } else {
-                // User doesn't exist, create profile
                 globalLB[user] = { score: score, pass: pass };
                 setLoggedInState(user);
                 msg.style.color = "#4ade80"; msg.innerText = "✓ Account Created! Click Sync to save to DB.";
@@ -220,16 +167,13 @@
             document.getElementById('loggedInAs').innerText = `Logged in as: ${username}`;
         }
 
-        // --- SYNC SCORE LOGIC ---
         document.getElementById('syncBtn').addEventListener('click', async () => {
             const msg = document.getElementById('apiMsg');
             const btn = document.getElementById('syncBtn');
             btn.disabled = true; btn.innerText = "Syncing..."; msg.innerText = "";
 
-            // Update local memory
             globalLB[loggedInUser].score = score;
 
-            const token = GH_TOKEN_PART_1 + GH_TOKEN_PART_2;
             const payload = {
                 message: `Score sync: ${loggedInUser}`,
                 content: btoa(unescape(encodeURIComponent(JSON.stringify(globalLB, null, 2))))
@@ -237,10 +181,9 @@
             if (fileSha) payload.sha = fileSha;
 
             try {
-                const push = await fetch(`https://api.github.com/repos/${REPO_OWNER}/${REPO_NAME}/contents/${FILE_PATH}`, {
-                    method: 'PUT', headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+                const push = await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/leaderboard.json`, {
+                    method: 'PUT', headers: { 'Authorization': `Bearer ${CONFIG.GITHUB_TOKEN}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
                 });
-
                 if (push.ok) {
                     const result = await push.json();
                     fileSha = result.content.sha;
