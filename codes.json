@@ -14,5 +14,9 @@
   "DBGP": {
     "type": "redirect",
     "url": "https://t.me/infodbgp"
+  },
+  "TTT": {
+    "type": "redirect",
+    "url": "https://wael.work.gd/tic-tac-toe.html"
   }
 }
