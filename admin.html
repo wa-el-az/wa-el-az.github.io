@@ -105,14 +105,31 @@ input { width: 100%; padding: 14px; border-radius: 12px; margin-bottom: 15px; bo
     localStorage.removeItem('gh_token'); window.location.href = "redeem.html"; 
   });
 
-  async function loadTraffic() {
+async function loadTraffic() {
     const term = document.getElementById('terminalBody');
+    const token = GH_TOKEN_PART_1 + GH_TOKEN_PART_2;
+
     try {
-        const res = await fetch(`https://api.github.com/repos/${REPO}/contents/traffic.json`);
+        // We add a 'cache: no-store' to make sure we always get the newest logs
+        const res = await fetch(`https://api.github.com/repos/${REPO}/contents/traffic.json`, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Accept': 'application/vnd.github.v3+json',
+                'Cache-Control': 'no-cache'
+            }
+        });
+
         if (res.ok) {
             const data = await res.json();
-            const logs = JSON.parse(atob(data.content)).reverse();
+            // Decode with UTF-8 support to handle special characters/emojis
+            const content = decodeURIComponent(escape(atob(data.content)));
+            const logs = JSON.parse(content).reverse();
+            
             term.innerHTML = "";
+            if (logs.length === 0) {
+                term.innerHTML = "> [SYSTEM] Logs are currently empty.";
+            }
+
             logs.forEach(log => {
                 term.innerHTML += `
                     <div class="log-entry">
@@ -120,12 +137,19 @@ input { width: 100%; padding: 14px; border-radius: 12px; margin-bottom: 15px; bo
                         > IP: ${log.ip}<br>
                         > LOC: ${log.loc}<br>
                         > ISP: ${log.isp}<br>
-                        > DEV: ${log.device} (${log.platform})
+                        > DEV: ${log.device}
                     </div>
                 `;
             });
-        } else { term.innerHTML = "[ERROR] No traffic logs found."; }
-    } catch(e) { term.innerHTML = "[ERROR] Connection failed."; }
+        } else { 
+            const errorText = await res.text();
+            console.error("GitHub API Error:", errorText);
+            term.innerHTML = `[ERROR] API Status: ${res.status}<br>[REASON] Check Console (F12)`; 
+        }
+    } catch(e) { 
+        console.error("Fetch Connection Error:", e);
+        term.innerHTML = "[ERROR] Connection failed.<br>> Check if traffic.json exists."; 
+    }
   }
 </script>
 </body>
