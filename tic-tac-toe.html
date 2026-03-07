@@ -36,10 +36,13 @@
         .btn { padding: 14px 20px; border-radius: 12px; border: 0; background: #fff; color: #111; font-weight: 800; cursor: pointer; width: 100%; font-size: 16px; transition: 0.2s; }
         .btn:hover { background: #e0e0e0; transform: translateY(-2px); }
 
-        @media (max-width: 860px) {
-            .bg-right::before { display: none; }
-            .bg-left, .bg-right { position: fixed; height: 50vh; width: 100%; }
-        }
+@media (max-width: 860px) {
+        .container { grid-template-columns: 1fr; margin-top: 40px; }
+        .bg-right::before { display: none; }
+        .bg-left, .bg-right { position: fixed; height: 50vh; width: 100%; }
+        .bg-left { top: 0; left: 0; }
+        .bg-right { bottom: 0; top: auto; right: 0; }
+    }
     </style>
 </head>
 <body>
