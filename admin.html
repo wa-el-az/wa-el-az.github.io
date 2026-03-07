@@ -110,24 +110,25 @@ async function loadTraffic() {
     const token = GH_TOKEN_PART_1 + GH_TOKEN_PART_2;
 
     try {
-        // We add a 'cache: no-store' to make sure we always get the newest logs
-        const res = await fetch(`https://api.github.com/repos/${REPO}/contents/traffic.json`, {
+        // We removed 'Cache-Control' because GitHub's CORS policy blocks it
+        // We added a random number (?v=) to the URL to bypass the cache instead!
+        const res = await fetch(`https://api.github.com/repos/${REPO}/contents/traffic.json?t=${Date.now()}`, {
+            method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
-                'Accept': 'application/vnd.github.v3+json',
-                'Cache-Control': 'no-cache'
+                'Accept': 'application/vnd.github.v3+json'
             }
         });
 
         if (res.ok) {
             const data = await res.json();
-            // Decode with UTF-8 support to handle special characters/emojis
             const content = decodeURIComponent(escape(atob(data.content)));
             const logs = JSON.parse(content).reverse();
             
             term.innerHTML = "";
             if (logs.length === 0) {
-                term.innerHTML = "> [SYSTEM] Logs are currently empty.";
+                term.innerHTML = "> [SYSTEM] Logs are empty. Waiting for visitors...";
+                return;
             }
 
             logs.forEach(log => {
@@ -141,14 +142,12 @@ async function loadTraffic() {
                     </div>
                 `;
             });
-        } else { 
-            const errorText = await res.text();
-            console.error("GitHub API Error:", errorText);
-            term.innerHTML = `[ERROR] API Status: ${res.status}<br>[REASON] Check Console (F12)`; 
+        } else {
+            term.innerHTML = `[ERROR] GitHub Rejected Request: ${res.status}`;
         }
     } catch(e) { 
         console.error("Fetch Connection Error:", e);
-        term.innerHTML = "[ERROR] Connection failed.<br>> Check if traffic.json exists."; 
+        term.innerHTML = "[ERROR] CORS/Network Blocked.<br>> Check console for Preflight errors."; 
     }
   }
 </script>
