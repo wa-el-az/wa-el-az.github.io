@@ -44,6 +44,7 @@
         <button class="btn" onclick="resetGame()">Restart Game</button>
     </div>
 
+    <script src="js/achievements.js"></script>
     <script>
         let origBoard;
         const huPlayer = 'X'; const aiPlayer = 'O';
@@ -93,8 +94,14 @@
 
         function gameOver(gameWon) {
             gameActive = false;
-            if (gameWon.player == huPlayer) { statusText.innerText = "You Win!"; statusText.style.color = "#4ade80"; } 
-            else { statusText.innerText = "AI Wins!"; statusText.style.color = "#ff6b6b"; }
+            if (gameWon.player == huPlayer) { 
+                statusText.innerText = "You Win!"; 
+                statusText.style.color = "#4ade80"; 
+                window.unlockAchievement('ttt_win');
+            } else { 
+                statusText.innerText = "AI Wins!"; 
+                statusText.style.color = "#ff6b6b"; 
+            }
         }
 
         function emptySquares() { return origBoard.filter(s => typeof s == 'number'); }
@@ -110,7 +117,13 @@
         }
 
         function checkTie() {
-            if (emptySquares().length == 0) { gameActive = false; statusText.innerText = "It's a Tie!"; statusText.style.color = "#f5f7fa"; return true; }
+            if (emptySquares().length == 0) { 
+                gameActive = false; 
+                statusText.innerText = "It's a Tie!"; 
+                statusText.style.color = "#f5f7fa"; 
+                window.unlockAchievement('ttt_tie');
+                return true; 
+            }
             return false;
         }
 
