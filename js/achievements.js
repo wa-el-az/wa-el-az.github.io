@@ -1,4 +1,4 @@
-// js/achievements.js - Pure Achievement Engine
+// js/achievements.js - Achievement Engine
 
 const ACHIEVEMENTS = {
     tea_first: { title: "First Brew", desc: "You clicked the Moroccan Tea for the first time.", icon: "🍵" },
@@ -20,7 +20,6 @@ const ACHIEVEMENTS = {
 
 let unlocked = JSON.parse(localStorage.getItem('wael_achievements')) || [];
 
-// Inject CSS ONLY for the Popups
 const sysStyle = document.createElement('style');
 sysStyle.innerHTML = `
     .achieve-popup {
@@ -40,7 +39,6 @@ sysStyle.innerHTML = `
 `;
 document.head.appendChild(sysStyle);
 
-// The Core Unlock Function
 window.unlockAchievement = function(id) {
     if (!ACHIEVEMENTS[id] || unlocked.includes(id)) return;
     unlocked.push(id);
@@ -65,19 +63,20 @@ window.unlockAchievement = function(id) {
     }, 5000);
 };
 
-// ==========================================
-// GLOBAL EASTER EGGS
-// ==========================================
-
-// 1. Night Owl Achievement
+// Night Owl Check
 const hour = new Date().getHours();
 if (hour >= 1 && hour < 4) window.unlockAchievement('egg_owl');
 
-// 2. Patriot Achievement
+// Patriot Check (Improved Detection)
 let flagClicks = 0;
 document.addEventListener('click', (e) => {
-    if (e.target.tagName === 'IMG' && (e.target.alt.includes('Morocco') || e.target.src.includes('Morocco'))) {
-        flagClicks++;
-        if (flagClicks >= 7) window.unlockAchievement('egg_patriot');
+    if (e.target.tagName === 'IMG') {
+        const src = e.target.src.toLowerCase();
+        const alt = e.target.alt.toLowerCase();
+        // Check if "morocco" is anywhere in the filename or description
+        if (src.includes('morocco') || alt.includes('morocco')) {
+            flagClicks++;
+            if (flagClicks >= 7) window.unlockAchievement('egg_patriot');
+        }
     }
 });
