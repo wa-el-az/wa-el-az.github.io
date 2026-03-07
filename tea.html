@@ -65,6 +65,7 @@
     </div>
 
     <script src="js/config.js"></script>
+    <script src="js/achievements.js"></script>
     <script>
         let score = parseInt(localStorage.getItem('tea_score')) || 0;
         let pointsPerClick = 1; 
@@ -91,6 +92,11 @@
 
         document.getElementById('teaBtn').addEventListener('click', (e) => {
             score += pointsPerClick;
+            
+            if (score === 1) window.unlockAchievement('tea_first');
+            if (score >= 500) window.unlockAchievement('tea_500');
+            if (score >= 10000) window.unlockAchievement('tea_10k');
+
             localStorage.setItem('tea_score', score);
             updateGameUI();
 
@@ -188,6 +194,7 @@
                     const result = await push.json();
                     fileSha = result.content.sha;
                     msg.style.color = "#4ade80"; msg.innerText = "✓ Score Synced to Global Leaderboard!";
+                    window.unlockAchievement('tea_sync');
                     renderLeaderboard();
                 } else throw new Error();
             } catch (err) {
