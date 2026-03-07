@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Wael — Landing</title>
+<title>Wael</title>
 <link rel="icon" type="image/png" href="1000003608.png" />
 <style>
 :root{ --left-bg:#063826; --right-bg:#5b0b0b; --text:#f5f7fa; --muted:rgba(255,255,255,.78); --radius:999px; }
@@ -63,12 +63,12 @@
   <section class="description-section">
     <div class="desc-text">
       A proud Moroccan 🇲🇦 student who likes tea.
-      <span>Born in 2013.</span>
-      <a href="shortcuts.html" class="shortcut-btn">Explore Shortcuts</a>
+      <span>Also a Developer.</span>
+      <a href="shortcuts.html" class="shortcut-btn">Shortcuts</a>
     </div>
   </section>
   <footer class="footer-section">
-    <p class="footer-text"><strong>Credits:</strong><br>Wael Amrani Zerrifi<br>Copyrights ©️ 2026</p>
+    <p class="footer-text"><strong>Credits:</strong><br>By Wael Amrani Zerrifi<br>©️ Copyrights 2026</p>
   </footer>
 </main>
 <script>
@@ -76,7 +76,7 @@
     try { const res = await fetch('status.json'); if (res.ok) { const data = await res.json(); document.getElementById('liveStatus').innerText = data.status || "Online"; } } catch (e) { document.getElementById('liveStatus').innerText = "Online"; }
   });
   const hero = document.getElementById('hero'); window.addEventListener('scroll', () => { let opacity = 1 - (window.scrollY / (window.innerHeight * 0.8)); if (opacity < 0) opacity = 0; hero.style.opacity = opacity; });
-  const phrases = ["I am Wael.", "I am a Moroccan.", "I am a tech enthusiast."]; let pIdx = 0; let cIdx = phrases[0].length; let del = true; const typeNode = document.getElementById('typewriter-text');
+  const phrases = ["I am Wael.", "I am a Moroccan.", "I am a tech enthusiast.", "I like tea."]; let pIdx = 0; let cIdx = phrases[0].length; let del = true; const typeNode = document.getElementById('typewriter-text');
   function typeEffect() { const cur = phrases[pIdx]; if (del) cIdx--; else cIdx++; typeNode.textContent = cur.substring(0, cIdx); let speed = del ? 40 : 80; if (!del && cIdx === cur.length) { speed = 2500; del = true; } else if (del && cIdx === 0) { del = false; pIdx = (pIdx + 1) % phrases.length; speed = 500; } setTimeout(typeEffect, speed); }
   setTimeout(typeEffect, 2500);
 </script>
