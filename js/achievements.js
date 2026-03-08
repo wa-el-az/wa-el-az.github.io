@@ -1,4 +1,4 @@
-// js/achievements.js - Achievement Engine
+// js/achievements.js - Secure Achievement Engine
 
 const ACHIEVEMENTS = {
     tea_first: { title: "First Brew", desc: "You clicked the Moroccan Tea for the first time.", icon: "🍵" },
@@ -20,6 +20,7 @@ const ACHIEVEMENTS = {
 
 let unlocked = JSON.parse(localStorage.getItem('wael_achievements')) || [];
 
+// Inject CSS ONLY for the Popups
 const sysStyle = document.createElement('style');
 sysStyle.innerHTML = `
     .achieve-popup {
@@ -40,7 +41,17 @@ sysStyle.innerHTML = `
 document.head.appendChild(sysStyle);
 
 window.unlockAchievement = function(id) {
+    // SECURITY CHECK: Only save if the user is authenticated as Wael
+    const isAuthenticated = localStorage.getItem('gh_token') === CONFIG.GITHUB_TOKEN;
+    const isWael = localStorage.getItem('active_user') === 'Wael';
+
+    if (!isAuthenticated || !isWael) {
+        console.log("Achievement triggered, but not logged in as Wael. Data not saved.");
+        return; 
+    }
+
     if (!ACHIEVEMENTS[id] || unlocked.includes(id)) return;
+
     unlocked.push(id);
     localStorage.setItem('wael_achievements', JSON.stringify(unlocked));
     
@@ -67,13 +78,12 @@ window.unlockAchievement = function(id) {
 const hour = new Date().getHours();
 if (hour >= 1 && hour < 4) window.unlockAchievement('egg_owl');
 
-// Patriot Check (Improved Detection)
+// Patriot Check
 let flagClicks = 0;
 document.addEventListener('click', (e) => {
     if (e.target.tagName === 'IMG') {
         const src = e.target.src.toLowerCase();
         const alt = e.target.alt.toLowerCase();
-        // Check if "morocco" is anywhere in the filename or description
         if (src.includes('morocco') || alt.includes('morocco')) {
             flagClicks++;
             if (flagClicks >= 7) window.unlockAchievement('egg_patriot');
