@@ -93,12 +93,18 @@
         document.getElementById('teaBtn').addEventListener('click', (e) => {
             score += pointsPerClick;
             
+            // Check if Wael is logged in before saving score
+            const isWael = localStorage.getItem('active_user') === 'Wael';
+            if (isWael) {
+                localStorage.setItem('tea_score', score);
+            }
+
+            updateGameUI();
+            
+            // Achievement triggers (these now check for Wael internally)
             if (score === 1) window.unlockAchievement('tea_first');
             if (score >= 500) window.unlockAchievement('tea_500');
             if (score >= 10000) window.unlockAchievement('tea_10k');
-
-            localStorage.setItem('tea_score', score);
-            updateGameUI();
 
             const floater = document.createElement('div');
             floater.className = 'floating-text';
