@@ -1,4 +1,4 @@
-// js/achievements.js - Secure Achievement Engine
+// js/achievements.js - Master Achievement Engine (Wael Edition)
 
 const ACHIEVEMENTS = {
     tea_first: { title: "First Brew", desc: "You clicked the Moroccan Tea for the first time.", icon: "🍵" },
@@ -20,7 +20,7 @@ const ACHIEVEMENTS = {
 
 let unlocked = JSON.parse(localStorage.getItem('wael_achievements')) || [];
 
-// Inject CSS ONLY for the Popups
+// 1. Inject Popup Styles
 const sysStyle = document.createElement('style');
 sysStyle.innerHTML = `
     .achieve-popup {
@@ -40,13 +40,14 @@ sysStyle.innerHTML = `
 `;
 document.head.appendChild(sysStyle);
 
+// 2. The Core Unlock Function (With Security)
 window.unlockAchievement = function(id) {
-    // SECURITY CHECK: Only save if the user is authenticated as Wael
     const isAuthenticated = localStorage.getItem('gh_token') === CONFIG.GITHUB_TOKEN;
     const isWael = localStorage.getItem('active_user') === 'Wael';
 
+    // Block saving for guests
     if (!isAuthenticated || !isWael) {
-        console.log("Achievement triggered, but not logged in as Wael. Data not saved.");
+        console.warn("Achievement triggered, but not logged in as Wael. Progress not saved.");
         return; 
     }
 
@@ -55,6 +56,7 @@ window.unlockAchievement = function(id) {
     unlocked.push(id);
     localStorage.setItem('wael_achievements', JSON.stringify(unlocked));
     
+    // Show UI Popup
     const popup = document.createElement('div');
     popup.className = 'achieve-popup';
     popup.innerHTML = `
@@ -74,11 +76,10 @@ window.unlockAchievement = function(id) {
     }, 5000);
 };
 
-// Night Owl Check
+// 3. Global Checks (Night Owl & Patriot)
 const hour = new Date().getHours();
 if (hour >= 1 && hour < 4) window.unlockAchievement('egg_owl');
 
-// Patriot Check
 let flagClicks = 0;
 document.addEventListener('click', (e) => {
     if (e.target.tagName === 'IMG') {
@@ -90,3 +91,21 @@ document.addEventListener('click', (e) => {
         }
     }
 });
+
+// 4. THE MASTER SYNC: Auto-Unlock All if Wael is Logged In
+(function syncWaelAccount() {
+    const isAuthenticated = localStorage.getItem('gh_token') === CONFIG.GITHUB_TOKEN;
+    const isWael = localStorage.getItem('active_user') === 'Wael';
+
+    if (isAuthenticated && isWael) {
+        console.log("Welcome Wael. Syncing all trophies to this session...");
+        Object.keys(ACHIEVEMENTS).forEach(id => {
+            // Add to unlocked list if not already there
+            if (!unlocked.includes(id)) {
+                unlocked.push(id);
+            }
+        });
+        // Save the full list back to localStorage
+        localStorage.setItem('wael_achievements', JSON.stringify(unlocked));
+    }
+})();
