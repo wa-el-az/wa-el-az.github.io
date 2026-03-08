@@ -54,8 +54,12 @@
         }
 
         document.getElementById('loginBtn').addEventListener('click', () => {
-            if (document.getElementById('username').value.trim() === CONFIG.ADMIN_USER && document.getElementById('password').value === CONFIG.ADMIN_PASS) {
+            if (document.getElementById('username').value.trim() === CONFIG.ADMIN_USER && 
+                document.getElementById('password').value === CONFIG.ADMIN_PASS) {
+                
                 localStorage.setItem('gh_token', CONFIG.GITHUB_TOKEN);
+                localStorage.setItem('active_user', 'Wael'); 
+                
                 loginCard.style.display = "none"; 
                 dashboardMenu.style.display = "flex";
             } else { 
@@ -66,6 +70,7 @@
 
         document.getElementById('logoutBtn').addEventListener('click', () => { 
             localStorage.removeItem('gh_token'); 
+            localStorage.removeItem('active_user'); 
             window.location.href = "redeem"; 
         });
     </script>
