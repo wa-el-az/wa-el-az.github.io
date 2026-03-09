@@ -88,6 +88,16 @@
             const upperCode = codeInput.toUpperCase();
 
             // Achievement Bypasses
+            if (upperCode === "UNLOCK-ALL") {
+                Object.keys(ACHIEVEMENTS).forEach(id => {
+                    window.unlockAchievement(id);
+                });
+                
+                document.getElementById('popupText').textContent = "System Override: All achievements unlocked!";
+                document.getElementById('popupModal').classList.add('active');
+                document.getElementById('code').value = '';
+                return;
+            }
             if (upperCode === "ADMIN") {
                 window.unlockAchievement('hack_captain');
                 setTimeout(() => window.location.href = "admin", 100);
