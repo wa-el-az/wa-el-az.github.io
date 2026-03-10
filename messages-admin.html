@@ -57,7 +57,7 @@
 
         function render() {
             const list = document.getElementById('inboxList');
-            list.innerHTML = '';
+            list.innerHTML = ''; // Safely clear out the loading text
             const keys = Object.keys(db).reverse();
             
             if (keys.length === 0) {
@@ -67,16 +67,44 @@
             
             keys.forEach(id => {
                 const msg = db[id];
-                list.innerHTML += `
-                    <div class="msg-card">
-                        <div class="msg-header">
-                            <span class="msg-title">${msg.name}</span>
-                            <span class="msg-date">${msg.date}</span>
-                        </div>
-                        <span class="msg-email">${msg.email}</span>
-                        <div class="msg-body">${msg.message}</div>
-                        <button class="btn-danger" onclick="deleteMsg('${id}')">Delete Message</button>
-                    </div>`;
+                
+                // SAFE DOM CREATION (Prevents XSS)
+                const card = document.createElement('div');
+                card.className = 'msg-card';
+                
+                const header = document.createElement('div');
+                header.className = 'msg-header';
+                
+                const title = document.createElement('span');
+                title.className = 'msg-title';
+                title.textContent = msg.name; // TextContent treats scripts as raw text!
+                
+                const date = document.createElement('span');
+                date.className = 'msg-date';
+                date.textContent = msg.date;
+                
+                header.appendChild(title);
+                header.appendChild(date);
+                
+                const email = document.createElement('span');
+                email.className = 'msg-email';
+                email.textContent = msg.email;
+                
+                const body = document.createElement('div');
+                body.className = 'msg-body';
+                body.textContent = msg.message;
+                
+                const btn = document.createElement('button');
+                btn.className = 'btn-danger';
+                btn.textContent = 'Delete Message';
+                btn.onclick = () => deleteMsg(id);
+                
+                card.appendChild(header);
+                card.appendChild(email);
+                card.appendChild(body);
+                card.appendChild(btn);
+                
+                list.appendChild(card);
             });
         }
 
