@@ -44,6 +44,7 @@
         <button class="btn" onclick="resetGame()">Restart Game</button>
     </div>
 
+    <script src="js/config.js"></script>
     <script src="js/achievements.js"></script>
     <script>
         let origBoard;
@@ -68,7 +69,9 @@
         function makeMove(squareId) {
             if (gameActive && typeof origBoard[squareId] == 'number') {
                 turn(squareId, huPlayer);
-                if (!checkWin(origBoard, huPlayer) && !checkTie()) {
+                
+                // If the human didn't win or tie, let AI play
+                if (gameActive) {
                     statusText.innerText = "AI is thinking..."; statusText.style.color = "#fff";
                     setTimeout(() => { turn(bestSpot(), aiPlayer); }, 300);
                 }
@@ -78,9 +81,16 @@
         function turn(squareId, player) {
             origBoard[squareId] = player;
             cells[squareId].innerText = player; cells[squareId].classList.add(player.toLowerCase()); cells[squareId].style.cursor = 'default';
+            
             let gameWon = checkWin(origBoard, player);
-            if (gameWon) gameOver(gameWon);
-            else if (player === aiPlayer && gameActive) { statusText.innerText = "Your turn! (You are X)"; statusText.style.color = "#4ade80"; }
+            if (gameWon) {
+                gameOver(gameWon);
+            } else if (checkTie()) {
+                // checkTie() returns true if the game is a tie, stopping further actions
+                return;
+            } else if (player === aiPlayer && gameActive) { 
+                statusText.innerText = "Your turn! (You are X)"; statusText.style.color = "#4ade80"; 
+            }
         }
 
         function checkWin(board, player) {
