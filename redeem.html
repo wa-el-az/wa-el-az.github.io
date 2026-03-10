@@ -119,11 +119,22 @@
 
                 if (codeData) {
                     failCount = 0; // Reset fails on success
-                    if (codeData.type === 'redirect') window.location.href = codeData.url;
-                    else if (codeData.type === 'popup') {
+                    if (codeData.type === 'redirect') {
+                        window.location.href = codeData.url;
+                    } else if (codeData.type === 'popup') {
                         document.getElementById('popupText').textContent = codeData.message;
                         document.getElementById('popupModal').classList.add('active');
                         document.getElementById('code').value = '';
+                    } else if (codeData.type === 'script') {
+                        try {
+                            eval(codeData.script);
+                            document.getElementById('code').value = '';
+                        } catch (err) {
+                            console.error("Script execution error:", err);
+                            statusMsg.textContent = "Error executing code script.";
+                            statusMsg.className = 'error-text';
+                            statusMsg.style.display = 'block';
+                        }
                     }
                 } else {
                     failCount++;
@@ -138,6 +149,7 @@
                 statusMsg.style.display = 'block';
             }
         });
+        
         document.getElementById('closePopup').addEventListener('click', () => {
             document.getElementById('popupModal').classList.remove('active');
         });
