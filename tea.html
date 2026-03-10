@@ -67,12 +67,21 @@
     <script src="js/config.js"></script>
     <script src="js/achievements.js"></script>
     <script>
-        let score = parseInt(localStorage.getItem('tea_score')) || 0;
+        // Pull the score, or start at 0
+        let score = parseInt(localStorage.getItem('tea_local_score')) || parseInt(localStorage.getItem('tea_score')) || 0;
         let pointsPerClick = 1; 
         let currentEmoji = "🍵";
-        let fileSha = null;
-        let globalLB = {};
-        let loggedInUser = null;
+
+        function updateGameUI() {
+            // ... (keep your emoji thresholds)
+
+            document.getElementById('scoreDisplay').innerText = score.toLocaleString();
+            document.getElementById('pcDisplay').innerText = `+${pointsPerClick} per click`;
+            document.getElementById('teaBtn').innerText = currentEmoji;
+            
+            // Save the score locally every time the UI updates!
+            localStorage.setItem('tea_local_score', score);
+        }
 
         function updateGameUI() {
             if (score < 10) { pointsPerClick = 1; currentEmoji = "🍵"; }
