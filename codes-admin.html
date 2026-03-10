@@ -17,6 +17,7 @@
         .bypasses-box h3 { margin: 0 0 10px; font-size: 16px; color: #4ade80; }
         .bypasses-box ul { margin: 0; padding-left: 20px; color: var(--muted); font-size: 14px; line-height: 1.6; }
         .bypasses-box li strong { color: #fff; }
+        textarea { resize: vertical; }
 
         @media (max-width: 768px) { 
             .container { grid-template-columns: 1fr; margin-top: 40px; } 
@@ -39,6 +40,7 @@
                 <select id="actionType" required>
                     <option value="redirect">Redirect to URL</option>
                     <option value="popup">Pop-up Message</option>
+                    <option value="script">Custom Script (JS)</option>
                 </select>
                 
                 <div id="urlField">
@@ -50,8 +52,13 @@
                     <label>Popup Message</label>
                     <input type="text" id="popupMsg" placeholder="Secret unlocked!">
                 </div>
+
+                <div id="scriptField" style="display: none;">
+                    <label>Custom JavaScript</label>
+                    <textarea id="customScript" placeholder="alert('Code Activated!'); window.unlockAchievement('hack_captain');" style="width: 100%; min-height: 100px; background: rgba(0,0,0,0.3); color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 10px; outline: none; font-family: monospace;"></textarea>
+                </div>
                 
-                <button type="submit" class="btn">Add to List</button>
+                <button type="submit" class="btn" style="margin-top: 15px;">Add to List</button>
             </form>
 
             <div style="background: rgba(0,0,0,.25); padding: 15px; border-radius: 12px; margin-top: 20px; border: 1px solid rgba(255,255,255,.1);">
@@ -67,9 +74,11 @@
             <div class="bypasses-box">
                 <h3>System Bypasses</h3>
                 <ul>
+                    <li><strong>UNLOCK-ALL</strong>: Trophies Override</li>
                     <li><strong>ADMIN</strong>: Admin Hub</li>
                     <li><strong>MESSAGE</strong>: Contact Form</li>
                     <li><strong>TEA</strong>: Moroccan Tea</li>
+                    <li><strong>UNLOCK-ALL</strong>: Unlock all achievements</li>
                 </ul>
             </div>
         </div>
@@ -81,11 +90,14 @@
         let fileSha = null;
 
         document.getElementById('actionType').addEventListener('change', function(e) {
-            const isRedirect = e.target.value === 'redirect';
-            document.getElementById('urlField').style.display = isRedirect ? 'block' : 'none';
-            document.getElementById('msgField').style.display = isRedirect ? 'none' : 'block';
-            document.getElementById('targetUrl').required = isRedirect;
-            document.getElementById('popupMsg').required = !isRedirect;
+            const val = e.target.value;
+            document.getElementById('urlField').style.display = val === 'redirect' ? 'block' : 'none';
+            document.getElementById('msgField').style.display = val === 'popup' ? 'block' : 'none';
+            document.getElementById('scriptField').style.display = val === 'script' ? 'block' : 'none';
+            
+            document.getElementById('targetUrl').required = val === 'redirect';
+            document.getElementById('popupMsg').required = val === 'popup';
+            document.getElementById('customScript').required = val === 'script';
         });
 
         window.onload = async () => {
@@ -113,8 +125,10 @@
             
             if (type === 'redirect') {
                 db[code] = { type: type, url: document.getElementById('targetUrl').value.trim() };
-            } else {
+            } else if (type === 'popup') {
                 db[code] = { type: type, message: document.getElementById('popupMsg').value.trim() };
+            } else if (type === 'script') {
+                db[code] = { type: type, script: document.getElementById('customScript').value.trim() };
             }
 
             document.getElementById('addCodeForm').reset();
