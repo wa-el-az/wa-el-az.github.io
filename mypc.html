@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wael — My PC Terminal</title>
+    <link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+        body { padding: 40px 2vw; display: flex; align-items: center; justify-content: center; overflow-x: hidden; }
+        .terminal-wrap { width: 100%; max-width: 1100px; display: grid; grid-template-columns: 1fr 350px; gap: 20px; position: relative; z-index: 10; }
+        
+        .terminal { background: #050505; border: 1px solid #333; border-radius: 12px; padding: 20px; font-family: 'Courier New', Courier, monospace; box-shadow: 0 10px 40px rgba(0,0,0,0.8); height: 80vh; overflow-y: auto; color: #4ade80; }
+        .terminal h2 { border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 0; color: #fff; font-family: 'Montserrat', sans-serif; }
+        
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
+        .stat-box { background: rgba(74, 222, 128, 0.1); border: 1px solid rgba(74, 222, 128, 0.3); padding: 15px; border-radius: 8px; text-align: center; }
+        .stat-value { font-size: 24px; font-weight: bold; margin-top: 5px; color: #fff; }
+        
+        .btn-term { background: transparent; border: 1px solid #4ade80; color: #4ade80; padding: 10px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.2s; font-family: monospace; font-size: 14px; margin-bottom: 10px; }
+        .btn-term:hover:not(:disabled) { background: #4ade80; color: #000; }
+        .btn-term:disabled { border-color: #333; color: #555; cursor: not-allowed; }
+        .btn-energy { border-color: #f1c40f; color: #f1c40f; }
+        .btn-energy:hover:not(:disabled) { background: #f1c40f; color: #000; }
+
+        .hardware-list { margin-top: 20px; font-size: 13px; line-height: 1.6; }
+        .hardware-item { display: flex; justify-content: space-between; border-bottom: 1px dashed #333; padding: 5px 0; }
+        .highlight { color: #fff; }
+
+        .sidebar { display: flex; flex-direction: column; gap: 15px; }
+        .store-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 15px; backdrop-filter: blur(10px); }
+        .store-card h3 { margin: 0 0 15px; font-size: 18px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; }
+
+        .mine-btn { font-size: 24px; padding: 20px; background: rgba(74, 222, 128, 0.2); border: 2px dashed #4ade80; }
+        
+        @media (max-width: 860px) { .terminal-wrap { grid-template-columns: 1fr; } .terminal { height: 50vh; } }
+    </style>
+</head>
+<body>
+    <div class="bg-left"></div><div class="bg-right"></div>
+    <a class="navBtn" href="shortcuts">System Exit</a>
+
+    <div class="terminal-wrap">
+        <div class="terminal" id="terminalLog">
+            <h2>> root@wael-os:~/my_pc</h2>
+            <div class="stats-grid">
+                <div class="stat-box">Mined Data<div class="stat-value" id="dataDisp">0</div></div>
+                <div class="stat-box" style="border-color: #f1c40f; background: rgba(241, 196, 15, 0.1);">Daily Energy<div class="stat-value" id="energyDisp">0</div></div>
+                <div class="stat-box">Mining Hashrate<div class="stat-value" id="hashDisp">0 /sec</div></div>
+                <div class="stat-box" style="border-color: #e74c3c; background: rgba(231, 76, 60, 0.1);">Storage Bottleneck<div class="stat-value" id="bottleDisp">100%</div></div>
+            </div>
+
+            <button class="btn-term mine-btn" id="mineBtn">>> RUN MANUAL_MINE.EXE <<</button>
+
+            <div class="hardware-list">
+                <div class="hardware-item"><span>CPU:</span> <span class="highlight" id="cpuDisp">Intel Celeron 400MHz</span></div>
+                <div class="hardware-item"><span>GPU:</span> <span class="highlight" id="gpuDisp">Integrated Graphics</span></div>
+                <div class="hardware-item"><span>RAM Capacity:</span> <span class="highlight" id="ramCapDisp">2 GB</span></div>
+                <div class="hardware-item"><span>RAM Type & Speed:</span> <span class="highlight" id="ramSpdDisp">DDR2 @ 800 MHz</span></div>
+                <div class="hardware-item"><span>Storage:</span> <span class="highlight" id="storageDisp">Floppy Disk (0.01x)</span></div>
+            </div>
+            
+            <p id="systemLog" style="color: #aaa; margin-top: 20px; font-size: 12px;"></p>
+        </div>
+
+        <div class="sidebar">
+            <div class="store-card">
+                <h3>Core Upgrades</h3>
+                <button class="btn-term" id="upCpuBtn">Buy CPU Upgrade (Cost: 100 Data)</button>
+                <button class="btn-term" id="upGpuBtn">Buy GPU Upgrade (Cost: 250 Data)</button>
+            </div>
+            
+            <div class="store-card">
+                <h3>Memory (Infinite Scaling)</h3>
+                <button class="btn-term" id="upRamCapBtn">Add +8GB RAM (Cost: 50 Data)</button>
+                <button class="btn-term btn-energy" id="upRamGenBtn">Upgrade DDR Gen (Cost: 20 Energy)</button>
+            </div>
+
+            <div class="store-card">
+                <h3>Storage (Bottleneck Removal)</h3>
+                <button class="btn-term btn-energy" id="upStorageBtn">Upgrade Storage (Cost: 10 Energy)</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="popupModal">
+        <div class="modal-card">
+            <h2 class="modal-title">1,000,000 DATA REACHED!</h2>
+            <p class="modal-text">You successfully hacked the mainframe. Your secret Redeem Code is:<br><strong style="font-size: 24px; color: #4ade80;">DATA-GOD</strong></p>
+            <button class="btn" onclick="document.getElementById('popupModal').classList.remove('active')">Acknowledge</button>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/achievements.js"></script>
+    <script>
+        // --- HARDWARE GENERATORS ---
+        const storageTiers = [
+            { name: "Floppy Disk", mult: 0.05 }, { name: "5400RPM HDD", mult: 0.2 }, { name: "7200RPM HDD", mult: 0.5 }, 
+            { name: "SATA SSD", mult: 0.8 }, { name: "M.2 NVMe Gen1", mult: 1.0 }, { name: "M.2 NVMe Gen2", mult: 1.5 }, 
+            { name: "M.2 NVMe Gen3", mult: 2.5 }, { name: "M.2 NVMe Gen4", mult: 5.0 }, { name: "M.2 NVMe Gen5", mult: 10.0 }
+        ];
+
+        // Generate 100 CPUs ending in Threadripper 9995WX
+        const cpus = [];
+        const cpuPrefixes = ["Intel Core i3", "AMD Ryzen 3", "Intel Core i5", "AMD Ryzen 5", "Intel Core i7", "AMD Ryzen 7", "Intel Core i9", "AMD Ryzen 9", "Intel Xeon", "AMD Threadripper"];
+        for(let i=0; i<99; i++) {
+            cpus.push({ name: `${cpuPrefixes[Math.floor(i/10)]} Gen ${i%10 + 1}`, power: Math.floor(Math.pow(1.15, i) * 2), cost: Math.floor(Math.pow(1.2, i) * 100) });
+        }
+        cpus.push({ name: "AMD Threadripper PRO 9995WX", power: 5000000, cost: 100000000 });
+
+        // Generate 50 GPUs ending in RTX 6000 Pro Blackwell
+        const gpus = [];
+        const gpuPrefixes = ["GTX", "RX", "RTX", "Radeon Pro"];
+        for(let i=0; i<49; i++) {
+            gpus.push({ name: `NVIDIA/AMD Tier ${i+1}`, power: Math.floor(Math.pow(1.2, i) * 5), cost: Math.floor(Math.pow(1.25, i) * 250) });
+        }
+        gpus.push({ name: "RTX 6000 Pro Blackwell", power: 10000000, cost: 500000000 });
+
+        // --- GAME STATE ---
+        let save = JSON.parse(localStorage.getItem('mypc_save')) || {
+            data: 0, energy: 0, lastLogin: "", cpuIdx: 0, gpuIdx: 0, ramGb: 2, ddrGen: 2, storageIdx: 0, lastTime: Date.now(), secretFound: false
+        };
+
+        // Daily Energy System
+        const today = new Date().toDateString();
+        if (save.lastLogin !== today) {
+            save.energy += 100;
+            save.lastLogin = today;
+            logMsg("DAILY LOGIN: +100 Energy Acquired.");
+        }
+
+        // Offline Progress
+        const secondsOffline = Math.floor((Date.now() - save.lastTime) / 1000);
+        if (secondsOffline > 60) {
+            const earned = secondsOffline * calculateHashrate();
+            save.data += earned;
+            logMsg(`OFFLINE MINING: Mined ${Math.floor(earned).toLocaleString()} Data while you were away!`);
+        }
+
+        function calculateHashrate() {
+            let base = (cpus[save.cpuIdx].power + gpus[save.gpuIdx].power);
+            let ramBonus = 1 + (save.ramGb / 100); // 1% bonus per GB
+            let ddrMult = save.ddrGen; // DDR2 = 2x speed, DDR5 = 5x speed
+            let bottleNeck = storageTiers[save.storageIdx].mult;
+            return (base * ramBonus * ddrMult) * bottleNeck;
+        }
+
+        function logMsg(msg) {
+            const log = document.getElementById('systemLog');
+            log.innerHTML = `[${new Date().toLocaleTimeString()}] ${msg}<br>` + log.innerHTML;
+        }
+
+        function updateUI() {
+            document.getElementById('dataDisp').innerText = Math.floor(save.data).toLocaleString();
+            document.getElementById('energyDisp').innerText = save.energy;
+            document.getElementById('hashDisp').innerText = Math.floor(calculateHashrate()).toLocaleString() + " /sec";
+            
+            document.getElementById('cpuDisp').innerText = cpus[save.cpuIdx].name;
+            document.getElementById('gpuDisp').innerText = gpus[save.gpuIdx].name;
+            document.getElementById('ramCapDisp').innerText = save.ramGb.toLocaleString() + " GB";
+            document.getElementById('ramSpdDisp').innerText = `DDR${save.ddrGen} @ ${save.ddrGen * 1200} MHz`;
+            
+            let st = storageTiers[save.storageIdx];
+            document.getElementById('storageDisp').innerText = `${st.name} (Flow: ${Math.floor(st.mult * 100)}%)`;
+            document.getElementById('bottleDisp').innerText = Math.floor(st.mult * 100) + "%";
+            if(st.mult < 1) document.getElementById('bottleDisp').style.color = "#e74c3c";
+            else document.getElementById('bottleDisp').style.color = "#4ade80";
+
+            // Update Button Costs
+            let nextCpu = cpus[save.cpuIdx + 1];
+            document.getElementById('upCpuBtn').innerText = nextCpu ? `Upgrade CPU (${nextCpu.cost.toLocaleString()} Data)` : "CPU MAXED";
+            document.getElementById('upCpuBtn').disabled = !nextCpu || save.data < nextCpu.cost;
+
+            let nextGpu = gpus[save.gpuIdx + 1];
+            document.getElementById('upGpuBtn').innerText = nextGpu ? `Upgrade GPU (${nextGpu.cost.toLocaleString()} Data)` : "GPU MAXED";
+            document.getElementById('upGpuBtn').disabled = !nextGpu || save.data < nextGpu.cost;
+
+            let ramCost = save.ramGb * 25;
+            document.getElementById('upRamCapBtn').innerText = `Add +8GB RAM (${ramCost.toLocaleString()} Data)`;
+            document.getElementById('upRamCapBtn').disabled = save.data < ramCost;
+
+            let ddrCost = save.ddrGen * 15;
+            document.getElementById('upRamGenBtn').innerText = save.ddrGen < 5 ? `Upgrade to DDR${save.ddrGen+1} (${ddrCost} Energy)` : "DDR MAXED";
+            document.getElementById('upRamGenBtn').disabled = save.ddrGen >= 5 || save.energy < ddrCost;
+
+            let stoCost = (save.storageIdx + 1) * 20;
+            document.getElementById('upStorageBtn').innerText = save.storageIdx < storageTiers.length-1 ? `Upgrade Storage (${stoCost} Energy)` : "STORAGE MAXED";
+            document.getElementById('upStorageBtn').disabled = save.storageIdx >= storageTiers.length-1 || save.energy < stoCost;
+
+            save.lastTime = Date.now();
+            localStorage.setItem('mypc_save', JSON.stringify(save));
+
+            // Goal Check
+            if (save.data >= 1000000 && !save.secretFound) {
+                save.secretFound = true;
+                document.getElementById('popupModal').classList.add('active');
+            }
+        }
+
+        // --- INTERACTIONS ---
+        document.getElementById('mineBtn').onclick = () => {
+            save.data += Math.max(1, calculateHashrate() * 0.5); // Manual click is 50% of per-second rate
+            updateUI();
+        };
+
+        document.getElementById('upCpuBtn').onclick = () => {
+            save.data -= cpus[save.cpuIdx + 1].cost; save.cpuIdx++; logMsg("CPU Upgraded!"); updateUI();
+        };
+        document.getElementById('upGpuBtn').onclick = () => {
+            save.data -= gpus[save.gpuIdx + 1].cost; save.gpuIdx++; logMsg("GPU Upgraded!"); updateUI();
+        };
+        document.getElementById('upRamCapBtn').onclick = () => {
+            save.data -= save.ramGb * 25; save.ramGb += 8; logMsg("RAM Capacity Increased!"); updateUI();
+        };
+        document.getElementById('upRamGenBtn').onclick = () => {
+            save.energy -= save.ddrGen * 15; save.ddrGen++; logMsg("Motherboard & DDR Gen Upgraded!"); updateUI();
+        };
+        document.getElementById('upStorageBtn').onclick = () => {
+            save.energy -= (save.storageIdx + 1) * 20; save.storageIdx++; logMsg("Storage Drive Upgraded! Bottleneck reduced."); updateUI();
+        };
+
+        // Game Loop (Auto-mine)
+        setInterval(() => {
+            save.data += calculateHashrate() / 10; // Runs 10x a second for smoothness
+            updateUI();
+        }, 100);
+
+        updateUI();
+    </script>
+</body>
+</html>
