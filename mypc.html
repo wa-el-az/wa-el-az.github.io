@@ -7,10 +7,57 @@
     <link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
     <link rel="stylesheet" href="css/style.css" />
     <style>
-        body { padding: 40px 2vw; display: flex; align-items: center; justify-content: center; overflow-x: hidden; }
-        .terminal-wrap { width: 100%; max-width: 1100px; display: grid; grid-template-columns: 1fr 350px; gap: 20px; position: relative; z-index: 10; }
+        body { padding: 80px 5vw 40px; display: flex; justify-content: center; min-height: 100vh; overflow-x: hidden; }
         
-        .terminal { background: #050505; border: 1px solid #333; border-radius: 12px; padding: 20px; font-family: 'Courier New', Courier, monospace; box-shadow: 0 10px 40px rgba(0,0,0,0.8); height: 80vh; overflow-y: auto; color: #4ade80; }
+        /* THE NEW FLEXBOX LAYOUT */
+        .terminal-wrap { 
+            display: flex; 
+            flex-direction: row; /* PC: Left and Right */
+            gap: 25px; 
+            width: 100%; 
+            max-width: 1200px; 
+            position: relative; 
+            z-index: 10; 
+            align-items: flex-start;
+        }
+        
+        /* The Game (Left on PC) */
+        .terminal { 
+            flex: 1; /* Takes up all remaining space */
+            background: #050505; 
+            border: 1px solid #333; 
+            border-radius: 12px; 
+            padding: 20px; 
+            font-family: 'Courier New', Courier, monospace; 
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8); 
+            height: 80vh; 
+            overflow-y: auto; 
+            color: #4ade80; 
+        }
+        
+        /* The Upgrades (Right on PC) */
+        .sidebar { 
+            width: 350px; /* Fixed width on PC */
+            display: flex; 
+            flex-direction: column; 
+            gap: 15px; 
+            flex-shrink: 0;
+        }
+
+        /* MOBILE LAYOUT OVERRIDE */
+        @media (max-width: 900px) { 
+            .terminal-wrap { 
+                flex-direction: column; /* Mobile: Top and Bottom */
+            } 
+            .sidebar { 
+                width: 100%; /* Take full width on mobile */
+            }
+            .terminal { 
+                height: 55vh; /* Make terminal smaller so store is visible */
+                width: 100%;
+            } 
+        }
+
         .terminal h2 { border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 0; color: #fff; font-family: 'Montserrat', sans-serif; }
         
         .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 25px; }
@@ -24,21 +71,18 @@
         .btn-energy:hover:not(:disabled) { background: #f1c40f; color: #000; }
 
         .hardware-list { margin-top: 20px; font-size: 13px; line-height: 1.6; }
-        .hardware-item { display: flex; justify-content: space-between; border-bottom: 1px dashed #333; padding: 5px 0; }
-        .highlight { color: #fff; }
+        .hardware-item { display: flex; justify-content: space-between; border-bottom: 1px dashed #333; padding: 8px 0; }
+        .highlight { color: #fff; font-weight: bold; text-align: right; }
 
-        .sidebar { display: flex; flex-direction: column; gap: 15px; }
         .store-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 15px; backdrop-filter: blur(10px); }
         .store-card h3 { margin: 0 0 15px; font-size: 18px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; }
 
-        .mine-btn { font-size: 24px; padding: 20px; background: rgba(74, 222, 128, 0.2); border: 2px dashed #4ade80; }
-        
-        @media (max-width: 860px) { .terminal-wrap { grid-template-columns: 1fr; } .terminal { height: 50vh; } }
+        .mine-btn { font-size: 20px; padding: 20px; background: rgba(74, 222, 128, 0.2); border: 2px dashed #4ade80; }
     </style>
 </head>
 <body>
     <div class="bg-left"></div><div class="bg-right"></div>
-    <a class="navBtn" href="shortcuts">System Exit</a>
+    <a class="navBtn" href="shortcuts" style="z-index: 50;">System Exit</a>
 
     <div class="terminal-wrap">
         <div class="terminal" id="terminalLog">
@@ -66,19 +110,19 @@
         <div class="sidebar">
             <div class="store-card">
                 <h3>Core Upgrades</h3>
-                <button class="btn-term" id="upCpuBtn">Buy CPU Upgrade (Cost: 100 Data)</button>
-                <button class="btn-term" id="upGpuBtn">Buy GPU Upgrade (Cost: 250 Data)</button>
+                <button class="btn-term" id="upCpuBtn">Buy CPU Upgrade</button>
+                <button class="btn-term" id="upGpuBtn">Buy GPU Upgrade</button>
             </div>
             
             <div class="store-card">
                 <h3>Memory (Infinite Scaling)</h3>
-                <button class="btn-term" id="upRamCapBtn">Add +8GB RAM (Cost: 50 Data)</button>
-                <button class="btn-term btn-energy" id="upRamGenBtn">Upgrade DDR Gen (Cost: 20 Energy)</button>
+                <button class="btn-term" id="upRamCapBtn">Add +8GB RAM</button>
+                <button class="btn-term btn-energy" id="upRamGenBtn">Upgrade DDR Gen</button>
             </div>
 
             <div class="store-card">
                 <h3>Storage (Bottleneck Removal)</h3>
-                <button class="btn-term btn-energy" id="upStorageBtn">Upgrade Storage (Cost: 10 Energy)</button>
+                <button class="btn-term btn-energy" id="upStorageBtn">Upgrade Storage</button>
             </div>
         </div>
     </div>
@@ -101,20 +145,14 @@
             { name: "M.2 NVMe Gen3", mult: 2.5 }, { name: "M.2 NVMe Gen4", mult: 5.0 }, { name: "M.2 NVMe Gen5", mult: 10.0 }
         ];
 
-        // Generate 100 CPUs ending in Threadripper 9995WX
         const cpus = [];
         const cpuPrefixes = ["Intel Core i3", "AMD Ryzen 3", "Intel Core i5", "AMD Ryzen 5", "Intel Core i7", "AMD Ryzen 7", "Intel Core i9", "AMD Ryzen 9", "Intel Xeon", "AMD Threadripper"];
-        for(let i=0; i<99; i++) {
-            cpus.push({ name: `${cpuPrefixes[Math.floor(i/10)]} Gen ${i%10 + 1}`, power: Math.floor(Math.pow(1.15, i) * 2), cost: Math.floor(Math.pow(1.2, i) * 100) });
-        }
+        for(let i=0; i<99; i++) { cpus.push({ name: `${cpuPrefixes[Math.floor(i/10)]} Gen ${i%10 + 1}`, power: Math.floor(Math.pow(1.15, i) * 2), cost: Math.floor(Math.pow(1.2, i) * 100) }); }
         cpus.push({ name: "AMD Threadripper PRO 9995WX", power: 5000000, cost: 100000000 });
 
-        // Generate 50 GPUs ending in RTX 6000 Pro Blackwell
         const gpus = [];
         const gpuPrefixes = ["GTX", "RX", "RTX", "Radeon Pro"];
-        for(let i=0; i<49; i++) {
-            gpus.push({ name: `NVIDIA/AMD Tier ${i+1}`, power: Math.floor(Math.pow(1.2, i) * 5), cost: Math.floor(Math.pow(1.25, i) * 250) });
-        }
+        for(let i=0; i<49; i++) { gpus.push({ name: `NVIDIA/AMD Tier ${i+1}`, power: Math.floor(Math.pow(1.2, i) * 5), cost: Math.floor(Math.pow(1.25, i) * 250) }); }
         gpus.push({ name: "RTX 6000 Pro Blackwell", power: 10000000, cost: 500000000 });
 
         // --- GAME STATE ---
@@ -122,7 +160,6 @@
             data: 0, energy: 0, lastLogin: "", cpuIdx: 0, gpuIdx: 0, ramGb: 2, ddrGen: 2, storageIdx: 0, lastTime: Date.now(), secretFound: false
         };
 
-        // Daily Energy System
         const today = new Date().toDateString();
         if (save.lastLogin !== today) {
             save.energy += 100;
@@ -130,7 +167,6 @@
             logMsg("DAILY LOGIN: +100 Energy Acquired.");
         }
 
-        // Offline Progress
         const secondsOffline = Math.floor((Date.now() - save.lastTime) / 1000);
         if (secondsOffline > 60) {
             const earned = secondsOffline * calculateHashrate();
@@ -140,8 +176,8 @@
 
         function calculateHashrate() {
             let base = (cpus[save.cpuIdx].power + gpus[save.gpuIdx].power);
-            let ramBonus = 1 + (save.ramGb / 100); // 1% bonus per GB
-            let ddrMult = save.ddrGen; // DDR2 = 2x speed, DDR5 = 5x speed
+            let ramBonus = 1 + (save.ramGb / 100); 
+            let ddrMult = save.ddrGen; 
             let bottleNeck = storageTiers[save.storageIdx].mult;
             return (base * ramBonus * ddrMult) * bottleNeck;
         }
@@ -167,7 +203,6 @@
             if(st.mult < 1) document.getElementById('bottleDisp').style.color = "#e74c3c";
             else document.getElementById('bottleDisp').style.color = "#4ade80";
 
-            // Update Button Costs
             let nextCpu = cpus[save.cpuIdx + 1];
             document.getElementById('upCpuBtn').innerText = nextCpu ? `Upgrade CPU (${nextCpu.cost.toLocaleString()} Data)` : "CPU MAXED";
             document.getElementById('upCpuBtn').disabled = !nextCpu || save.data < nextCpu.cost;
@@ -191,40 +226,24 @@
             save.lastTime = Date.now();
             localStorage.setItem('mypc_save', JSON.stringify(save));
 
-            // Goal Check
             if (save.data >= 1000000 && !save.secretFound) {
                 save.secretFound = true;
                 document.getElementById('popupModal').classList.add('active');
             }
         }
 
-        // --- INTERACTIONS ---
         document.getElementById('mineBtn').onclick = () => {
-            save.data += Math.max(1, calculateHashrate() * 0.5); // Manual click is 50% of per-second rate
+            save.data += Math.max(1, calculateHashrate() * 0.5); 
             updateUI();
         };
 
-        document.getElementById('upCpuBtn').onclick = () => {
-            save.data -= cpus[save.cpuIdx + 1].cost; save.cpuIdx++; logMsg("CPU Upgraded!"); updateUI();
-        };
-        document.getElementById('upGpuBtn').onclick = () => {
-            save.data -= gpus[save.gpuIdx + 1].cost; save.gpuIdx++; logMsg("GPU Upgraded!"); updateUI();
-        };
-        document.getElementById('upRamCapBtn').onclick = () => {
-            save.data -= save.ramGb * 25; save.ramGb += 8; logMsg("RAM Capacity Increased!"); updateUI();
-        };
-        document.getElementById('upRamGenBtn').onclick = () => {
-            save.energy -= save.ddrGen * 15; save.ddrGen++; logMsg("Motherboard & DDR Gen Upgraded!"); updateUI();
-        };
-        document.getElementById('upStorageBtn').onclick = () => {
-            save.energy -= (save.storageIdx + 1) * 20; save.storageIdx++; logMsg("Storage Drive Upgraded! Bottleneck reduced."); updateUI();
-        };
+        document.getElementById('upCpuBtn').onclick = () => { save.data -= cpus[save.cpuIdx + 1].cost; save.cpuIdx++; logMsg("CPU Upgraded!"); updateUI(); };
+        document.getElementById('upGpuBtn').onclick = () => { save.data -= gpus[save.gpuIdx + 1].cost; save.gpuIdx++; logMsg("GPU Upgraded!"); updateUI(); };
+        document.getElementById('upRamCapBtn').onclick = () => { save.data -= save.ramGb * 25; save.ramGb += 8; logMsg("RAM Capacity Increased!"); updateUI(); };
+        document.getElementById('upRamGenBtn').onclick = () => { save.energy -= save.ddrGen * 15; save.ddrGen++; logMsg("Motherboard & DDR Gen Upgraded!"); updateUI(); };
+        document.getElementById('upStorageBtn').onclick = () => { save.energy -= (save.storageIdx + 1) * 20; save.storageIdx++; logMsg("Storage Drive Upgraded!"); updateUI(); };
 
-        // Game Loop (Auto-mine)
-        setInterval(() => {
-            save.data += calculateHashrate() / 10; // Runs 10x a second for smoothness
-            updateUI();
-        }, 100);
+        setInterval(() => { save.data += calculateHashrate() / 10; updateUI(); }, 100);
 
         updateUI();
     </script>
