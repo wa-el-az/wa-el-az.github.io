@@ -38,5 +38,25 @@
       "lastTime": 1773342574792,
       "secretFound": false
     }
+  },
+  "Gg": {
+    "score": 0,
+    "pass": "gg1",
+    "mypc": {
+      "data": 0,
+      "cache": 0,
+      "energy": 100,
+      "lastLogin": "Fri Mar 13 2026",
+      "cpuIdx": 0,
+      "gpuIdx": 0,
+      "ramGb": 2,
+      "ddrGen": 2,
+      "storageIdx": 0,
+      "coolerIdx": 0,
+      "psuIdx": 0,
+      "netIdx": 0,
+      "lastTime": 1773344162843,
+      "secretFound": false
+    }
   }
 }
