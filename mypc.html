@@ -8,38 +8,17 @@
     <link rel="stylesheet" href="css/style.css" />
     <style>
         body { padding: 80px 3vw 40px; display: flex; justify-content: center; min-height: 100vh; overflow-x: hidden; }
-        
-        .terminal-wrap { 
-            display: flex; flex-direction: row; gap: 25px; width: 100%; max-width: 1400px; 
-            position: relative; z-index: 10; align-items: flex-start;
-        }
-        
-        .terminal { 
-            flex: 1; background: #050505; border: 1px solid #333; border-radius: 12px; padding: 25px; 
-            font-family: 'Courier New', Courier, monospace; box-shadow: 0 10px 40px rgba(0,0,0,0.8); 
-            height: 85vh; overflow-y: auto; color: #4ade80; 
-        }
-        
-        .sidebar { 
-            width: 320px; display: flex; flex-direction: column; gap: 15px; flex-shrink: 0;
-            max-height: 85vh; overflow-y: auto; padding-right: 5px;
-        }
+        .terminal-wrap { display: flex; flex-direction: row; gap: 25px; width: 100%; max-width: 1400px; position: relative; z-index: 10; align-items: flex-start; }
+        .terminal { flex: 1; background: #050505; border: 1px solid #333; border-radius: 12px; padding: 25px; font-family: 'Courier New', Courier, monospace; box-shadow: 0 10px 40px rgba(0,0,0,0.8); height: 85vh; overflow-y: auto; color: #4ade80; }
+        .sidebar { width: 320px; display: flex; flex-direction: column; gap: 15px; flex-shrink: 0; max-height: 85vh; overflow-y: auto; padding-right: 5px; }
         .sidebar::-webkit-scrollbar { width: 6px; }
         .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
-
-        @media (max-width: 950px) { 
-            .terminal-wrap { flex-direction: column; } 
-            .sidebar { width: 100%; max-height: none; overflow-y: visible; }
-            .terminal { height: 50vh; width: 100%; } 
-        }
-
+        @media (max-width: 950px) { .terminal-wrap { flex-direction: column; } .sidebar { width: 100%; max-height: none; overflow-y: visible; } .terminal { height: 50vh; width: 100%; } }
         .terminal h2 { border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 0; color: #fff; font-family: 'Montserrat', sans-serif; display: flex; justify-content: space-between; align-items: center;}
-        
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 25px; }
         .stat-box { background: rgba(74, 222, 128, 0.08); border: 1px solid rgba(74, 222, 128, 0.3); padding: 12px; border-radius: 8px; text-align: center; }
         .stat-value { font-size: 20px; font-weight: bold; margin-top: 5px; color: #fff; }
         .warning-box { background: rgba(231, 76, 60, 0.1) !important; border-color: #e74c3c !important; }
-        
         .btn-term { background: transparent; border: 1px solid #4ade80; color: #4ade80; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.2s; font-family: monospace; font-size: 13px; margin-bottom: 8px; }
         .btn-term:hover:not(:disabled) { background: #4ade80; color: #000; }
         .btn-term:disabled { border-color: #333; color: #555; cursor: not-allowed; }
@@ -47,17 +26,13 @@
         .btn-energy:hover:not(:disabled) { background: #f1c40f; color: #000; }
         .btn-tea { border-color: #3498db; color: #3498db; }
         .btn-tea:hover:not(:disabled) { background: #3498db; color: #fff; }
-
         .hardware-list { margin-top: 20px; font-size: 13px; line-height: 1.6; }
         .hardware-item { display: flex; justify-content: space-between; border-bottom: 1px dashed #333; padding: 8px 0; }
         .highlight { color: #fff; font-weight: bold; text-align: right; }
         .text-red { color: #ff6b6b !important; }
-
         .store-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 15px; }
         .store-card h3 { margin: 0 0 12px; font-size: 16px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; color: #fff; }
-
         .mine-btn { font-size: 18px; padding: 15px; background: rgba(74, 222, 128, 0.15); border: 2px dashed #4ade80; }
-
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.6); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
         .modal-card { width: min(420px, 90%); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); border-radius: 28px; padding: 32px 26px; text-align: center; box-shadow: 0 25px 70px rgba(0,0,0,.55); transform: translateY(20px); transition: transform 0.3s ease; }
@@ -73,17 +48,15 @@
     <div class="terminal-wrap">
         <div class="terminal" id="terminalLog">
             <h2>
-                <span id="termHeader">> root@wael-os:~/my_pc</span>
-                <span id="saveIndicator" style="color: #f1c40f; font-size: 12px; opacity: 0; transition: opacity 0.5s; font-family: monospace;">[Auto-Saving...]</span>
+                <span id="termHeader">> Connecting to Mainframe...</span>
+                <span id="saveIndicator" style="color: #4ade80; font-size: 12px; opacity: 0; transition: opacity 0.5s; font-family: monospace;">[Local Save]</span>
             </h2>
             <div class="stats-grid">
                 <div class="stat-box">Extracted Data<div class="stat-value" id="dataDisp">0</div></div>
                 <div class="stat-box">Local Cache<div class="stat-value" id="cacheDisp">0</div></div>
                 <div class="stat-box" style="border-color: #f1c40f; background: rgba(241, 196, 15, 0.1);">Daily Energy<div class="stat-value" id="energyDisp">0</div></div>
-                
                 <div class="stat-box">Raw Hashrate<div class="stat-value" id="hashDisp">0 /s</div></div>
                 <div class="stat-box">Upload Speed<div class="stat-value" id="netDisp">0 /s</div></div>
-                
                 <div class="stat-box" id="tempBox">System Temp<div class="stat-value" id="tempDisp">35°C</div></div>
                 <div class="stat-box" id="powerBox">Power Draw<div class="stat-value" id="powerDisp">0W / 300W</div></div>
                 <div class="stat-box" id="bottleBox">Storage Flow<div class="stat-value" id="bottleDisp">100%</div></div>
@@ -107,7 +80,7 @@
         <div class="sidebar">
             <div class="store-card" style="border-color: rgba(52, 152, 219, 0.4); background: rgba(52, 152, 219, 0.05);">
                 <h3 style="color: #3498db; border-bottom-color: rgba(52, 152, 219, 0.2);">Cross-System Link</h3>
-                <p style="font-size: 12px; color: #aaa; margin-top: 0; margin-bottom: 10px;">Linked Tea Balance: <strong id="teaDispStore" style="color:#fff;">0</strong></p>
+                <p style="font-size: 12px; color: #aaa; margin-top: 0; margin-bottom: 10px;">Cloud Tea Balance: <strong id="teaDispStore" style="color:#fff;">0</strong></p>
                 <button class="btn-term btn-tea" id="convertTeaBtn">Convert 1,000 Tea ➔ 50 Energy</button>
             </div>
 
@@ -135,10 +108,12 @@
 
     <div class="modal-overlay" id="loginModal" style="z-index: 10001;">
         <div class="modal-card">
-            <h2 class="modal-title">System Registration</h2>
-            <p class="modal-text">Register your username. This will link your Wael OS profile and import your Tea Clicker progress automatically.</p>
-            <input type="text" id="usernameInput" class="input" placeholder="e.g. WaelHackz" style="width: 100%; margin-bottom: 20px; box-sizing: border-box;" autocomplete="off" />
-            <button class="btn" id="loginBtn">Initialize Terminal</button>
+            <h2 class="modal-title">Cloud Terminal Login</h2>
+            <p class="modal-text">Enter your Wael OS credentials to sync with the Global Database.</p>
+            <input type="text" id="usernameInput" class="input" placeholder="Username" autocomplete="off" />
+            <input type="password" id="passwordInput" class="input" placeholder="Password" />
+            <p id="loginMsg" style="font-size: 13px; font-weight: bold; margin-top: 0;"></p>
+            <button class="btn" id="loginBtn">Authenticate</button>
         </div>
     </div>
 
@@ -154,78 +129,107 @@
     <script src="js/achievements.js"></script>
     <script>
         // --- HARDWARE DATABASES ---
-        const storageTiers = [
-            { name: "Floppy Disk", mult: 0.05 }, { name: "5400RPM HDD", mult: 0.2 }, { name: "7200RPM HDD", mult: 0.5 }, 
-            { name: "SATA SSD", mult: 0.8 }, { name: "M.2 NVMe Gen1", mult: 1.0 }, { name: "M.2 NVMe Gen2", mult: 1.5 }, 
-            { name: "M.2 NVMe Gen3", mult: 2.5 }, { name: "M.2 NVMe Gen4", mult: 5.0 }, { name: "M.2 NVMe Gen5", mult: 10.0 }
-        ];
+        const storageTiers = [{ name: "Floppy Disk", mult: 0.05 }, { name: "5400RPM HDD", mult: 0.2 }, { name: "7200RPM HDD", mult: 0.5 }, { name: "SATA SSD", mult: 0.8 }, { name: "M.2 NVMe Gen1", mult: 1.0 }, { name: "M.2 NVMe Gen2", mult: 1.5 }, { name: "M.2 NVMe Gen3", mult: 2.5 }, { name: "M.2 NVMe Gen4", mult: 5.0 }, { name: "M.2 NVMe Gen5", mult: 10.0 }];
+        const coolers = [{ name: "Intel/AMD Stock Cooler", capacity: 50, cost: 0 }, { name: "Cheap Tower Air Cooler", capacity: 80, cost: 500 }, { name: "Premium Dual-Tower Cooler", capacity: 150, cost: 2500 }, { name: "120mm AIO Liquid", capacity: 200, cost: 10000 }, { name: "240mm AIO Liquid", capacity: 300, cost: 50000 }, { name: "360mm AIO Liquid", capacity: 450, cost: 150000 }, { name: "Custom Hardtube Water Loop", capacity: 700, cost: 500000 }, { name: "Sub-Zero Chiller", capacity: 1200, cost: 2000000 }, { name: "Liquid Nitrogen (LN2) Pot", capacity: 3000, cost: 10000000 }];
+        const psus = [{ name: "Generic 300W", watts: 300, cost: 0 }, { name: "450W 80+ White", watts: 450, cost: 200 }, { name: "600W 80+ Bronze", watts: 600, cost: 1000 }, { name: "750W 80+ Gold", watts: 750, cost: 5000 }, { name: "1000W 80+ Platinum", watts: 1000, cost: 20000 }, { name: "1200W 80+ Titanium", watts: 1200, cost: 80000 }, { name: "1600W 80+ Titanium", watts: 1600, cost: 300000 }, { name: "Dual 2000W Server PSUs", watts: 4000, cost: 1500000 }, { name: "Industrial Power Station", watts: 10000, cost: 10000000 }];
+        const networks = [{ name: "56k Dial-Up", speed: 5 }, { name: "ADSL Connection", speed: 50 }, { name: "Basic Broadband", speed: 250 }, { name: "Gigabit Fiber", speed: 1000 }, { name: "10-Gigabit Fiber Link", speed: 5000 }, { name: "Direct Satellite Uplink", speed: 25000 }, { name: "Dark Web Backbone Node", speed: 100000 }, { name: "Quantum Entanglement Link", speed: 1000000 }];
 
-        const coolers = [
-            { name: "Intel/AMD Stock Cooler", capacity: 50, cost: 0 }, { name: "Cheap Tower Air Cooler", capacity: 80, cost: 500 },
-            { name: "Premium Dual-Tower Cooler", capacity: 150, cost: 2500 }, { name: "120mm AIO Liquid", capacity: 200, cost: 10000 },
-            { name: "240mm AIO Liquid", capacity: 300, cost: 50000 }, { name: "360mm AIO Liquid", capacity: 450, cost: 150000 },
-            { name: "Custom Hardtube Water Loop", capacity: 700, cost: 500000 }, { name: "Sub-Zero Chiller", capacity: 1200, cost: 2000000 },
-            { name: "Liquid Nitrogen (LN2) Pot", capacity: 3000, cost: 10000000 }
-        ];
-
-        const psus = [
-            { name: "Generic 300W", watts: 300, cost: 0 }, { name: "450W 80+ White", watts: 450, cost: 200 },
-            { name: "600W 80+ Bronze", watts: 600, cost: 1000 }, { name: "750W 80+ Gold", watts: 750, cost: 5000 },
-            { name: "1000W 80+ Platinum", watts: 1000, cost: 20000 }, { name: "1200W 80+ Titanium", watts: 1200, cost: 80000 },
-            { name: "1600W 80+ Titanium", watts: 1600, cost: 300000 }, { name: "Dual 2000W Server PSUs", watts: 4000, cost: 1500000 },
-            { name: "Industrial Power Station", watts: 10000, cost: 10000000 }
-        ];
-
-        const networks = [
-            { name: "56k Dial-Up", speed: 5 }, { name: "ADSL Connection", speed: 50 },
-            { name: "Basic Broadband", speed: 250 }, { name: "Gigabit Fiber", speed: 1000 },
-            { name: "10-Gigabit Fiber Link", speed: 5000 }, { name: "Direct Satellite Uplink", speed: 25000 },
-            { name: "Dark Web Backbone Node", speed: 100000 }, { name: "Quantum Entanglement Link", speed: 1000000 }
-        ];
-
-        const cpus = [];
-        const cpuPrefixes = ["Intel Core i3", "AMD Ryzen 3", "Intel Core i5", "AMD Ryzen 5", "Intel Core i7", "AMD Ryzen 7", "Intel Core i9", "AMD Ryzen 9", "Intel Xeon", "AMD Threadripper"];
-        for(let i=0; i<99; i++) { 
-            cpus.push({ name: `${cpuPrefixes[Math.floor(i/10)]} Gen ${i%10 + 1}`, power: Math.floor(Math.pow(1.15, i) * 2), cost: Math.floor(Math.pow(1.2, i) * 100), watts: 35 + Math.floor(i * 3) }); 
-        }
+        const cpus = []; const cpuPrefixes = ["Intel Core i3", "AMD Ryzen 3", "Intel Core i5", "AMD Ryzen 5", "Intel Core i7", "AMD Ryzen 7", "Intel Core i9", "AMD Ryzen 9", "Intel Xeon", "AMD Threadripper"];
+        for(let i=0; i<99; i++) { cpus.push({ name: `${cpuPrefixes[Math.floor(i/10)]} Gen ${i%10 + 1}`, power: Math.floor(Math.pow(1.15, i) * 2), cost: Math.floor(Math.pow(1.2, i) * 100), watts: 35 + Math.floor(i * 3) }); }
         cpus.push({ name: "AMD Threadripper PRO 9995WX", power: 5000000, cost: 100000000, watts: 500 });
 
-        const gpuNames = ["GTX 750", "GTX 760", "GTX 770", "GTX 780 Ti", "GTX 950", "GTX 960", "GTX 970", "GTX 980 Ti", "GTX 1050", "GTX 1050 Ti", "GTX 1060 3GB", "GTX 1060 6GB", "GTX 1070", "GTX 1070 Ti", "GTX 1080", "GTX 1080 Ti", "TITAN X", "RTX 2060", "RTX 2060 Super", "RTX 2070", "RTX 2070 Super", "RTX 2080", "RTX 2080 Super", "RTX 2080 Ti", "TITAN RTX", "RTX 3050", "RTX 3060", "RTX 3060 Ti", "RTX 3070", "RTX 3070 Ti", "RTX 3080", "RTX 3080 Ti", "RTX 3090", "RTX 3090 Ti", "RTX 4060", "RTX 4060 Ti", "RTX 4070", "RTX 4070 Super", "RTX 4070 Ti", "RTX 4070 Ti Super", "RTX 4080", "RTX 4080 Super", "RTX 4090", "RTX 5070", "RTX 5070 Ti", "RTX 5080", "RTX 5090", "RTX 6000 Ada Generation", "RTX 6000 Pro Blackwell"];
-        const gpus = [];
-        gpuNames.forEach((name, i) => { gpus.push({ name: name, power: Math.floor(Math.pow(1.25, i) * 5), cost: Math.floor(Math.pow(1.3, i) * 250), watts: 50 + Math.floor(i * 12) }); });
+        const gpuNames = ["GTX 750", "GTX 760", "GTX 770", "GTX 780 Ti", "GTX 950", "GTX 960", "GTX 970", "GTX 980 Ti", "GTX 1050", "GTX 1050 Ti", "GTX 1060 3GB", "GTX 1060 6GB", "GTX 1070", "GTX 1070 Ti", "GTX 1080", "GTX 1080 Ti", "TITAN X", "RTX 2060", "RTX 2060 Super", "RTX 2070", "RTX 2070 Super", "RTX 2080", "RTX 2080 Super", "RTX 2080 Ti", "TITAN RTX", "RTX 3050", "RTX 3060", "RTX 3060 Ti", "RTX 3070", "RTX 3070 Ti", "RTX 3080", "RTX 3080 Ti", "RTX 3090", "RTX 3090 Ti", "RTX 4060", "RTX 4060 Ti", "RTX 4070", "RTX 4070 Super", "RTX 4070 Ti", "RTX 4070 Ti Super", "RTX 4080", "RTX 4080 Super", "RTX 4090", "RTX 5070", "RTX 5070 Ti", "RTX 5080", "RTX 5090", "RTX 6000 Ada Gen", "RTX 6000 Pro Blackwell"];
+        const gpus = []; gpuNames.forEach((name, i) => { gpus.push({ name: name, power: Math.floor(Math.pow(1.25, i) * 5), cost: Math.floor(Math.pow(1.3, i) * 250), watts: 50 + Math.floor(i * 12) }); });
 
-        // --- GAME LOGIC ---
+        // --- DATABASE & STATE ---
+        let globalLB = {};
+        let fileSha = null;
+        let loggedInUser = null;
         let gameActive = false;
-        let save = JSON.parse(localStorage.getItem('mypc_save_v2')) || {
+
+        let save = {
             data: 0, cache: 0, energy: 0, lastLogin: "", 
             cpuIdx: 0, gpuIdx: 0, ramGb: 2, ddrGen: 2, storageIdx: 0, coolerIdx: 0, psuIdx: 0, netIdx: 0,
             lastTime: Date.now(), secretFound: false
         };
 
-        // LOGIN SYSTEM INITIALIZATION
-        let sessionUser = localStorage.getItem('wael_os_user');
-        if (!sessionUser) {
-            document.getElementById('loginModal').classList.add('active');
-        } else {
-            startGame(sessionUser);
+        // 1. FETCH LEADERBOARD ON LOAD
+        async function fetchDB() {
+            try {
+                const res = await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/leaderboard.json`);
+                if (res.ok) {
+                    const data = await res.json();
+                    fileSha = data.sha;
+                    globalLB = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+                    
+                    // Legacy fix for tea game format
+                    for (let key in globalLB) {
+                        if (typeof globalLB[key] === 'number') globalLB[key] = { score: globalLB[key], pass: "1234" };
+                    }
+                    checkAutoLogin();
+                } else throw new Error();
+            } catch (e) {
+                document.getElementById('termHeader').innerText = "> DATABASE CONNECTION FAILED. LOCAL MODE ONLY.";
+                checkAutoLogin(true); // Fallback to local
+            }
+        }
+        fetchDB();
+
+        function checkAutoLogin(offline = false) {
+            let savedUser = localStorage.getItem('mypc_user');
+            let savedPass = localStorage.getItem('mypc_pass');
+
+            if (savedUser && savedPass && !offline) {
+                // Verify against DB
+                if (globalLB[savedUser] && globalLB[savedUser].pass === savedPass) {
+                    if(globalLB[savedUser].mypc) save = globalLB[savedUser].mypc;
+                    startGame(savedUser);
+                } else {
+                    document.getElementById('loginModal').classList.add('active');
+                }
+            } else if (offline) {
+                save = JSON.parse(localStorage.getItem('mypc_local_backup')) || save;
+                startGame("offline_user");
+            } else {
+                document.getElementById('loginModal').classList.add('active');
+            }
         }
 
         document.getElementById('loginBtn').onclick = () => {
-            let input = document.getElementById('usernameInput').value.trim();
-            if (input) {
-                localStorage.setItem('wael_os_user', input);
+            const user = document.getElementById('usernameInput').value.trim();
+            const pass = document.getElementById('passwordInput').value.trim();
+            const msg = document.getElementById('loginMsg');
+            
+            if (!user || !pass) { msg.style.color = "#ff6b6b"; msg.innerText = "Please enter both fields!"; return; }
+
+            if (globalLB[user]) {
+                if (globalLB[user].pass === pass) {
+                    localStorage.setItem('mypc_user', user);
+                    localStorage.setItem('mypc_pass', pass);
+                    if(globalLB[user].mypc) save = globalLB[user].mypc;
+                    document.getElementById('loginModal').classList.remove('active');
+                    startGame(user);
+                } else {
+                    msg.style.color = "#ff6b6b"; msg.innerText = "✗ Incorrect password!";
+                }
+            } else {
+                // New Account Creation
+                globalLB[user] = { score: 0, pass: pass, mypc: save };
+                localStorage.setItem('mypc_user', user);
+                localStorage.setItem('mypc_pass', pass);
                 document.getElementById('loginModal').classList.remove('active');
-                startGame(input);
+                startGame(user);
+                cloudSync(); // Push new user to DB
             }
         };
 
         function startGame(username) {
+            loggedInUser = username;
             document.getElementById('termHeader').innerText = `> ${username}@wael-os:~/my_pc`;
             
             const today = new Date().toDateString();
             if (save.lastLogin !== today) {
-                save.energy += 100;
-                save.lastLogin = today;
+                save.energy += 100; save.lastLogin = today;
                 logMsg("DAILY LOGIN: +100 Energy Acquired.");
             }
 
@@ -234,19 +238,17 @@
                 let offlineHash = calculateHashrate();
                 let generated = offlineHash * secondsOffline;
                 save.cache += generated;
-                
                 let networkCapacity = networks[save.netIdx].speed * secondsOffline;
                 let extracted = Math.min(save.cache, networkCapacity);
-                save.cache -= extracted;
-                save.data += extracted;
-
-                logMsg(`OFFLINE REPORT: Generated ${Math.floor(generated).toLocaleString()} data. Extracted ${Math.floor(extracted).toLocaleString()} to balance.`);
+                save.cache -= extracted; save.data += extracted;
+                logMsg(`OFFLINE REPORT: Extracted ${Math.floor(extracted).toLocaleString()} to balance.`);
             }
 
             gameActive = true;
             updateUI();
         }
 
+        // --- CORE GAME MECHANICS ---
         function getTemp() {
             let heatGeneration = cpus[save.cpuIdx].watts + gpus[save.gpuIdx].watts;
             let coolingPower = coolers[save.coolerIdx].capacity;
@@ -269,8 +271,7 @@
         function updateUI() {
             if(!gameActive) return;
 
-            // Fetch Tea Data from other game
-            let currentTea = parseInt(localStorage.getItem('tea_local_score')) || 0;
+            let currentTea = (globalLB[loggedInUser] && globalLB[loggedInUser].score) ? globalLB[loggedInUser].score : 0;
             document.getElementById('teaDispStore').innerText = currentTea.toLocaleString();
 
             let currentTemp = getTemp();
@@ -286,7 +287,6 @@
             
             document.getElementById('tempDisp').innerText = Math.floor(currentTemp) + "°C";
             document.getElementById('tempBox').className = isThrottling ? "stat-box warning-box" : "stat-box";
-            if(isThrottling) document.getElementById('tempDisp').innerText += " (THROTTLED)";
 
             document.getElementById('powerDisp').innerText = `${currentWatts}W / ${maxWatts}W`;
             document.getElementById('powerBox').className = (currentWatts > maxWatts * 0.9) ? "stat-box warning-box" : "stat-box";
@@ -356,14 +356,16 @@
 
         // TEA CROSS-GAME INTEGRATION
         document.getElementById('convertTeaBtn').onclick = () => {
-            let teaScore = parseInt(localStorage.getItem('tea_local_score')) || 0;
+            if (!globalLB[loggedInUser]) return;
+            let teaScore = globalLB[loggedInUser].score || 0;
             if (teaScore >= 1000) {
-                localStorage.setItem('tea_local_score', teaScore - 1000); // Deduct from Tea game
-                save.energy += 50; // Add to PC Game
-                logMsg("<span style='color:#3498db'>INTEGRATION: 1,000 Tea Clicks converted to 50 Energy.</span>");
+                globalLB[loggedInUser].score -= 1000;
+                save.energy += 50;
+                logMsg("<span style='color:#3498db'>INTEGRATION: 1,000 Cloud Tea converted to 50 Energy.</span>");
                 updateUI();
+                cloudSync(); // Force save after transaction
             } else {
-                logMsg("<span class='text-red'>ERROR: Insufficient Tea Balance. Go play the Tea Clicker!</span>");
+                logMsg("<span class='text-red'>ERROR: Insufficient Cloud Tea Balance. Go play the Tea Clicker!</span>");
             }
         };
 
@@ -386,15 +388,54 @@
             updateUI(); 
         }, 100);
 
-        // --- EXACT 10 SECOND AUTO-SAVE ---
+        // --- CLOUD SYNC & AUTO-SAVE (10 SECONDS) ---
+        async function cloudSync() {
+            if (!loggedInUser || !CONFIG.GITHUB_TOKEN) return;
+            
+            globalLB[loggedInUser].mypc = save;
+
+            const payload = {
+                message: `Auto-save My PC for ${loggedInUser}`,
+                content: btoa(unescape(encodeURIComponent(JSON.stringify(globalLB, null, 2))))
+            };
+            if (fileSha) payload.sha = fileSha;
+
+            try {
+                const res = await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/leaderboard.json`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${CONFIG.GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    fileSha = data.content.sha;
+                    
+                    let indicator = document.getElementById('saveIndicator');
+                    indicator.innerText = "[Cloud Sync OK]";
+                    indicator.style.color = "#4ade80";
+                    setTimeout(() => { indicator.style.opacity = 0; }, 1500);
+                }
+            } catch (e) {
+                console.error("Cloud Sync Failed", e);
+                let indicator = document.getElementById('saveIndicator');
+                indicator.innerText = "[Sync Failed - Local Saved]";
+                indicator.style.color = "#ff6b6b";
+                setTimeout(() => { indicator.style.opacity = 0; }, 2000);
+            }
+        }
+
         setInterval(() => {
             if (!gameActive) return;
+            
             save.lastTime = Date.now();
-            localStorage.setItem('mypc_save_v2', JSON.stringify(save));
+            localStorage.setItem('mypc_local_backup', JSON.stringify(save));
             
             let indicator = document.getElementById('saveIndicator');
+            indicator.innerText = "[Syncing...]";
+            indicator.style.color = "#f1c40f";
             indicator.style.opacity = 1;
-            setTimeout(() => { indicator.style.opacity = 0; }, 1500); // Fades out after 1.5s
+            
+            cloudSync();
         }, 10000);
 
     </script>
