@@ -1,79 +1,79 @@
 /* 1. Import Inter for non-Apple devices to clone the San Francisco look */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-/* 2. Global Variables - Keeping your Wael OS vibe */
 :root {
-    --moroccan-red: #c1272d;
-    --moroccan-green: #006233;
-    --bg-dark: #121212;
-    --text-main: #f5f5f7; /* Apple's signature off-white */
-    --glass-bg: rgba(255, 255, 255, 0.05); /* For that modern OS frosted glass look */
-    --glass-border: rgba(255, 255, 255, 0.1);
+  /* Original Variables */
+  --text: #f5f7fa;
+  --muted: rgba(255, 255, 255, .78);
+  --radius: 16px;
+  --terminal-green: #4ade80;
+  
+  /* Wael OS Custom Variables */
+  --moroccan-red: #c1272d;
+  --moroccan-green: #006233;
+  --bg-dark: #121212;
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
 }
 
-/* 3. Universal Reset */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
-/* 4. The Magic Body Tag */
 body {
-    /* The Apple Font & Emoji Stack */
-    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    
-    background-color: var(--bg-dark);
-    color: var(--text-main);
-    line-height: 1.5;
-    
-    /* These two lines force the text to render sharply, mimicking macOS/iOS */
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    
-    min-height: 100vh;
+  margin: 0;
+  min-height: 100vh;
+  
+  /* The Magic Apple Font & Emoji Stack */
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  
+  /* macOS crisp text rendering */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  
+  color: var(--text);
+  background: #0b0b0b;
 }
 
-/* 5. Typography Tweaks (Apple style) */
-h1, h2, h3, h4, h5, h6 {
-    font-weight: 600;
-    letter-spacing: -0.02em; /* Apple pulls their title letters slightly tighter together */
+/* Restored Split Background */
+.bg-left, .bg-right { position: fixed; top: 0; bottom: 0; }
+.bg-left { left: 0; width: 58%; z-index: -2; background: linear-gradient(135deg,#052e21 0%,#063826 60%,#052b1f 100%); }
+.bg-right { right: 0; width: 52%; z-index: -1; background: linear-gradient(135deg,#4a0707 0%,#5b0b0b 60%,#360606 100%); }
+.bg-right::before { content: ""; position: absolute; left: -140px; top: -10%; width: 280px; height: 120%; background: inherit; transform: skewX(-14deg); box-shadow: -20px 0 50px rgba(0,0,0,.35); }
+
+/* Restored Navigation Button */
+.navBtn { position: absolute; top: 20px; right: 20px; padding: 12px 22px; z-index: 20; border-radius: 999px; background: rgba(255, 255, 255, .12); border: 1px solid rgba(255, 255, 255, .25); backdrop-filter: blur(10px); color: #fff; font-weight: 700; text-decoration: none; transition: 0.2s; }
+.navBtn:hover { background: rgba(255, 255, 255, .2); transform: translateY(-1px); }
+
+/* Restored Card Layout */
+.card { background: rgba(255, 255, 255, .08); border: 1px solid rgba(255, 255, 255, .15); border-radius: 28px; backdrop-filter: blur(14px); box-shadow: 0 25px 70px rgba(0,0,0,.35); padding: 35px 30px; }
+
+/* Restored Inputs */
+input, select, textarea { width: 100%; padding: 14px; border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(255, 255, 255, .18); background: rgba(0, 0, 0, .18); color: #fff; outline: none; font-family: inherit; font-size: 16px; }
+
+/* Restored Buttons */
+.btn { padding: 14px 20px; border-radius: 12px; border: 0; background: #fff; color: #111; font-weight: 800; cursor: pointer; width: 100%; font-size: 16px; transition: 0.2s; font-family: inherit; }
+.btn:hover { background: #e0e0e0; transform: translateY(-2px); }
+
+.btn-danger { background: #ff4757; color: white; padding: 6px 12px; border-radius: 8px; border: 0; cursor: pointer; font-weight: bold; transition: 0.2s; font-family: inherit; }
+
+/* Apple-style Typography Tweaks */
+h1 { margin: 0 0 5px; font-size: 32px; font-weight: 600; letter-spacing: -0.02em; }
+p.sub { color: var(--muted); margin: 0 0 25px; font-size: 15px; }
+
+/* FIX FOR ACHIEVEMENT CLICKS - RESTORED */
+.heroImg img, .frame img {
+  position: relative;
+  z-index: 99;
+  pointer-events: auto !important;
 }
 
-/* 6. Example: Applying your Moroccan gradient to text */
-.moroccan-gradient-text {
-    background: linear-gradient(90deg, var(--moroccan-red), var(--moroccan-green));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+.heroImg, .frame {
+  pointer-events: none;
 }
 
-/* 7. Wael OS Standard Buttons */
-button {
-    font-family: inherit; /* Forces buttons to use the Apple stack too */
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    color: var(--text-main);
-    padding: 10px 20px;
-    border-radius: 8px; /* iOS-style slight rounding */
-    font-size: 1rem;
-    font-weight: 500;
-    cursor: pointer;
-    backdrop-filter: blur(10px); /* Glassmorphism blur */
-    transition: all 0.2s ease;
-}
-
-button:hover {
-    background: rgba(255, 255, 255, 0.1);
-    transform: scale(1.02);
-}
-
-/* 8. Links */
-a {
-    color: var(--moroccan-green);
-    text-decoration: none;
-    transition: color 0.2s ease;
-}
-
-a:hover {
-    color: var(--moroccan-red);
+/* Mobile Responsiveness - RESTORED */
+@media (max-width: 860px) {
+  .bg-right::before { display: none; }
+  .bg-left, .bg-right { position: fixed; height: 50vh; width: 100%; }
+  .bg-left { top: 0; left: 0; }
+  .bg-right { bottom: 0; top: auto; right: 0; }
 }
