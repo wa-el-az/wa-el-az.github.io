@@ -43,9 +43,9 @@
     "score": 0,
     "pass": "gg1",
     "mypc": {
-      "data": 156.9432000000004,
+      "data": 166.28880000000112,
       "cache": 0,
-      "energy": 100,
+      "energy": 85,
       "lastLogin": "Fri Mar 13 2026",
       "cpuIdx": 2,
       "gpuIdx": 1,
@@ -54,8 +54,8 @@
       "storageIdx": 0,
       "coolerIdx": 0,
       "psuIdx": 0,
-      "netIdx": 0,
-      "lastTime": 1773345547429,
+      "netIdx": 1,
+      "lastTime": 1773345557425,
       "secretFound": false
     }
   }
