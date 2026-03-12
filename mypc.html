@@ -9,68 +9,54 @@
     <style>
         body { padding: 80px 3vw 40px; display: flex; justify-content: center; min-height: 100vh; overflow-x: hidden; }
         
-        /* WIDER FLEXBOX LAYOUT */
         .terminal-wrap { 
-            display: flex; 
-            flex-direction: row; 
-            gap: 25px; 
-            width: 100%; 
-            max-width: 1400px; /* Increased from 1200px */
-            position: relative; 
-            z-index: 10; 
-            align-items: flex-start;
+            display: flex; flex-direction: row; gap: 25px; width: 100%; max-width: 1400px; 
+            position: relative; z-index: 10; align-items: flex-start;
         }
         
         .terminal { 
-            flex: 1; 
-            background: #050505; 
-            border: 1px solid #333; 
-            border-radius: 12px; 
-            padding: 25px; 
-            font-family: 'Courier New', Courier, monospace; 
-            box-shadow: 0 10px 40px rgba(0,0,0,0.8); 
-            height: 85vh; 
-            overflow-y: auto; 
-            color: #4ade80; 
+            flex: 1; background: #050505; border: 1px solid #333; border-radius: 12px; padding: 25px; 
+            font-family: 'Courier New', Courier, monospace; box-shadow: 0 10px 40px rgba(0,0,0,0.8); 
+            height: 85vh; overflow-y: auto; color: #4ade80; 
         }
         
+        /* Added custom scrollbar and max-height so the store scrolls independently if it gets too tall */
         .sidebar { 
-            width: 320px; 
-            display: flex; 
-            flex-direction: column; 
-            gap: 15px; 
-            flex-shrink: 0;
+            width: 320px; display: flex; flex-direction: column; gap: 15px; flex-shrink: 0;
+            max-height: 85vh; overflow-y: auto; padding-right: 5px;
         }
+        .sidebar::-webkit-scrollbar { width: 6px; }
+        .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
 
         @media (max-width: 950px) { 
             .terminal-wrap { flex-direction: column; } 
-            .sidebar { width: 100%; }
+            .sidebar { width: 100%; max-height: none; overflow-y: visible; }
             .terminal { height: 50vh; width: 100%; } 
         }
 
         .terminal h2 { border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 0; color: #fff; font-family: 'Montserrat', sans-serif; }
         
-        /* Auto-fitting grid for wider screens */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px; }
-        .stat-box { background: rgba(74, 222, 128, 0.1); border: 1px solid rgba(74, 222, 128, 0.3); padding: 15px; border-radius: 8px; text-align: center; }
-        .stat-value { font-size: 24px; font-weight: bold; margin-top: 5px; color: #fff; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 25px; }
+        .stat-box { background: rgba(74, 222, 128, 0.08); border: 1px solid rgba(74, 222, 128, 0.3); padding: 12px; border-radius: 8px; text-align: center; }
+        .stat-value { font-size: 20px; font-weight: bold; margin-top: 5px; color: #fff; }
+        .warning-box { background: rgba(231, 76, 60, 0.1) !important; border-color: #e74c3c !important; }
         
-        .btn-term { background: transparent; border: 1px solid #4ade80; color: #4ade80; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.2s; font-family: monospace; font-size: 14px; margin-bottom: 10px; }
+        .btn-term { background: transparent; border: 1px solid #4ade80; color: #4ade80; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.2s; font-family: monospace; font-size: 13px; margin-bottom: 8px; }
         .btn-term:hover:not(:disabled) { background: #4ade80; color: #000; }
         .btn-term:disabled { border-color: #333; color: #555; cursor: not-allowed; }
         .btn-energy { border-color: #f1c40f; color: #f1c40f; }
         .btn-energy:hover:not(:disabled) { background: #f1c40f; color: #000; }
 
-        .hardware-list { margin-top: 20px; font-size: 14px; line-height: 1.6; }
-        .hardware-item { display: flex; justify-content: space-between; border-bottom: 1px dashed #333; padding: 10px 0; }
+        .hardware-list { margin-top: 20px; font-size: 13px; line-height: 1.6; }
+        .hardware-item { display: flex; justify-content: space-between; border-bottom: 1px dashed #333; padding: 8px 0; }
         .highlight { color: #fff; font-weight: bold; text-align: right; }
+        .text-red { color: #ff6b6b !important; }
 
-        .store-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 15px; backdrop-filter: blur(10px); }
-        .store-card h3 { margin: 0 0 15px; font-size: 18px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; color: #fff;}
+        .store-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 15px; }
+        .store-card h3 { margin: 0 0 12px; font-size: 16px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; color: #fff; }
 
-        .mine-btn { font-size: 20px; padding: 20px; background: rgba(74, 222, 128, 0.2); border: 2px dashed #4ade80; }
+        .mine-btn { font-size: 18px; padding: 15px; background: rgba(74, 222, 128, 0.15); border: 2px dashed #4ade80; }
 
-        /* THE MISSING MODAL CSS (Hides the popup by default) */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.6); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
         .modal-card { width: min(420px, 90%); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); border-radius: 28px; padding: 32px 26px; text-align: center; box-shadow: 0 25px 70px rgba(0,0,0,.55); transform: translateY(20px); transition: transform 0.3s ease; }
@@ -87,41 +73,52 @@
         <div class="terminal" id="terminalLog">
             <h2>> root@wael-os:~/my_pc</h2>
             <div class="stats-grid">
-                <div class="stat-box">Mined Data<div class="stat-value" id="dataDisp">0</div></div>
+                <div class="stat-box">Extracted Data<div class="stat-value" id="dataDisp">0</div></div>
+                <div class="stat-box">Local Cache<div class="stat-value" id="cacheDisp">0</div></div>
                 <div class="stat-box" style="border-color: #f1c40f; background: rgba(241, 196, 15, 0.1);">Daily Energy<div class="stat-value" id="energyDisp">0</div></div>
-                <div class="stat-box">Mining Hashrate<div class="stat-value" id="hashDisp">0 /sec</div></div>
-                <div class="stat-box" style="border-color: #e74c3c; background: rgba(231, 76, 60, 0.1);">Storage Bottleneck<div class="stat-value" id="bottleDisp">100%</div></div>
+                
+                <div class="stat-box">Raw Hashrate<div class="stat-value" id="hashDisp">0 /s</div></div>
+                <div class="stat-box">Upload Speed<div class="stat-value" id="netDisp">0 /s</div></div>
+                
+                <div class="stat-box" id="tempBox">System Temp<div class="stat-value" id="tempDisp">35°C</div></div>
+                <div class="stat-box" id="powerBox">Power Draw<div class="stat-value" id="powerDisp">0W / 300W</div></div>
+                <div class="stat-box" id="bottleBox">Storage Flow<div class="stat-value" id="bottleDisp">100%</div></div>
             </div>
 
             <button class="btn-term mine-btn" id="mineBtn">>> RUN MANUAL_MINE.EXE <<</button>
 
             <div class="hardware-list">
-                <div class="hardware-item"><span>CPU:</span> <span class="highlight" id="cpuDisp">Intel Celeron 400MHz</span></div>
-                <div class="hardware-item"><span>GPU:</span> <span class="highlight" id="gpuDisp">Integrated Graphics</span></div>
-                <div class="hardware-item"><span>RAM Capacity:</span> <span class="highlight" id="ramCapDisp">2 GB</span></div>
-                <div class="hardware-item"><span>RAM Type & Speed:</span> <span class="highlight" id="ramSpdDisp">DDR2 @ 800 MHz</span></div>
-                <div class="hardware-item"><span>Storage:</span> <span class="highlight" id="storageDisp">Floppy Disk (0.01x)</span></div>
+                <div class="hardware-item"><span>CPU:</span> <span class="highlight" id="cpuDisp"></span></div>
+                <div class="hardware-item"><span>GPU:</span> <span class="highlight" id="gpuDisp"></span></div>
+                <div class="hardware-item"><span>RAM Capacity & Type:</span> <span class="highlight" id="ramSpdDisp"></span></div>
+                <div class="hardware-item"><span>Cooling Solution:</span> <span class="highlight" id="coolerDisp"></span></div>
+                <div class="hardware-item"><span>Power Supply (PSU):</span> <span class="highlight" id="psuDisp"></span></div>
+                <div class="hardware-item"><span>Network Connection:</span> <span class="highlight" id="networkDisp"></span></div>
+                <div class="hardware-item"><span>Storage Drive:</span> <span class="highlight" id="storageDisp"></span></div>
             </div>
             
-            <p id="systemLog" style="color: #aaa; margin-top: 20px; font-size: 12px;"></p>
+            <p id="systemLog" style="color: #aaa; margin-top: 20px; font-size: 11px; font-family: monospace;"></p>
         </div>
 
         <div class="sidebar">
             <div class="store-card">
-                <h3>Core Upgrades</h3>
+                <h3>Core Hardware</h3>
                 <button class="btn-term" id="upCpuBtn">Buy CPU Upgrade</button>
                 <button class="btn-term" id="upGpuBtn">Buy GPU Upgrade</button>
+                <button class="btn-term" id="upRamCapBtn">Add +8GB RAM</button>
             </div>
             
             <div class="store-card">
-                <h3>Memory (Infinite Scaling)</h3>
-                <button class="btn-term" id="upRamCapBtn">Add +8GB RAM</button>
-                <button class="btn-term btn-energy" id="upRamGenBtn">Upgrade DDR Gen</button>
+                <h3>Thermals & Power</h3>
+                <button class="btn-term" id="upCoolerBtn">Upgrade Cooler</button>
+                <button class="btn-term" id="upPsuBtn">Upgrade PSU</button>
             </div>
 
             <div class="store-card">
-                <h3>Storage (Bottleneck Removal)</h3>
+                <h3>Infrastructure (Requires Energy)</h3>
+                <button class="btn-term btn-energy" id="upNetBtn">Upgrade Network</button>
                 <button class="btn-term btn-energy" id="upStorageBtn">Upgrade Storage</button>
+                <button class="btn-term btn-energy" id="upRamGenBtn">Upgrade DDR Gen</button>
             </div>
         </div>
     </div>
@@ -137,24 +134,73 @@
     <script src="js/config.js"></script>
     <script src="js/achievements.js"></script>
     <script>
+        // --- HARDWARE DATABASES ---
         const storageTiers = [
             { name: "Floppy Disk", mult: 0.05 }, { name: "5400RPM HDD", mult: 0.2 }, { name: "7200RPM HDD", mult: 0.5 }, 
             { name: "SATA SSD", mult: 0.8 }, { name: "M.2 NVMe Gen1", mult: 1.0 }, { name: "M.2 NVMe Gen2", mult: 1.5 }, 
             { name: "M.2 NVMe Gen3", mult: 2.5 }, { name: "M.2 NVMe Gen4", mult: 5.0 }, { name: "M.2 NVMe Gen5", mult: 10.0 }
         ];
 
+        const coolers = [
+            { name: "Intel/AMD Stock Cooler", capacity: 50, cost: 0 }, { name: "Cheap Tower Air Cooler", capacity: 80, cost: 500 },
+            { name: "Premium Dual-Tower Cooler", capacity: 150, cost: 2500 }, { name: "120mm AIO Liquid", capacity: 200, cost: 10000 },
+            { name: "240mm AIO Liquid", capacity: 300, cost: 50000 }, { name: "360mm AIO Liquid", capacity: 450, cost: 150000 },
+            { name: "Custom Hardtube Water Loop", capacity: 700, cost: 500000 }, { name: "Sub-Zero Chiller", capacity: 1200, cost: 2000000 },
+            { name: "Liquid Nitrogen (LN2) Pot", capacity: 3000, cost: 10000000 }
+        ];
+
+        const psus = [
+            { name: "Generic 300W", watts: 300, cost: 0 }, { name: "450W 80+ White", watts: 450, cost: 200 },
+            { name: "600W 80+ Bronze", watts: 600, cost: 1000 }, { name: "750W 80+ Gold", watts: 750, cost: 5000 },
+            { name: "1000W 80+ Platinum", watts: 1000, cost: 20000 }, { name: "1200W 80+ Titanium", watts: 1200, cost: 80000 },
+            { name: "1600W 80+ Titanium", watts: 1600, cost: 300000 }, { name: "Dual 2000W Server PSUs", watts: 4000, cost: 1500000 },
+            { name: "Industrial Power Station", watts: 10000, cost: 10000000 }
+        ];
+
+        const networks = [
+            { name: "56k Dial-Up", speed: 5 }, { name: "ADSL Connection", speed: 50 },
+            { name: "Basic Broadband", speed: 250 }, { name: "Gigabit Fiber", speed: 1000 },
+            { name: "10-Gigabit Fiber Link", speed: 5000 }, { name: "Direct Satellite Uplink", speed: 25000 },
+            { name: "Dark Web Backbone Node", speed: 100000 }, { name: "Quantum Entanglement Link", speed: 1000000 }
+        ];
+
+        // 100 CPUs
         const cpus = [];
         const cpuPrefixes = ["Intel Core i3", "AMD Ryzen 3", "Intel Core i5", "AMD Ryzen 5", "Intel Core i7", "AMD Ryzen 7", "Intel Core i9", "AMD Ryzen 9", "Intel Xeon", "AMD Threadripper"];
-        for(let i=0; i<99; i++) { cpus.push({ name: `${cpuPrefixes[Math.floor(i/10)]} Gen ${i%10 + 1}`, power: Math.floor(Math.pow(1.15, i) * 2), cost: Math.floor(Math.pow(1.2, i) * 100) }); }
-        cpus.push({ name: "AMD Threadripper PRO 9995WX", power: 5000000, cost: 100000000 });
+        for(let i=0; i<99; i++) { 
+            cpus.push({ 
+                name: `${cpuPrefixes[Math.floor(i/10)]} Gen ${i%10 + 1}`, 
+                power: Math.floor(Math.pow(1.15, i) * 2), 
+                cost: Math.floor(Math.pow(1.2, i) * 100),
+                watts: 35 + Math.floor(i * 3)
+            }); 
+        }
+        cpus.push({ name: "AMD Threadripper PRO 9995WX", power: 5000000, cost: 100000000, watts: 500 });
 
+        // 50 REALISTIC GPUs
+        const gpuNames = [
+            "GTX 750", "GTX 760", "GTX 770", "GTX 780 Ti", "GTX 950", "GTX 960", "GTX 970", "GTX 980 Ti", 
+            "GTX 1050", "GTX 1050 Ti", "GTX 1060 3GB", "GTX 1060 6GB", "GTX 1070", "GTX 1070 Ti", "GTX 1080", "GTX 1080 Ti", "TITAN X", 
+            "RTX 2060", "RTX 2060 Super", "RTX 2070", "RTX 2070 Super", "RTX 2080", "RTX 2080 Super", "RTX 2080 Ti", "TITAN RTX", 
+            "RTX 3050", "RTX 3060", "RTX 3060 Ti", "RTX 3070", "RTX 3070 Ti", "RTX 3080", "RTX 3080 Ti", "RTX 3090", "RTX 3090 Ti", 
+            "RTX 4060", "RTX 4060 Ti", "RTX 4070", "RTX 4070 Super", "RTX 4070 Ti", "RTX 4070 Ti Super", "RTX 4080", "RTX 4080 Super", "RTX 4090", 
+            "RTX 5070", "RTX 5070 Ti", "RTX 5080", "RTX 5090", "RTX 6000 Ada Generation", "RTX 6000 Pro Blackwell"
+        ];
         const gpus = [];
-        const gpuPrefixes = ["GTX", "RX", "RTX", "Radeon Pro"];
-        for(let i=0; i<49; i++) { gpus.push({ name: `NVIDIA/AMD Tier ${i+1}`, power: Math.floor(Math.pow(1.2, i) * 5), cost: Math.floor(Math.pow(1.25, i) * 250) }); }
-        gpus.push({ name: "RTX 6000 Pro Blackwell", power: 10000000, cost: 500000000 });
+        gpuNames.forEach((name, i) => {
+            gpus.push({ 
+                name: name, 
+                power: Math.floor(Math.pow(1.25, i) * 5), 
+                cost: Math.floor(Math.pow(1.3, i) * 250),
+                watts: 50 + Math.floor(i * 12)
+            });
+        });
 
-        let save = JSON.parse(localStorage.getItem('mypc_save')) || {
-            data: 0, energy: 0, lastLogin: "", cpuIdx: 0, gpuIdx: 0, ramGb: 2, ddrGen: 2, storageIdx: 0, lastTime: Date.now(), secretFound: false
+        // --- GAME STATE ---
+        let save = JSON.parse(localStorage.getItem('mypc_save_v2')) || {
+            data: 0, cache: 0, energy: 0, lastLogin: "", 
+            cpuIdx: 0, gpuIdx: 0, ramGb: 2, ddrGen: 2, storageIdx: 0, coolerIdx: 0, psuIdx: 0, netIdx: 0,
+            lastTime: Date.now(), secretFound: false
         };
 
         const today = new Date().toDateString();
@@ -164,11 +210,12 @@
             logMsg("DAILY LOGIN: +100 Energy Acquired.");
         }
 
-        const secondsOffline = Math.floor((Date.now() - save.lastTime) / 1000);
-        if (secondsOffline > 60) {
-            const earned = secondsOffline * calculateHashrate();
-            save.data += earned;
-            logMsg(`OFFLINE MINING: Mined ${Math.floor(earned).toLocaleString()} Data while you were away!`);
+        // --- CORE MECHANICS ---
+        function getTemp() {
+            let heatGeneration = cpus[save.cpuIdx].watts + gpus[save.gpuIdx].watts;
+            let coolingPower = coolers[save.coolerIdx].capacity;
+            let temp = 35 + (heatGeneration * 0.2) - (coolingPower * 0.1);
+            return Math.max(30, Math.min(100, temp + (Math.random()*2 - 1))); // Add slight random fluctuation
         }
 
         function calculateHashrate() {
@@ -176,52 +223,103 @@
             let ramBonus = 1 + (save.ramGb / 100); 
             let ddrMult = save.ddrGen; 
             let bottleNeck = storageTiers[save.storageIdx].mult;
-            return (base * ramBonus * ddrMult) * bottleNeck;
+            let rawHash = (base * ramBonus * ddrMult) * bottleNeck;
+            
+            // Thermal Throttling
+            if (getTemp() >= 90) rawHash *= 0.5;
+            return rawHash;
+        }
+
+        const secondsOffline = Math.floor((Date.now() - save.lastTime) / 1000);
+        if (secondsOffline > 60) {
+            let offlineHash = calculateHashrate();
+            let generated = offlineHash * secondsOffline;
+            save.cache += generated;
+            
+            let networkCapacity = networks[save.netIdx].speed * secondsOffline;
+            let extracted = Math.min(save.cache, networkCapacity);
+            save.cache -= extracted;
+            save.data += extracted;
+
+            logMsg(`OFFLINE REPORT: Generated ${Math.floor(generated).toLocaleString()} data. Extracted ${Math.floor(extracted).toLocaleString()} to balance.`);
         }
 
         function logMsg(msg) {
             const log = document.getElementById('systemLog');
-            log.innerHTML = `[${new Date().toLocaleTimeString()}] ${msg}<br>` + log.innerHTML;
+            log.innerHTML = `[${new Date().toLocaleTimeString()}] ${msg}<br>` + log.innerHTML.substring(0, 1000);
         }
 
         function updateUI() {
+            let currentTemp = getTemp();
+            let currentWatts = cpus[save.cpuIdx].watts + gpus[save.gpuIdx].watts;
+            let maxWatts = psus[save.psuIdx].watts;
+            let isThrottling = currentTemp >= 90;
+            let netSpeed = networks[save.netIdx].speed;
+
+            // Stat Boxes
             document.getElementById('dataDisp').innerText = Math.floor(save.data).toLocaleString();
+            document.getElementById('cacheDisp').innerText = Math.floor(save.cache).toLocaleString();
             document.getElementById('energyDisp').innerText = save.energy;
-            document.getElementById('hashDisp').innerText = Math.floor(calculateHashrate()).toLocaleString() + " /sec";
+            document.getElementById('hashDisp').innerText = Math.floor(calculateHashrate()).toLocaleString() + " /s";
+            document.getElementById('netDisp').innerText = netSpeed.toLocaleString() + " /s";
             
+            document.getElementById('tempDisp').innerText = Math.floor(currentTemp) + "°C";
+            document.getElementById('tempBox').className = isThrottling ? "stat-box warning-box" : "stat-box";
+            if(isThrottling) document.getElementById('tempDisp').innerText += " (THROTTLED)";
+
+            document.getElementById('powerDisp').innerText = `${currentWatts}W / ${maxWatts}W`;
+            document.getElementById('powerBox').className = (currentWatts > maxWatts * 0.9) ? "stat-box warning-box" : "stat-box";
+
+            let st = storageTiers[save.storageIdx];
+            document.getElementById('bottleDisp').innerText = Math.floor(st.mult * 100) + "%";
+            document.getElementById('bottleBox').className = (st.mult < 1) ? "stat-box warning-box" : "stat-box";
+
+            // Hardware List
             document.getElementById('cpuDisp').innerText = cpus[save.cpuIdx].name;
             document.getElementById('gpuDisp').innerText = gpus[save.gpuIdx].name;
-            document.getElementById('ramCapDisp').innerText = save.ramGb.toLocaleString() + " GB";
-            document.getElementById('ramSpdDisp').innerText = `DDR${save.ddrGen} @ ${save.ddrGen * 1200} MHz`;
-            
-            let st = storageTiers[save.storageIdx];
-            document.getElementById('storageDisp').innerText = `${st.name} (Flow: ${Math.floor(st.mult * 100)}%)`;
-            document.getElementById('bottleDisp').innerText = Math.floor(st.mult * 100) + "%";
-            if(st.mult < 1) document.getElementById('bottleDisp').style.color = "#e74c3c";
-            else document.getElementById('bottleDisp').style.color = "#4ade80";
+            document.getElementById('ramSpdDisp').innerText = `${save.ramGb}GB DDR${save.ddrGen}`;
+            document.getElementById('coolerDisp').innerText = coolers[save.coolerIdx].name;
+            document.getElementById('psuDisp').innerText = psus[save.psuIdx].name;
+            document.getElementById('networkDisp').innerText = networks[save.netIdx].name;
+            document.getElementById('storageDisp').innerText = st.name;
 
+            // Store Buttons
             let nextCpu = cpus[save.cpuIdx + 1];
-            document.getElementById('upCpuBtn').innerText = nextCpu ? `Upgrade CPU (${nextCpu.cost.toLocaleString()})` : "CPU MAXED";
-            document.getElementById('upCpuBtn').disabled = !nextCpu || save.data < nextCpu.cost;
+            let cpuPowerOk = nextCpu ? (nextCpu.watts + gpus[save.gpuIdx].watts <= maxWatts) : false;
+            document.getElementById('upCpuBtn').innerText = nextCpu ? (cpuPowerOk ? `Upgrade CPU (${nextCpu.cost.toLocaleString()})` : `PSU LIMIT REACHED`) : "MAXED";
+            document.getElementById('upCpuBtn').disabled = !nextCpu || save.data < nextCpu.cost || !cpuPowerOk;
 
             let nextGpu = gpus[save.gpuIdx + 1];
-            document.getElementById('upGpuBtn').innerText = nextGpu ? `Upgrade GPU (${nextGpu.cost.toLocaleString()})` : "GPU MAXED";
-            document.getElementById('upGpuBtn').disabled = !nextGpu || save.data < nextGpu.cost;
+            let gpuPowerOk = nextGpu ? (cpus[save.cpuIdx].watts + nextGpu.watts <= maxWatts) : false;
+            document.getElementById('upGpuBtn').innerText = nextGpu ? (gpuPowerOk ? `Upgrade GPU (${nextGpu.cost.toLocaleString()})` : `PSU LIMIT REACHED`) : "MAXED";
+            document.getElementById('upGpuBtn').disabled = !nextGpu || save.data < nextGpu.cost || !gpuPowerOk;
 
             let ramCost = save.ramGb * 25;
             document.getElementById('upRamCapBtn').innerText = `Add +8GB RAM (${ramCost.toLocaleString()})`;
             document.getElementById('upRamCapBtn').disabled = save.data < ramCost;
 
+            let nextCooler = coolers[save.coolerIdx + 1];
+            document.getElementById('upCoolerBtn').innerText = nextCooler ? `Upgrade Cooler (${nextCooler.cost.toLocaleString()})` : "MAXED";
+            document.getElementById('upCoolerBtn').disabled = !nextCooler || save.data < nextCooler.cost;
+
+            let nextPsu = psus[save.psuIdx + 1];
+            document.getElementById('upPsuBtn').innerText = nextPsu ? `Upgrade PSU (${nextPsu.cost.toLocaleString()})` : "MAXED";
+            document.getElementById('upPsuBtn').disabled = !nextPsu || save.data < nextPsu.cost;
+
+            let netCost = (save.netIdx + 1) * 15;
+            document.getElementById('upNetBtn').innerText = save.netIdx < networks.length-1 ? `Upgrade Network (${netCost} Energy)` : "MAXED";
+            document.getElementById('upNetBtn').disabled = save.netIdx >= networks.length-1 || save.energy < netCost;
+
             let ddrCost = save.ddrGen * 15;
-            document.getElementById('upRamGenBtn').innerText = save.ddrGen < 5 ? `Upgrade to DDR${save.ddrGen+1} (${ddrCost} Energy)` : "DDR MAXED";
+            document.getElementById('upRamGenBtn').innerText = save.ddrGen < 5 ? `Upgrade DDR${save.ddrGen+1} (${ddrCost} Energy)` : "MAXED";
             document.getElementById('upRamGenBtn').disabled = save.ddrGen >= 5 || save.energy < ddrCost;
 
             let stoCost = (save.storageIdx + 1) * 20;
-            document.getElementById('upStorageBtn').innerText = save.storageIdx < storageTiers.length-1 ? `Upgrade Storage (${stoCost} Energy)` : "STORAGE MAXED";
+            document.getElementById('upStorageBtn').innerText = save.storageIdx < storageTiers.length-1 ? `Upgrade Storage (${stoCost} Energy)` : "MAXED";
             document.getElementById('upStorageBtn').disabled = save.storageIdx >= storageTiers.length-1 || save.energy < stoCost;
 
             save.lastTime = Date.now();
-            localStorage.setItem('mypc_save', JSON.stringify(save));
+            localStorage.setItem('mypc_save_v2', JSON.stringify(save));
 
             if (save.data >= 1000000 && !save.secretFound) {
                 save.secretFound = true;
@@ -229,18 +327,43 @@
             }
         }
 
+        // --- INTERACTIONS ---
         document.getElementById('mineBtn').onclick = () => {
-            save.data += Math.max(1, calculateHashrate() * 0.5); 
+            save.cache += Math.max(1, calculateHashrate() * 0.5); 
             updateUI();
         };
 
-        document.getElementById('upCpuBtn').onclick = () => { save.data -= cpus[save.cpuIdx + 1].cost; save.cpuIdx++; logMsg("CPU Upgraded!"); updateUI(); };
-        document.getElementById('upGpuBtn').onclick = () => { save.data -= gpus[save.gpuIdx + 1].cost; save.gpuIdx++; logMsg("GPU Upgraded!"); updateUI(); };
-        document.getElementById('upRamCapBtn').onclick = () => { save.data -= save.ramGb * 25; save.ramGb += 8; logMsg("RAM Capacity Increased!"); updateUI(); };
-        document.getElementById('upRamGenBtn').onclick = () => { save.energy -= save.ddrGen * 15; save.ddrGen++; logMsg("Motherboard & DDR Gen Upgraded!"); updateUI(); };
-        document.getElementById('upStorageBtn').onclick = () => { save.energy -= (save.storageIdx + 1) * 20; save.storageIdx++; logMsg("Storage Drive Upgraded!"); updateUI(); };
+        document.getElementById('upCpuBtn').onclick = () => { save.data -= cpus[save.cpuIdx + 1].cost; save.cpuIdx++; logMsg("CPU Upgraded. System temps may increase."); updateUI(); };
+        document.getElementById('upGpuBtn').onclick = () => { save.data -= gpus[save.gpuIdx + 1].cost; save.gpuIdx++; logMsg("GPU Upgraded. Power draw increased."); updateUI(); };
+        document.getElementById('upRamCapBtn').onclick = () => { save.data -= save.ramGb * 25; save.ramGb += 8; logMsg("RAM Capacity Increased."); updateUI(); };
+        document.getElementById('upCoolerBtn').onclick = () => { save.data -= coolers[save.coolerIdx + 1].cost; save.coolerIdx++; logMsg("Cooling system improved. Temps stabilized."); updateUI(); };
+        document.getElementById('upPsuBtn').onclick = () => { save.data -= psus[save.psuIdx + 1].cost; save.psuIdx++; logMsg("Power Supply Upgraded. Higher wattage available."); updateUI(); };
+        
+        document.getElementById('upNetBtn').onclick = () => { save.energy -= (save.netIdx + 1) * 15; save.netIdx++; logMsg("Network Bandwidth Increased. Exfiltration sped up."); updateUI(); };
+        document.getElementById('upRamGenBtn').onclick = () => { save.energy -= save.ddrGen * 15; save.ddrGen++; logMsg("Motherboard & DDR Gen Upgraded."); updateUI(); };
+        document.getElementById('upStorageBtn').onclick = () => { save.energy -= (save.storageIdx + 1) * 20; save.storageIdx++; logMsg("Storage Drive Upgraded. Bottleneck reduced."); updateUI(); };
 
-        setInterval(() => { save.data += calculateHashrate() / 10; updateUI(); }, 100);
+        // Game Loop (Auto-mine & Auto-Upload)
+        setInterval(() => { 
+            // 1. Generate into cache
+            save.cache += calculateHashrate() / 10; 
+            
+            // 2. Upload from cache based on network speed
+            let extractionLimit = networks[save.netIdx].speed / 10;
+            let actualExtraction = Math.min(save.cache, extractionLimit);
+            
+            save.cache -= actualExtraction;
+            save.data += actualExtraction;
+
+            // Warn if cache is building up too fast
+            if (save.cache > networks[save.netIdx].speed * 2) {
+                document.getElementById('cacheDisp').parentElement.classList.add('warning-box');
+            } else {
+                document.getElementById('cacheDisp').parentElement.classList.remove('warning-box');
+            }
+
+            updateUI(); 
+        }, 100);
 
         updateUI();
     </script>
