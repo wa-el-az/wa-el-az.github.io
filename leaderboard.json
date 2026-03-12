@@ -43,7 +43,7 @@
     "score": 0,
     "pass": "gg1",
     "mypc": {
-      "data": 0,
+      "data": 6.425999999999992,
       "cache": 0,
       "energy": 100,
       "lastLogin": "Fri Mar 13 2026",
@@ -55,7 +55,7 @@
       "coolerIdx": 0,
       "psuIdx": 0,
       "netIdx": 0,
-      "lastTime": 1773344162843,
+      "lastTime": 1773344192845,
       "secretFound": false
     }
   }
