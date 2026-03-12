@@ -1,11 +1,11 @@
 {
   "Wael": {
-    "score": 79000,
+    "score": 78000,
     "pass": "AZ",
     "mypc": {
-      "data": 1496.1600000000133,
+      "data": 3738.1600000000117,
       "cache": 0,
-      "energy": 70,
+      "energy": 120,
       "lastLogin": "Thu Mar 12 2026",
       "cpuIdx": 13,
       "gpuIdx": 2,
