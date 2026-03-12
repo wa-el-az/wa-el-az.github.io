@@ -16,9 +16,14 @@
         @media (max-width: 950px) { .terminal-wrap { flex-direction: column; } .sidebar { width: 100%; max-height: none; overflow-y: visible; } .terminal { height: 50vh; width: 100%; } }
         .terminal h2 { border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 0; color: #fff; font-family: 'Montserrat', sans-serif; display: flex; justify-content: space-between; align-items: center;}
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 25px; }
-        .stat-box { background: rgba(74, 222, 128, 0.08); border: 1px solid rgba(74, 222, 128, 0.3); padding: 12px; border-radius: 8px; text-align: center; }
+        .stat-box { background: rgba(74, 222, 128, 0.08); border: 1px solid rgba(74, 222, 128, 0.3); padding: 12px; border-radius: 8px; text-align: center; transition: 0.2s; }
         .stat-value { font-size: 20px; font-weight: bold; margin-top: 5px; color: #fff; }
         .warning-box { background: rgba(231, 76, 60, 0.1) !important; border-color: #e74c3c !important; }
+        
+        /* New Hover Effect for the Upload Box */
+        #uploadBox { cursor: pointer; border-color: #3498db; background: rgba(52, 152, 219, 0.1); }
+        #uploadBox:hover { background: rgba(52, 152, 219, 0.3); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3); }
+
         .btn-term { background: transparent; border: 1px solid #4ade80; color: #4ade80; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.2s; font-family: monospace; font-size: 13px; margin-bottom: 8px; }
         .btn-term:hover:not(:disabled) { background: #4ade80; color: #000; }
         .btn-term:disabled { border-color: #333; color: #555; cursor: not-allowed; }
@@ -56,7 +61,9 @@
                 <div class="stat-box">Local Cache<div class="stat-value" id="cacheDisp">0</div></div>
                 <div class="stat-box" style="border-color: #f1c40f; background: rgba(241, 196, 15, 0.1);">Daily Energy<div class="stat-value" id="energyDisp">0</div></div>
                 <div class="stat-box">Raw Hashrate<div class="stat-value" id="hashDisp">0 /s</div></div>
-                <div class="stat-box">Upload Speed<div class="stat-value" id="netDisp">0 /s</div></div>
+                
+                <div class="stat-box" id="uploadBox" title="Click to manually flush cache!">Manual Upload<div class="stat-value" id="netDisp">0 /s</div></div>
+                
                 <div class="stat-box" id="tempBox">System Temp<div class="stat-value" id="tempDisp">35°C</div></div>
                 <div class="stat-box" id="powerBox">Power Draw<div class="stat-value" id="powerDisp">0W / 300W</div></div>
                 <div class="stat-box" id="bottleBox">Storage Flow<div class="stat-value" id="bottleDisp">100%</div></div>
@@ -109,11 +116,11 @@
     <div class="modal-overlay" id="loginModal" style="z-index: 10001;">
         <div class="modal-card">
             <h2 class="modal-title">Cloud Terminal Login</h2>
-            <p class="modal-text">Enter your Wael OS credentials to sync with the Global Database.</p>
+            <p class="modal-text">Enter your Wael OS credentials to sync with the Global Database. <strong style="color: #4ade80;">If your username doesn't exist, a new account will be created automatically!</strong></p>
             <input type="text" id="usernameInput" class="input" placeholder="Username" autocomplete="off" />
             <input type="password" id="passwordInput" class="input" placeholder="Password" />
             <p id="loginMsg" style="font-size: 13px; font-weight: bold; margin-top: 0;"></p>
-            <button class="btn" id="loginBtn">Authenticate</button>
+            <button class="btn" id="loginBtn">Authenticate / Register</button>
         </div>
     </div>
 
@@ -128,7 +135,6 @@
     <script src="js/config.js"></script>
     <script src="js/achievements.js"></script>
     <script>
-        // --- HARDWARE DATABASES ---
         const storageTiers = [{ name: "Floppy Disk", mult: 0.05 }, { name: "5400RPM HDD", mult: 0.2 }, { name: "7200RPM HDD", mult: 0.5 }, { name: "SATA SSD", mult: 0.8 }, { name: "M.2 NVMe Gen1", mult: 1.0 }, { name: "M.2 NVMe Gen2", mult: 1.5 }, { name: "M.2 NVMe Gen3", mult: 2.5 }, { name: "M.2 NVMe Gen4", mult: 5.0 }, { name: "M.2 NVMe Gen5", mult: 10.0 }];
         const coolers = [{ name: "Intel/AMD Stock Cooler", capacity: 50, cost: 0 }, { name: "Cheap Tower Air Cooler", capacity: 80, cost: 500 }, { name: "Premium Dual-Tower Cooler", capacity: 150, cost: 2500 }, { name: "120mm AIO Liquid", capacity: 200, cost: 10000 }, { name: "240mm AIO Liquid", capacity: 300, cost: 50000 }, { name: "360mm AIO Liquid", capacity: 450, cost: 150000 }, { name: "Custom Hardtube Water Loop", capacity: 700, cost: 500000 }, { name: "Sub-Zero Chiller", capacity: 1200, cost: 2000000 }, { name: "Liquid Nitrogen (LN2) Pot", capacity: 3000, cost: 10000000 }];
         const psus = [{ name: "Generic 300W", watts: 300, cost: 0 }, { name: "450W 80+ White", watts: 450, cost: 200 }, { name: "600W 80+ Bronze", watts: 600, cost: 1000 }, { name: "750W 80+ Gold", watts: 750, cost: 5000 }, { name: "1000W 80+ Platinum", watts: 1000, cost: 20000 }, { name: "1200W 80+ Titanium", watts: 1200, cost: 80000 }, { name: "1600W 80+ Titanium", watts: 1600, cost: 300000 }, { name: "Dual 2000W Server PSUs", watts: 4000, cost: 1500000 }, { name: "Industrial Power Station", watts: 10000, cost: 10000000 }];
@@ -141,7 +147,6 @@
         const gpuNames = ["GTX 750", "GTX 760", "GTX 770", "GTX 780 Ti", "GTX 950", "GTX 960", "GTX 970", "GTX 980 Ti", "GTX 1050", "GTX 1050 Ti", "GTX 1060 3GB", "GTX 1060 6GB", "GTX 1070", "GTX 1070 Ti", "GTX 1080", "GTX 1080 Ti", "TITAN X", "RTX 2060", "RTX 2060 Super", "RTX 2070", "RTX 2070 Super", "RTX 2080", "RTX 2080 Super", "RTX 2080 Ti", "TITAN RTX", "RTX 3050", "RTX 3060", "RTX 3060 Ti", "RTX 3070", "RTX 3070 Ti", "RTX 3080", "RTX 3080 Ti", "RTX 3090", "RTX 3090 Ti", "RTX 4060", "RTX 4060 Ti", "RTX 4070", "RTX 4070 Super", "RTX 4070 Ti", "RTX 4070 Ti Super", "RTX 4080", "RTX 4080 Super", "RTX 4090", "RTX 5070", "RTX 5070 Ti", "RTX 5080", "RTX 5090", "RTX 6000 Ada Gen", "RTX 6000 Pro Blackwell"];
         const gpus = []; gpuNames.forEach((name, i) => { gpus.push({ name: name, power: Math.floor(Math.pow(1.25, i) * 5), cost: Math.floor(Math.pow(1.3, i) * 250), watts: 50 + Math.floor(i * 12) }); });
 
-        // --- DATABASE & STATE ---
         let globalLB = {};
         let fileSha = null;
         let loggedInUser = null;
@@ -153,7 +158,6 @@
             lastTime: Date.now(), secretFound: false
         };
 
-        // 1. FETCH LEADERBOARD ON LOAD
         async function fetchDB() {
             try {
                 const res = await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/leaderboard.json`);
@@ -161,8 +165,6 @@
                     const data = await res.json();
                     fileSha = data.sha;
                     globalLB = JSON.parse(decodeURIComponent(escape(atob(data.content))));
-                    
-                    // Legacy fix for tea game format
                     for (let key in globalLB) {
                         if (typeof globalLB[key] === 'number') globalLB[key] = { score: globalLB[key], pass: "1234" };
                     }
@@ -170,7 +172,7 @@
                 } else throw new Error();
             } catch (e) {
                 document.getElementById('termHeader').innerText = "> DATABASE CONNECTION FAILED. LOCAL MODE ONLY.";
-                checkAutoLogin(true); // Fallback to local
+                checkAutoLogin(true);
             }
         }
         fetchDB();
@@ -180,7 +182,6 @@
             let savedPass = localStorage.getItem('mypc_pass');
 
             if (savedUser && savedPass && !offline) {
-                // Verify against DB
                 if (globalLB[savedUser] && globalLB[savedUser].pass === savedPass) {
                     if(globalLB[savedUser].mypc) save = globalLB[savedUser].mypc;
                     startGame(savedUser);
@@ -213,13 +214,12 @@
                     msg.style.color = "#ff6b6b"; msg.innerText = "✗ Incorrect password!";
                 }
             } else {
-                // New Account Creation
                 globalLB[user] = { score: 0, pass: pass, mypc: save };
                 localStorage.setItem('mypc_user', user);
                 localStorage.setItem('mypc_pass', pass);
                 document.getElementById('loginModal').classList.remove('active');
                 startGame(user);
-                cloudSync(); // Push new user to DB
+                cloudSync(); 
             }
         };
 
@@ -248,7 +248,6 @@
             updateUI();
         }
 
-        // --- CORE GAME MECHANICS ---
         function getTemp() {
             let heatGeneration = cpus[save.cpuIdx].watts + gpus[save.gpuIdx].watts;
             let coolingPower = coolers[save.coolerIdx].capacity;
@@ -345,6 +344,23 @@
 
         // --- BUTTON INTERACTIONS ---
         document.getElementById('mineBtn').onclick = () => { if(gameActive) { save.cache += Math.max(1, calculateHashrate() * 0.5); updateUI(); }};
+        
+        // --- NEW: MANUAL UPLOAD CLICK ---
+        document.getElementById('uploadBox').onclick = () => {
+            if(!gameActive) return;
+            let burstAmount = networks[save.netIdx].speed * 10;
+            let actualExtraction = Math.min(save.cache, burstAmount);
+            
+            if (actualExtraction > 0) {
+                save.cache -= actualExtraction;
+                save.data += actualExtraction;
+                logMsg(`<span style='color:#3498db'>MANUAL UPLOAD: Forced ${Math.floor(actualExtraction).toLocaleString()} data through the network!</span>`);
+                updateUI();
+            } else {
+                logMsg("<span class='text-red'>UPLOAD FAILED: Local cache is empty!</span>");
+            }
+        };
+
         document.getElementById('upCpuBtn').onclick = () => { save.data -= cpus[save.cpuIdx + 1].cost; save.cpuIdx++; logMsg("CPU Upgraded. Temps increasing."); updateUI(); };
         document.getElementById('upGpuBtn').onclick = () => { save.data -= gpus[save.gpuIdx + 1].cost; save.gpuIdx++; logMsg("GPU Upgraded. Power draw increased."); updateUI(); };
         document.getElementById('upRamCapBtn').onclick = () => { save.data -= save.ramGb * 25; save.ramGb += 8; logMsg("RAM Capacity Increased."); updateUI(); };
@@ -363,7 +379,7 @@
                 save.energy += 50;
                 logMsg("<span style='color:#3498db'>INTEGRATION: 1,000 Cloud Tea converted to 50 Energy.</span>");
                 updateUI();
-                cloudSync(); // Force save after transaction
+                cloudSync(); 
             } else {
                 logMsg("<span class='text-red'>ERROR: Insufficient Cloud Tea Balance. Go play the Tea Clicker!</span>");
             }
