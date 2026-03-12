@@ -3,7 +3,7 @@
     "score": 90000,
     "pass": "AZ",
     "mypc": {
-      "data": 78.61179999999995,
+      "data": 1946.7928000000006,
       "cache": 0,
       "energy": 600,
       "lastLogin": "Thu Mar 12 2026",
@@ -15,7 +15,7 @@
       "coolerIdx": 0,
       "psuIdx": 0,
       "netIdx": 0,
-      "lastTime": 1773339582095,
+      "lastTime": 1773342199581,
       "secretFound": false
     }
   }
