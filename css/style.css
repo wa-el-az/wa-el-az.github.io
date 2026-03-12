@@ -1,6 +1,13 @@
 /* 1. Import Inter for non-Apple devices to clone the San Francisco look */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
+/* 2. Force download Apple Emojis for Windows/Android */
+@font-face {
+  font-family: 'Apple Color Emoji';
+  src: local('Apple Color Emoji'), 
+       url('https://cdn.jsdelivr.net/gh/samuelngs/apple-emoji-linux/apple-color-emoji.woff2') format('woff2');
+}
+
 :root {
   /* Original Variables */
   --text: #f5f7fa;
