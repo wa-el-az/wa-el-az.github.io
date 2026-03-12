@@ -43,19 +43,19 @@
     "score": 0,
     "pass": "gg1",
     "mypc": {
-      "data": 959.1647999999991,
+      "data": 272.9063999999982,
       "cache": 0,
       "energy": 100,
       "lastLogin": "Fri Mar 13 2026",
-      "cpuIdx": 0,
-      "gpuIdx": 0,
-      "ramGb": 10,
+      "cpuIdx": 1,
+      "gpuIdx": 1,
+      "ramGb": 18,
       "ddrGen": 2,
       "storageIdx": 0,
       "coolerIdx": 0,
       "psuIdx": 0,
       "netIdx": 0,
-      "lastTime": 1773345507433,
+      "lastTime": 1773345517434,
       "secretFound": false
     }
   }
