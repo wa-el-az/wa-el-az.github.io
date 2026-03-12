@@ -4,7 +4,7 @@
     "pass": "AZ",
     "mypc": {
       "data": 13351030.46,
-      "cache": 1569609361.6000085,
+      "cache": 2072032986.6000085,
       "energy": 475,
       "lastLogin": "Thu Mar 12 2026",
       "cpuIdx": 64,
@@ -13,9 +13,9 @@
       "ddrGen": 5,
       "storageIdx": 8,
       "coolerIdx": 8,
-      "psuIdx": 7,
+      "psuIdx": 8,
       "netIdx": 7,
-      "lastTime": 1773343012440,
+      "lastTime": 1773343022440,
       "secretFound": true
     }
   },
