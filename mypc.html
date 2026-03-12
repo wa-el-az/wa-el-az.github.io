@@ -20,7 +20,6 @@
             height: 85vh; overflow-y: auto; color: #4ade80; 
         }
         
-        /* Added custom scrollbar and max-height so the store scrolls independently if it gets too tall */
         .sidebar { 
             width: 320px; display: flex; flex-direction: column; gap: 15px; flex-shrink: 0;
             max-height: 85vh; overflow-y: auto; padding-right: 5px;
@@ -34,7 +33,7 @@
             .terminal { height: 50vh; width: 100%; } 
         }
 
-        .terminal h2 { border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 0; color: #fff; font-family: 'Montserrat', sans-serif; }
+        .terminal h2 { border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 0; color: #fff; font-family: 'Montserrat', sans-serif; display: flex; justify-content: space-between; align-items: center;}
         
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 25px; }
         .stat-box { background: rgba(74, 222, 128, 0.08); border: 1px solid rgba(74, 222, 128, 0.3); padding: 12px; border-radius: 8px; text-align: center; }
@@ -46,6 +45,8 @@
         .btn-term:disabled { border-color: #333; color: #555; cursor: not-allowed; }
         .btn-energy { border-color: #f1c40f; color: #f1c40f; }
         .btn-energy:hover:not(:disabled) { background: #f1c40f; color: #000; }
+        .btn-tea { border-color: #3498db; color: #3498db; }
+        .btn-tea:hover:not(:disabled) { background: #3498db; color: #fff; }
 
         .hardware-list { margin-top: 20px; font-size: 13px; line-height: 1.6; }
         .hardware-item { display: flex; justify-content: space-between; border-bottom: 1px dashed #333; padding: 8px 0; }
@@ -71,7 +72,10 @@
 
     <div class="terminal-wrap">
         <div class="terminal" id="terminalLog">
-            <h2>> root@wael-os:~/my_pc</h2>
+            <h2>
+                <span id="termHeader">> root@wael-os:~/my_pc</span>
+                <span id="saveIndicator" style="color: #f1c40f; font-size: 12px; opacity: 0; transition: opacity 0.5s; font-family: monospace;">[Auto-Saving...]</span>
+            </h2>
             <div class="stats-grid">
                 <div class="stat-box">Extracted Data<div class="stat-value" id="dataDisp">0</div></div>
                 <div class="stat-box">Local Cache<div class="stat-value" id="cacheDisp">0</div></div>
@@ -101,6 +105,12 @@
         </div>
 
         <div class="sidebar">
+            <div class="store-card" style="border-color: rgba(52, 152, 219, 0.4); background: rgba(52, 152, 219, 0.05);">
+                <h3 style="color: #3498db; border-bottom-color: rgba(52, 152, 219, 0.2);">Cross-System Link</h3>
+                <p style="font-size: 12px; color: #aaa; margin-top: 0; margin-bottom: 10px;">Linked Tea Balance: <strong id="teaDispStore" style="color:#fff;">0</strong></p>
+                <button class="btn-term btn-tea" id="convertTeaBtn">Convert 1,000 Tea ➔ 50 Energy</button>
+            </div>
+
             <div class="store-card">
                 <h3>Core Hardware</h3>
                 <button class="btn-term" id="upCpuBtn">Buy CPU Upgrade</button>
@@ -115,11 +125,20 @@
             </div>
 
             <div class="store-card">
-                <h3>Infrastructure (Requires Energy)</h3>
+                <h3>Infrastructure</h3>
                 <button class="btn-term btn-energy" id="upNetBtn">Upgrade Network</button>
                 <button class="btn-term btn-energy" id="upStorageBtn">Upgrade Storage</button>
                 <button class="btn-term btn-energy" id="upRamGenBtn">Upgrade DDR Gen</button>
             </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="loginModal" style="z-index: 10001;">
+        <div class="modal-card">
+            <h2 class="modal-title">System Registration</h2>
+            <p class="modal-text">Register your username. This will link your Wael OS profile and import your Tea Clicker progress automatically.</p>
+            <input type="text" id="usernameInput" class="input" placeholder="e.g. WaelHackz" style="width: 100%; margin-bottom: 20px; box-sizing: border-box;" autocomplete="off" />
+            <button class="btn" id="loginBtn">Initialize Terminal</button>
         </div>
     </div>
 
@@ -164,84 +183,82 @@
             { name: "Dark Web Backbone Node", speed: 100000 }, { name: "Quantum Entanglement Link", speed: 1000000 }
         ];
 
-        // 100 CPUs
         const cpus = [];
         const cpuPrefixes = ["Intel Core i3", "AMD Ryzen 3", "Intel Core i5", "AMD Ryzen 5", "Intel Core i7", "AMD Ryzen 7", "Intel Core i9", "AMD Ryzen 9", "Intel Xeon", "AMD Threadripper"];
         for(let i=0; i<99; i++) { 
-            cpus.push({ 
-                name: `${cpuPrefixes[Math.floor(i/10)]} Gen ${i%10 + 1}`, 
-                power: Math.floor(Math.pow(1.15, i) * 2), 
-                cost: Math.floor(Math.pow(1.2, i) * 100),
-                watts: 35 + Math.floor(i * 3)
-            }); 
+            cpus.push({ name: `${cpuPrefixes[Math.floor(i/10)]} Gen ${i%10 + 1}`, power: Math.floor(Math.pow(1.15, i) * 2), cost: Math.floor(Math.pow(1.2, i) * 100), watts: 35 + Math.floor(i * 3) }); 
         }
         cpus.push({ name: "AMD Threadripper PRO 9995WX", power: 5000000, cost: 100000000, watts: 500 });
 
-        // 50 REALISTIC GPUs
-        const gpuNames = [
-            "GTX 750", "GTX 760", "GTX 770", "GTX 780 Ti", "GTX 950", "GTX 960", "GTX 970", "GTX 980 Ti", 
-            "GTX 1050", "GTX 1050 Ti", "GTX 1060 3GB", "GTX 1060 6GB", "GTX 1070", "GTX 1070 Ti", "GTX 1080", "GTX 1080 Ti", "TITAN X", 
-            "RTX 2060", "RTX 2060 Super", "RTX 2070", "RTX 2070 Super", "RTX 2080", "RTX 2080 Super", "RTX 2080 Ti", "TITAN RTX", 
-            "RTX 3050", "RTX 3060", "RTX 3060 Ti", "RTX 3070", "RTX 3070 Ti", "RTX 3080", "RTX 3080 Ti", "RTX 3090", "RTX 3090 Ti", 
-            "RTX 4060", "RTX 4060 Ti", "RTX 4070", "RTX 4070 Super", "RTX 4070 Ti", "RTX 4070 Ti Super", "RTX 4080", "RTX 4080 Super", "RTX 4090", 
-            "RTX 5070", "RTX 5070 Ti", "RTX 5080", "RTX 5090", "RTX 6000 Ada Generation", "RTX 6000 Pro Blackwell"
-        ];
+        const gpuNames = ["GTX 750", "GTX 760", "GTX 770", "GTX 780 Ti", "GTX 950", "GTX 960", "GTX 970", "GTX 980 Ti", "GTX 1050", "GTX 1050 Ti", "GTX 1060 3GB", "GTX 1060 6GB", "GTX 1070", "GTX 1070 Ti", "GTX 1080", "GTX 1080 Ti", "TITAN X", "RTX 2060", "RTX 2060 Super", "RTX 2070", "RTX 2070 Super", "RTX 2080", "RTX 2080 Super", "RTX 2080 Ti", "TITAN RTX", "RTX 3050", "RTX 3060", "RTX 3060 Ti", "RTX 3070", "RTX 3070 Ti", "RTX 3080", "RTX 3080 Ti", "RTX 3090", "RTX 3090 Ti", "RTX 4060", "RTX 4060 Ti", "RTX 4070", "RTX 4070 Super", "RTX 4070 Ti", "RTX 4070 Ti Super", "RTX 4080", "RTX 4080 Super", "RTX 4090", "RTX 5070", "RTX 5070 Ti", "RTX 5080", "RTX 5090", "RTX 6000 Ada Generation", "RTX 6000 Pro Blackwell"];
         const gpus = [];
-        gpuNames.forEach((name, i) => {
-            gpus.push({ 
-                name: name, 
-                power: Math.floor(Math.pow(1.25, i) * 5), 
-                cost: Math.floor(Math.pow(1.3, i) * 250),
-                watts: 50 + Math.floor(i * 12)
-            });
-        });
+        gpuNames.forEach((name, i) => { gpus.push({ name: name, power: Math.floor(Math.pow(1.25, i) * 5), cost: Math.floor(Math.pow(1.3, i) * 250), watts: 50 + Math.floor(i * 12) }); });
 
-        // --- GAME STATE ---
+        // --- GAME LOGIC ---
+        let gameActive = false;
         let save = JSON.parse(localStorage.getItem('mypc_save_v2')) || {
             data: 0, cache: 0, energy: 0, lastLogin: "", 
             cpuIdx: 0, gpuIdx: 0, ramGb: 2, ddrGen: 2, storageIdx: 0, coolerIdx: 0, psuIdx: 0, netIdx: 0,
             lastTime: Date.now(), secretFound: false
         };
 
-        const today = new Date().toDateString();
-        if (save.lastLogin !== today) {
-            save.energy += 100;
-            save.lastLogin = today;
-            logMsg("DAILY LOGIN: +100 Energy Acquired.");
+        // LOGIN SYSTEM INITIALIZATION
+        let sessionUser = localStorage.getItem('wael_os_user');
+        if (!sessionUser) {
+            document.getElementById('loginModal').classList.add('active');
+        } else {
+            startGame(sessionUser);
         }
 
-        // --- CORE MECHANICS ---
+        document.getElementById('loginBtn').onclick = () => {
+            let input = document.getElementById('usernameInput').value.trim();
+            if (input) {
+                localStorage.setItem('wael_os_user', input);
+                document.getElementById('loginModal').classList.remove('active');
+                startGame(input);
+            }
+        };
+
+        function startGame(username) {
+            document.getElementById('termHeader').innerText = `> ${username}@wael-os:~/my_pc`;
+            
+            const today = new Date().toDateString();
+            if (save.lastLogin !== today) {
+                save.energy += 100;
+                save.lastLogin = today;
+                logMsg("DAILY LOGIN: +100 Energy Acquired.");
+            }
+
+            const secondsOffline = Math.floor((Date.now() - save.lastTime) / 1000);
+            if (secondsOffline > 60) {
+                let offlineHash = calculateHashrate();
+                let generated = offlineHash * secondsOffline;
+                save.cache += generated;
+                
+                let networkCapacity = networks[save.netIdx].speed * secondsOffline;
+                let extracted = Math.min(save.cache, networkCapacity);
+                save.cache -= extracted;
+                save.data += extracted;
+
+                logMsg(`OFFLINE REPORT: Generated ${Math.floor(generated).toLocaleString()} data. Extracted ${Math.floor(extracted).toLocaleString()} to balance.`);
+            }
+
+            gameActive = true;
+            updateUI();
+        }
+
         function getTemp() {
             let heatGeneration = cpus[save.cpuIdx].watts + gpus[save.gpuIdx].watts;
             let coolingPower = coolers[save.coolerIdx].capacity;
             let temp = 35 + (heatGeneration * 0.2) - (coolingPower * 0.1);
-            return Math.max(30, Math.min(100, temp + (Math.random()*2 - 1))); // Add slight random fluctuation
+            return Math.max(30, Math.min(100, temp + (Math.random()*2 - 1)));
         }
 
         function calculateHashrate() {
             let base = (cpus[save.cpuIdx].power + gpus[save.gpuIdx].power);
-            let ramBonus = 1 + (save.ramGb / 100); 
-            let ddrMult = save.ddrGen; 
-            let bottleNeck = storageTiers[save.storageIdx].mult;
-            let rawHash = (base * ramBonus * ddrMult) * bottleNeck;
-            
-            // Thermal Throttling
+            let rawHash = (base * (1 + (save.ramGb / 100)) * save.ddrGen) * storageTiers[save.storageIdx].mult;
             if (getTemp() >= 90) rawHash *= 0.5;
             return rawHash;
-        }
-
-        const secondsOffline = Math.floor((Date.now() - save.lastTime) / 1000);
-        if (secondsOffline > 60) {
-            let offlineHash = calculateHashrate();
-            let generated = offlineHash * secondsOffline;
-            save.cache += generated;
-            
-            let networkCapacity = networks[save.netIdx].speed * secondsOffline;
-            let extracted = Math.min(save.cache, networkCapacity);
-            save.cache -= extracted;
-            save.data += extracted;
-
-            logMsg(`OFFLINE REPORT: Generated ${Math.floor(generated).toLocaleString()} data. Extracted ${Math.floor(extracted).toLocaleString()} to balance.`);
         }
 
         function logMsg(msg) {
@@ -250,18 +267,22 @@
         }
 
         function updateUI() {
+            if(!gameActive) return;
+
+            // Fetch Tea Data from other game
+            let currentTea = parseInt(localStorage.getItem('tea_local_score')) || 0;
+            document.getElementById('teaDispStore').innerText = currentTea.toLocaleString();
+
             let currentTemp = getTemp();
             let currentWatts = cpus[save.cpuIdx].watts + gpus[save.gpuIdx].watts;
             let maxWatts = psus[save.psuIdx].watts;
             let isThrottling = currentTemp >= 90;
-            let netSpeed = networks[save.netIdx].speed;
 
-            // Stat Boxes
             document.getElementById('dataDisp').innerText = Math.floor(save.data).toLocaleString();
             document.getElementById('cacheDisp').innerText = Math.floor(save.cache).toLocaleString();
             document.getElementById('energyDisp').innerText = save.energy;
             document.getElementById('hashDisp').innerText = Math.floor(calculateHashrate()).toLocaleString() + " /s";
-            document.getElementById('netDisp').innerText = netSpeed.toLocaleString() + " /s";
+            document.getElementById('netDisp').innerText = networks[save.netIdx].speed.toLocaleString() + " /s";
             
             document.getElementById('tempDisp').innerText = Math.floor(currentTemp) + "°C";
             document.getElementById('tempBox').className = isThrottling ? "stat-box warning-box" : "stat-box";
@@ -274,7 +295,6 @@
             document.getElementById('bottleDisp').innerText = Math.floor(st.mult * 100) + "%";
             document.getElementById('bottleBox').className = (st.mult < 1) ? "stat-box warning-box" : "stat-box";
 
-            // Hardware List
             document.getElementById('cpuDisp').innerText = cpus[save.cpuIdx].name;
             document.getElementById('gpuDisp').innerText = gpus[save.gpuIdx].name;
             document.getElementById('ramSpdDisp').innerText = `${save.ramGb}GB DDR${save.ddrGen}`;
@@ -283,7 +303,6 @@
             document.getElementById('networkDisp').innerText = networks[save.netIdx].name;
             document.getElementById('storageDisp').innerText = st.name;
 
-            // Store Buttons
             let nextCpu = cpus[save.cpuIdx + 1];
             let cpuPowerOk = nextCpu ? (nextCpu.watts + gpus[save.gpuIdx].watts <= maxWatts) : false;
             document.getElementById('upCpuBtn').innerText = nextCpu ? (cpuPowerOk ? `Upgrade CPU (${nextCpu.cost.toLocaleString()})` : `PSU LIMIT REACHED`) : "MAXED";
@@ -318,54 +337,66 @@
             document.getElementById('upStorageBtn').innerText = save.storageIdx < storageTiers.length-1 ? `Upgrade Storage (${stoCost} Energy)` : "MAXED";
             document.getElementById('upStorageBtn').disabled = save.storageIdx >= storageTiers.length-1 || save.energy < stoCost;
 
-            save.lastTime = Date.now();
-            localStorage.setItem('mypc_save_v2', JSON.stringify(save));
-
             if (save.data >= 1000000 && !save.secretFound) {
                 save.secretFound = true;
                 document.getElementById('popupModal').classList.add('active');
             }
         }
 
-        // --- INTERACTIONS ---
-        document.getElementById('mineBtn').onclick = () => {
-            save.cache += Math.max(1, calculateHashrate() * 0.5); 
-            updateUI();
-        };
-
-        document.getElementById('upCpuBtn').onclick = () => { save.data -= cpus[save.cpuIdx + 1].cost; save.cpuIdx++; logMsg("CPU Upgraded. System temps may increase."); updateUI(); };
+        // --- BUTTON INTERACTIONS ---
+        document.getElementById('mineBtn').onclick = () => { if(gameActive) { save.cache += Math.max(1, calculateHashrate() * 0.5); updateUI(); }};
+        document.getElementById('upCpuBtn').onclick = () => { save.data -= cpus[save.cpuIdx + 1].cost; save.cpuIdx++; logMsg("CPU Upgraded. Temps increasing."); updateUI(); };
         document.getElementById('upGpuBtn').onclick = () => { save.data -= gpus[save.gpuIdx + 1].cost; save.gpuIdx++; logMsg("GPU Upgraded. Power draw increased."); updateUI(); };
         document.getElementById('upRamCapBtn').onclick = () => { save.data -= save.ramGb * 25; save.ramGb += 8; logMsg("RAM Capacity Increased."); updateUI(); };
-        document.getElementById('upCoolerBtn').onclick = () => { save.data -= coolers[save.coolerIdx + 1].cost; save.coolerIdx++; logMsg("Cooling system improved. Temps stabilized."); updateUI(); };
-        document.getElementById('upPsuBtn').onclick = () => { save.data -= psus[save.psuIdx + 1].cost; save.psuIdx++; logMsg("Power Supply Upgraded. Higher wattage available."); updateUI(); };
-        
-        document.getElementById('upNetBtn').onclick = () => { save.energy -= (save.netIdx + 1) * 15; save.netIdx++; logMsg("Network Bandwidth Increased. Exfiltration sped up."); updateUI(); };
-        document.getElementById('upRamGenBtn').onclick = () => { save.energy -= save.ddrGen * 15; save.ddrGen++; logMsg("Motherboard & DDR Gen Upgraded."); updateUI(); };
-        document.getElementById('upStorageBtn').onclick = () => { save.energy -= (save.storageIdx + 1) * 20; save.storageIdx++; logMsg("Storage Drive Upgraded. Bottleneck reduced."); updateUI(); };
+        document.getElementById('upCoolerBtn').onclick = () => { save.data -= coolers[save.coolerIdx + 1].cost; save.coolerIdx++; logMsg("Cooling improved."); updateUI(); };
+        document.getElementById('upPsuBtn').onclick = () => { save.data -= psus[save.psuIdx + 1].cost; save.psuIdx++; logMsg("PSU Upgraded."); updateUI(); };
+        document.getElementById('upNetBtn').onclick = () => { save.energy -= (save.netIdx + 1) * 15; save.netIdx++; logMsg("Network Upgraded. Exfiltration sped up."); updateUI(); };
+        document.getElementById('upRamGenBtn').onclick = () => { save.energy -= save.ddrGen * 15; save.ddrGen++; logMsg("Motherboard Upgraded."); updateUI(); };
+        document.getElementById('upStorageBtn').onclick = () => { save.energy -= (save.storageIdx + 1) * 20; save.storageIdx++; logMsg("Storage Upgraded."); updateUI(); };
 
-        // Game Loop (Auto-mine & Auto-Upload)
+        // TEA CROSS-GAME INTEGRATION
+        document.getElementById('convertTeaBtn').onclick = () => {
+            let teaScore = parseInt(localStorage.getItem('tea_local_score')) || 0;
+            if (teaScore >= 1000) {
+                localStorage.setItem('tea_local_score', teaScore - 1000); // Deduct from Tea game
+                save.energy += 50; // Add to PC Game
+                logMsg("<span style='color:#3498db'>INTEGRATION: 1,000 Tea Clicks converted to 50 Energy.</span>");
+                updateUI();
+            } else {
+                logMsg("<span class='text-red'>ERROR: Insufficient Tea Balance. Go play the Tea Clicker!</span>");
+            }
+        };
+
+        // --- 100ms GAME LOOP ---
         setInterval(() => { 
-            // 1. Generate into cache
+            if (!gameActive) return;
             save.cache += calculateHashrate() / 10; 
             
-            // 2. Upload from cache based on network speed
             let extractionLimit = networks[save.netIdx].speed / 10;
             let actualExtraction = Math.min(save.cache, extractionLimit);
             
             save.cache -= actualExtraction;
             save.data += actualExtraction;
 
-            // Warn if cache is building up too fast
             if (save.cache > networks[save.netIdx].speed * 2) {
                 document.getElementById('cacheDisp').parentElement.classList.add('warning-box');
             } else {
                 document.getElementById('cacheDisp').parentElement.classList.remove('warning-box');
             }
-
             updateUI(); 
         }, 100);
 
-        updateUI();
+        // --- EXACT 10 SECOND AUTO-SAVE ---
+        setInterval(() => {
+            if (!gameActive) return;
+            save.lastTime = Date.now();
+            localStorage.setItem('mypc_save_v2', JSON.stringify(save));
+            
+            let indicator = document.getElementById('saveIndicator');
+            indicator.style.opacity = 1;
+            setTimeout(() => { indicator.style.opacity = 0; }, 1500); // Fades out after 1.5s
+        }, 10000);
+
     </script>
 </body>
 </html>
