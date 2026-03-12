@@ -3,19 +3,19 @@
     "score": 67000,
     "pass": "AZ",
     "mypc": {
-      "data": 56339761.45999998,
-      "cache": 40266665987.89997,
+      "data": 9679631.459999979,
+      "cache": 41713155203.8998,
       "energy": 475,
       "lastLogin": "Thu Mar 12 2026",
       "cpuIdx": 75,
-      "gpuIdx": 46,
+      "gpuIdx": 47,
       "ramGb": 1114,
       "ddrGen": 5,
       "storageIdx": 8,
       "coolerIdx": 8,
       "psuIdx": 8,
       "netIdx": 7,
-      "lastTime": 1773343667072,
+      "lastTime": 1773343677071,
       "secretFound": true
     }
   },
