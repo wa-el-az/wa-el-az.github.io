@@ -1,13 +1,13 @@
 {
   "Wael": {
-    "score": 81000,
+    "score": 80000,
     "pass": "AZ",
     "mypc": {
-      "data": 1956.146600000005,
+      "data": 415.491000000006,
       "cache": 0,
-      "energy": 1050,
+      "energy": 1100,
       "lastLogin": "Thu Mar 12 2026",
-      "cpuIdx": 0,
+      "cpuIdx": 7,
       "gpuIdx": 0,
       "ramGb": 2,
       "ddrGen": 2,
@@ -15,7 +15,7 @@
       "coolerIdx": 0,
       "psuIdx": 0,
       "netIdx": 0,
-      "lastTime": 1773342209582,
+      "lastTime": 1773342219582,
       "secretFound": false
     }
   }
