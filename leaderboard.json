@@ -18,5 +18,25 @@
       "lastTime": 1773342229583,
       "secretFound": false
     }
+  },
+  "Username": {
+    "score": 0,
+    "pass": "Password",
+    "mypc": {
+      "data": 0,
+      "cache": 0,
+      "energy": 100,
+      "lastLogin": "Thu Mar 12 2026",
+      "cpuIdx": 0,
+      "gpuIdx": 0,
+      "ramGb": 2,
+      "ddrGen": 2,
+      "storageIdx": 0,
+      "coolerIdx": 0,
+      "psuIdx": 0,
+      "netIdx": 0,
+      "lastTime": 1773342574792,
+      "secretFound": false
+    }
   }
 }
