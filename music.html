@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>WaelOS — Music Player</title>
+    <link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
+    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/u-term/apple-emoji-css@master/apple-emoji.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
+    <style>
+        .wrapper { padding: 60px 5vw; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        .player-card { width: 100%; max-width: 400px; text-align: center; padding: 30px; }
+        
+        .album-art { width: 200px; height: 200px; border-radius: 16px; object-fit: cover; margin: 0 auto 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); background: #1a1a1a; display: flex; align-items: center; justify-content: center; font-size: 50px; }
+        
+        .track-title { font-size: 22px; font-weight: bold; margin-bottom: 5px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        /* Custom Seek Bar */
+        .progress-container { display: flex; align-items: center; gap: 10px; margin: 20px 0; font-family: monospace; font-size: 12px; color: #aaa; }
+        .seek-bar { flex-grow: 1; -webkit-appearance: none; background: rgba(255,255,255,0.2); height: 6px; border-radius: 5px; outline: none; cursor: pointer; }
+        .seek-bar::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; background: #4ade80; border-radius: 50%; cursor: pointer; transition: 0.2s; }
+        .seek-bar::-webkit-slider-thumb:hover { transform: scale(1.2); }
+        
+        /* Controls */
+        .controls { display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; }
+        .ctrl-btn { background: rgba(255,255,255,0.1); border: none; color: white; width: 50px; height: 50px; border-radius: 50%; font-size: 20px; cursor: pointer; transition: 0.2s; }
+        .ctrl-btn:hover { background: rgba(255,255,255,0.2); transform: scale(1.05); }
+        .play-btn { background: #4ade80; color: #000; }
+        .play-btn:hover { background: #38c168; }
+
+        .playlist { margin-top: 20px; max-height: 200px; overflow-y: auto; text-align: left; background: rgba(0,0,0,0.2); border-radius: 10px; padding: 10px; }
+        .playlist-item { padding: 10px; border-bottom: 1px solid rgba(255,255,255,0.1); cursor: pointer; font-size: 14px; transition: 0.2s; }
+        .playlist-item:hover { background: rgba(255,255,255,0.05); }
+        .playlist-item.active { color: #4ade80; font-weight: bold; }
+
+        .action-btns { display: flex; gap: 10px; margin-top: 20px; }
+        .action-btns .btn { flex: 1; font-size: 14px; padding: 10px; }
+    </style>
+</head>
+<body>
+    <div class="bg-left"></div><div class="bg-right"></div>
+    <div class="wrapper">
+        <div class="card player-card">
+            
+            <img id="cover-art" src="" alt="Album Art" class="album-art" onerror="this.style.display='none'; document.getElementById('fallback-art').style.display='flex';" />
+            <div id="fallback-art" class="album-art" style="display: none;">🎵</div>
+
+            <div id="title" class="track-title">Loading Music...</div>
+
+            <audio id="audio-player"></audio>
+
+            <div class="progress-container">
+                <span id="current-time">0:00</span>
+                <input type="range" id="seek-bar" class="seek-bar" value="0" step="1">
+                <span id="duration">0:00</span>
+            </div>
+
+            <div class="controls">
+                <button class="ctrl-btn" onclick="prevTrack()">⏮</button>
+                <button class="ctrl-btn play-btn" id="play-pause-btn" onclick="togglePlay()">▶</button>
+                <button class="ctrl-btn" onclick="nextTrack()">⏭</button>
+            </div>
+
+            <div class="action-btns">
+                <button class="btn" onclick="downloadCurrent()">⬇️ Track</button>
+                <button class="btn btn-danger" onclick="downloadAllZip()">📦 ZIP All</button>
+            </div>
+            <p id="status-msg" style="margin-top: 10px; font-size: 12px; color: #4ade80;"></p>
+
+            <div class="playlist" id="playlist-container">
+                </div>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script>
+        const audio = document.getElementById('audio-player');
+        const playPauseBtn = document.getElementById('play-pause-btn');
+        const seekBar = document.getElementById('seek-bar');
+        const currentTimeEl = document.getElementById('current-time');
+        const durationEl = document.getElementById('duration');
+        const titleEl = document.getElementById('title');
+        const coverArt = document.getElementById('cover-art');
+        const fallbackArt = document.getElementById('fallback-art');
+        const playlistContainer = document.getElementById('playlist-container');
+        const statusMsg = document.getElementById('status-msg');
+
+        let tracks = [];
+        let currentTrackIndex = 0;
+
+        // Fetch files from GitHub /music folder
+        async function fetchMusic() {
+            try {
+                const response = await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/music`);
+                if (!response.ok) throw new Error("Could not find /music folder.");
+                
+                const data = await response.json();
+                tracks = data.filter(file => file.name.endsWith('.mp3') || file.name.endsWith('.m4a'));
+
+                if (tracks.length === 0) {
+                    titleEl.innerText = "No .mp3 or .m4a found.";
+                    return;
+                }
+
+                renderPlaylist();
+                loadTrack(0);
+            } catch (error) {
+                titleEl.innerText = "Error loading files.";
+                console.error(error);
+            }
+        }
+
+        function renderPlaylist() {
+            playlistContainer.innerHTML = tracks.map((track, index) => 
+                `<div class="playlist-item" id="track-${index}" onclick="loadTrack(${index}); audio.play();">
+                    ${track.name.replace(/\.[^/.]+$/, "")}
+                </div>`
+            ).join('');
+        }
+
+        function loadTrack(index) {
+            currentTrackIndex = index;
+            const track = tracks[index];
+            
+            // Highlight playlist
+            document.querySelectorAll('.playlist-item').forEach(el => el.classList.remove('active'));
+            const activeItem = document.getElementById(`track-${index}`);
+            if(activeItem) activeItem.classList.add('active');
+
+            // Set audio source
+            audio.src = track.download_url;
+            titleEl.innerText = track.name.replace(/\.[^/.]+$/, "");
+            playPauseBtn.innerText = "▶";
+
+            // Extract Album Art and Title using jsmediatags
+            coverArt.style.display = 'none';
+            fallbackArt.style.display = 'flex';
+
+            jsmediatags.read(track.download_url, {
+                onSuccess: function(tag) {
+                    if (tag.tags.title) titleEl.innerText = tag.tags.title;
+                    
+                    const picture = tag.tags.picture;
+                    if (picture) {
+                        let base64String = "";
+                        for (let i = 0; i < picture.data.length; i++) {
+                            base64String += String.fromCharCode(picture.data[i]);
+                        }
+                        coverArt.src = `data:${picture.format};base64,${window.btoa(base64String)}`;
+                        fallbackArt.style.display = 'none';
+                        coverArt.style.display = 'block';
+                    }
+                },
+                onError: function(error) {
+                    console.log("No ID3 tags found, using defaults.", error);
+                }
+            });
+        }
+
+        // --- AUDIO CONTROLS ---
+        function togglePlay() {
+            if (audio.paused) {
+                audio.play();
+            } else {
+                audio.pause();
+            }
+        }
+
+        audio.addEventListener('play', () => playPauseBtn.innerText = "⏸");
+        audio.addEventListener('pause', () => playPauseBtn.innerText = "▶");
+        audio.addEventListener('ended', nextTrack);
+
+        function nextTrack() {
+            if (currentTrackIndex < tracks.length - 1) {
+                loadTrack(currentTrackIndex + 1);
+                audio.play();
+            }
+        }
+
+        function prevTrack() {
+            if (currentTrackIndex > 0) {
+                loadTrack(currentTrackIndex - 1);
+                audio.play();
+            }
+        }
+
+        // --- SEEK BAR LOGIC ---
+        audio.addEventListener('timeupdate', () => {
+            if (!isNaN(audio.duration)) {
+                seekBar.max = audio.duration;
+                seekBar.value = audio.currentTime;
+                currentTimeEl.innerText = formatTime(audio.currentTime);
+                durationEl.innerText = formatTime(audio.duration);
+            }
+        });
+
+        seekBar.addEventListener('input', () => {
+            audio.currentTime = seekBar.value;
+        });
+
+        function formatTime(seconds) {
+            const min = Math.floor(seconds / 60);
+            const sec = Math.floor(seconds % 60);
+            return `${min}:${sec < 10 ? '0' : ''}${sec}`;
+        }
+
+        // --- DOWNLOAD LOGIC ---
+        function downloadCurrent() {
+            const track = tracks[currentTrackIndex];
+            fetch(track.download_url)
+                .then(res => res.blob())
+                .then(blob => saveAs(blob, track.name));
+        }
+
+        async function downloadAllZip() {
+            if (tracks.length === 0) return;
+            statusMsg.innerText = "Zipping files... Please wait.";
+            statusMsg.style.color = "var(--text-main)";
+            
+            const zip = new JSZip();
+            try {
+                for (let track of tracks) {
+                    const res = await fetch(track.download_url);
+                    const blob = await res.blob();
+                    zip.file(track.name, blob);
+                }
+                const content = await zip.generateAsync({ type: "blob" });
+                saveAs(content, "WaelOS_Music.zip");
+                statusMsg.innerText = "✅ ZIP Downloaded!";
+                statusMsg.style.color = "var(--terminal-green)";
+            } catch (error) {
+                statusMsg.innerText = "❌ ZIP Failed.";
+                statusMsg.style.color = "var(--moroccan-red)";
+            }
+        }
+
+        // Initialize
+        fetchMusic();
+    </script>
+</body>
+</html>
