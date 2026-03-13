@@ -1,12 +1,12 @@
 {
-  "py-ai": {
-    "title": "Python AI",
-    "description": "A simple Large Language Model/Artificial Intelligence built using Python. Trained using only my ThinkPad E330 Edge with an i5 3rd gen and 4GB of RAM.",
-    "link": ""
-  },
-  "html-main-website": {
-    "title": "This website.",
-    "description": "An about me website with redeem system and a Moroccan modern glassy theme built using HTML, I also used JSON for database and used CSS. The website is open-source and hosted at https://wael.work.gd .",
-    "link": "https://github.com/wa-el-az/wa-el-az.github.io"
-  }
+    "py-ai": {
+        "title": "Python AI",
+        "description": "A simple Large Language Model/Artificial Intelligence built using Python. Trained using only my ThinkPad E330 Edge with an i5 3rd gen and 4GB of RAM.",
+        "link": ""
+    },
+    "html-main-website": {
+        "title": "This website.",
+        "description": "An about me website with redeem system and a Moroccan modern glassy theme built using HTML, I also used JSON for database and used CSS. The website is open-source and hosted at https://wael.work.gd .",
+        "link": "https://github.com/wa-el-az/waelos"
+    }
 }
