@@ -1,27 +1,27 @@
 {
-    "Wael": {
-        "score": 103000,
-        "pass": "4606",
-        "mypc": {
-            "data": 1186.275599999958,
-            "cache": 0,
-            "energy": 10004900,
-            "btc": 0,
-            "qTokens": 0,
-            "lastLogin": "Sat Mar 14 2026",
-            "cpuIdx": 6,
-            "gpuIdx": 0,
-            "ramGb": 16,
-            "ddrGen": 2,
-            "storageIdx": 0,
-            "coolerIdx": 0,
-            "psuIdx": 0,
-            "netIdx": 4,
-            "busIdx": 0,
-            "softIdx": 0,
-            "ocMode": false,
-            "lastTime": 1773447185649,
-            "secretFound": false
-        }
+  "Wael": {
+    "score": 103000,
+    "pass": "4606",
+    "mypc": {
+      "data": 1859.9107999999487,
+      "cache": 0,
+      "energy": 10004900,
+      "btc": 0,
+      "qTokens": 0,
+      "lastLogin": "Sat Mar 14 2026",
+      "cpuIdx": 6,
+      "gpuIdx": 0,
+      "ramGb": 16,
+      "ddrGen": 2,
+      "storageIdx": 0,
+      "coolerIdx": 0,
+      "psuIdx": 0,
+      "netIdx": 4,
+      "busIdx": 0,
+      "softIdx": 0,
+      "ocMode": false,
+      "lastTime": 1773447357243,
+      "secretFound": false
     }
+  }
 }
