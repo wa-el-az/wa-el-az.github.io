@@ -13,7 +13,7 @@
         .card { text-align: center; }
         .score-display { font-size: 48px; font-weight: 900; margin: 10px 0; text-shadow: 0 4px 20px rgba(0,0,0,0.5); }
         .pc-info { font-size: 14px; color: #4ade80; font-weight: bold; margin-bottom: 20px; }
-        .tea-btn { font-size: 100px; background: none; border: none; cursor: pointer; transition: transform 0.1s; user-select: none; outline: none; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4)); }
+        .tea-btn { font-size: 100px; background: none; border: none; cursor: pointer; transition: transform 0.1s; user-select: none; outline: none; filter: drop-shadow(0 10px 20px rgba(0,0,0,0.4)); display: flex; align-items: center; justify-content: center; min-height: 150px; }
         .tea-btn:active { transform: scale(0.9); }
         .floating-text { position: fixed; font-size: 24px; font-weight: bold; color: #fff; pointer-events: none; animation: floatUp 1s ease-out forwards; z-index: 50; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
         @keyframes floatUp { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-50px) scale(1.5); } }
@@ -36,6 +36,7 @@
 <body>
     <div class="bg-left"></div><div class="bg-right"></div>
     <a class="navBtn" href="index">Home</a>
+    
     <div class="container">
         <div class="card">
             <h1>Moroccan Tea</h1>
@@ -71,30 +72,32 @@
         // Pull the score, or start at 0
         let score = parseInt(localStorage.getItem('tea_local_score')) || parseInt(localStorage.getItem('tea_score')) || 0;
         let pointsPerClick = 1; 
-        let currentEmoji = "🍵";
+        let currentEmojiHTML = "🍵";
+        let floatEmoji = "🍵";
+        let globalLB = {};
+        let fileSha = null;
+        let loggedInUser = null;
 
         function updateGameUI() {
-            // ... (keep your emoji thresholds)
+            if (score < 10) { pointsPerClick = 1; currentEmojiHTML = "🍵"; floatEmoji = "🍵"; }
+            else if (score < 100) { pointsPerClick = 2; currentEmojiHTML = "☕"; floatEmoji = "☕"; }
+            else if (score < 1000) { pointsPerClick = 4; currentEmojiHTML = "🧋"; floatEmoji = "🧋"; }
+            else if (score < 5000) { pointsPerClick = 10; currentEmojiHTML = "🧉"; floatEmoji = "🧉"; }
+            else if (score < 10000) { pointsPerClick = 100; currentEmojiHTML = "🫖"; floatEmoji = "🫖"; }
+            else if (score < 100000) { pointsPerClick = 1000; currentEmojiHTML = "👑"; floatEmoji = "👑"; }
+            else { 
+                // The new 100,000 Milestone
+                pointsPerClick = 10000; 
+                currentEmojiHTML = `<img src="https://png.pngtree.com/png-vector/20250207/ourmid/pngtree-refreshing-moroccan-mint-tea-in-an-engraved-glass-on-a-decorative-png-image_15409953.png" style="width: 140px; height: 140px; object-fit: contain; pointer-events: none; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.6));" alt="Legendary Mint Tea">`;
+                floatEmoji = "✨"; // Use sparkles for the floating text so the screen doesn't get cluttered with images
+            }
 
             document.getElementById('scoreDisplay').innerText = score.toLocaleString();
-            document.getElementById('pcDisplay').innerText = `+${pointsPerClick} per click`;
-            document.getElementById('teaBtn').innerText = currentEmoji;
+            document.getElementById('pcDisplay').innerText = `+${pointsPerClick.toLocaleString()} per click`;
+            document.getElementById('teaBtn').innerHTML = currentEmojiHTML;
             
-            // Save the score locally every time the UI updates!
+            // Save the score locally every time the UI updates
             localStorage.setItem('tea_local_score', score);
-        }
-
-        function updateGameUI() {
-            if (score < 10) { pointsPerClick = 1; currentEmoji = "🍵"; }
-            else if (score < 100) { pointsPerClick = 2; currentEmoji = "☕"; }
-            else if (score < 1000) { pointsPerClick = 4; currentEmoji = "🧋"; }
-            else if (score < 5000) { pointsPerClick = 10; currentEmoji = "🧉"; }
-            else if (score < 10000) { pointsPerClick = 100; currentEmoji = "🫖"; }
-            else { pointsPerClick = 1000; currentEmoji = "👑"; }
-
-            document.getElementById('scoreDisplay').innerText = score.toLocaleString();
-            document.getElementById('pcDisplay').innerText = `+${pointsPerClick} per click`;
-            document.getElementById('teaBtn').innerText = currentEmoji;
         }
 
         updateGameUI();
@@ -111,14 +114,14 @@
 
             updateGameUI();
             
-            // Achievement triggers (these now check for Wael internally)
+            // Achievement triggers
             if (score === 1) window.unlockAchievement('tea_first');
             if (score >= 500) window.unlockAchievement('tea_500');
             if (score >= 10000) window.unlockAchievement('tea_10k');
 
             const floater = document.createElement('div');
             floater.className = 'floating-text';
-            floater.innerText = `+${pointsPerClick} ${currentEmoji}`;
+            floater.innerHTML = `+${pointsPerClick.toLocaleString()} ${floatEmoji}`;
             const offsetX = (Math.random() - 0.5) * 40;
             floater.style.left = `${e.clientX + offsetX}px`;
             floater.style.top = `${e.clientY - 20}px`;
@@ -139,7 +142,10 @@
                         }
                     }
                     renderLeaderboard();
-                } else { document.getElementById('lbList').innerHTML = '<p style="text-align:center;">No scores yet!</p>'; }
+                    checkAutoLogin(); // Automatically log in if credentials are saved
+                } else { 
+                    document.getElementById('lbList').innerHTML = '<p style="text-align:center;">No scores yet!</p>'; 
+                }
             } catch (e) { }
         }
 
@@ -157,6 +163,25 @@
             });
         }
 
+        // --- NEW AUTO-LOGIN FUNCTION ---
+        function checkAutoLogin() {
+            const savedUser = localStorage.getItem('tea_user');
+            const savedPass = localStorage.getItem('tea_pass');
+            const msg = document.getElementById('apiMsg');
+            
+            if (savedUser && savedPass && globalLB[savedUser] && globalLB[savedUser].pass === savedPass) {
+                // Keep whichever score is higher: the local one or the cloud one
+                if (globalLB[savedUser].score > score) {
+                    score = globalLB[savedUser].score;
+                }
+                localStorage.setItem('tea_score', score);
+                updateGameUI();
+                setLoggedInState(savedUser);
+                msg.style.color = "#4ade80"; 
+                msg.innerText = `✓ Auto-logged in as ${savedUser}`;
+            }
+        }
+
         document.getElementById('loginBtn').addEventListener('click', () => {
             const user = document.getElementById('usernameInput').value.trim();
             const pass = document.getElementById('passwordInput').value.trim();
@@ -166,7 +191,13 @@
 
             if (globalLB[user]) {
                 if (globalLB[user].pass === pass) {
-                    score = globalLB[user].score;
+                    // Save credentials for auto-login
+                    localStorage.setItem('tea_user', user);
+                    localStorage.setItem('tea_pass', pass);
+                    
+                    if (globalLB[user].score > score) {
+                        score = globalLB[user].score;
+                    }
                     localStorage.setItem('tea_score', score);
                     updateGameUI();
                     setLoggedInState(user);
@@ -176,6 +207,11 @@
                 }
             } else {
                 globalLB[user] = { score: score, pass: pass };
+                
+                // Save credentials for auto-login
+                localStorage.setItem('tea_user', user);
+                localStorage.setItem('tea_pass', pass);
+                
                 setLoggedInState(user);
                 msg.style.color = "#4ade80"; msg.innerText = "✓ Account Created! Click Sync to save to DB.";
             }
