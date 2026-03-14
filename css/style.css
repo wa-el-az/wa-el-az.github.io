@@ -1,5 +1,8 @@
-/* 1. Import Inter for non-Apple devices to clone the San Francisco look */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+/* 1. Force download San Francisco Pro (SF Pro) */
+@font-face {
+  font-family: 'SF Pro';
+  src: url('https://github.com/sahibjotsaggu/San-Francisco-Pro-Fonts/raw/refs/heads/master/SF-Pro.ttf') format('truetype');
+}
 
 /* 2. Force download Apple Emojis (Direct GitHub Release URL) */
 @font-face {
@@ -100,8 +103,8 @@ body.theme-quantum {
 body {
   margin: 0;
   min-height: 100vh;
-  /* Font stack prioritizes the Apple Color Emoji font */
-  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  /* Font stack prioritizes SF Pro, then Apple Color Emoji */
+  font-family: "SF Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: var(--text-main);
