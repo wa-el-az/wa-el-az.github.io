@@ -2,13 +2,15 @@
 @font-face {
   font-family: 'SF Pro';
   src: url('https://github.com/sahibjotsaggu/San-Francisco-Pro-Fonts/raw/refs/heads/master/SF-Pro.ttf') format('truetype');
+  font-display: swap; /* Fixes the delayed text loading bug */
 }
 
-/* 2. Force download Apple Emojis (Direct GitHub Release URL) */
+/* 2. Force download Apple Emojis */
 @font-face {
   font-family: 'Apple Color Emoji';
   src: local('Apple Color Emoji'), 
        url('https://github.com/GORAlexComp/AppleColorEmojiFont/releases/download/v1/AppleColorEmoji.ttf') format('truetype');
+  font-display: swap; /* Fixes the delayed text loading bug */
 }
 
 /* 3. Space Grotesk for high-tech display headers */
