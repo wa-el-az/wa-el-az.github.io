@@ -18,5 +18,9 @@
   "DATA-GOD": {
     "type": "script",
     "script": "let currentTeas = parseInt(localStorage.getItem('teaScore')) || 0;\ncurrentTeas += 500000;\nlocalStorage.setItem('teaScore', currentTeas);\ndocument.getElementById('redeem-message').textContent = \"SYSTEM OVERRIDE: 500,000 Teas injected!\";\ndocument.getElementById('redeem-message').style.color = \"var(--terminal-green)\";"
+  },
+  "APPLE": {
+    "type": "script",
+    "script": "const fontName = 'Apple Color Emoji';\nlet isLoaded = document.fonts.check('12px \"' + fontName + '\"');\nconst modal = document.createElement('div');\nmodal.className = 'modal-overlay active';\nmodal.style.zIndex = '9999';\nlet statusText = isLoaded ? '✅ Apple Emoji Font is actively loaded in your browser.' : '❌ Font is missing or not fully loaded yet. Initiating download...';\nmodal.innerHTML = `\n    <div class=\"modal-card\">\n        <h2 class=\"modal-title\">🍎 Apple Emoji Font</h2>\n        <p class=\"modal-text\" style=\"font-size: 15px;\">${statusText}</p>\n        <p class=\"modal-text\" style=\"font-size: 13px; color: #aaa; margin-bottom: 20px;\">If you want to install it permanently on your OS, you can download the raw file below:</p>\n        <a href=\"https://github.com/GORAlexComp/AppleColorEmojiFont/releases/download/v1/AppleColorEmoji.ttf\" target=\"_blank\" class=\"btn\" id=\"downloadFontBtn\" style=\"display:block; margin-bottom: 15px; text-decoration:none; color: #000; background: #fff;\">Download .TTF (43MB)</a>\n        <button class=\"btn\" id=\"closeAppleBtn\" style=\"background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #fff;\">Close</button>\n    </div>\n`;\ndocument.body.appendChild(modal);\ndocument.getElementById('closeAppleBtn').onclick = () => {\n    modal.remove();\n};\nif (!isLoaded) {\n    window.open('https://github.com/GORAlexComp/AppleColorEmojiFont/releases/download/v1/AppleColorEmoji.ttf', '_blank');\n}"
   }
 }
