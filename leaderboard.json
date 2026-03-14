@@ -1,11 +1,11 @@
 {
   "Wael": {
-    "score": 157000,
+    "score": 155000,
     "pass": "4606",
     "mypc": {
-      "data": 1105.4235999999776,
+      "data": 1108.5787999999768,
       "cache": 0,
-      "energy": 2260,
+      "energy": 2360,
       "btc": 0,
       "qTokens": 0,
       "lastLogin": "Sat Mar 14 2026",
@@ -20,7 +20,7 @@
       "busIdx": 0,
       "softIdx": 0,
       "ocMode": false,
-      "lastTime": 1773447155647,
+      "lastTime": 1773447165651,
       "secretFound": false
     }
   }
