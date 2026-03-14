@@ -396,6 +396,11 @@
         function updateUI() {
             if(!gameActive) return;
             let currentTemp = getTemp();
+            
+            // Cloud Tea Sync Check
+            let currentTea = (globalLB[loggedInUser] && globalLB[loggedInUser].score) ? globalLB[loggedInUser].score : 0;
+            document.getElementById('teaDispStore').innerText = currentTea.toLocaleString();
+
             document.getElementById('dataDisp').innerText = Math.floor(save.data).toLocaleString();
             document.getElementById('cacheDisp').innerText = Math.floor(save.cache).toLocaleString();
             document.getElementById('energyDisp').innerText = save.energy;
@@ -457,6 +462,61 @@
         document.getElementById('buyChillerBtn').onclick = () => { save.btc -= 15; save.subZero = true; logMsg("<span style='color:#ff003c'>Sub-Zero Chiller installed. Thermal limiters removed.</span>"); updateUI(); };
         document.getElementById('buyFirewallAiBtn').onclick = () => { save.btc -= 0.1; save.firewallCharges++; logMsg(`<span style='color:#ff003c'>AI Firewall purchased. Charges remaining: ${save.firewallCharges}</span>`); updateUI(); };
 
+        // --- RESTORED CORE FUNCTIONS ---
+        document.getElementById('ocBtn').onclick = () => {
+            save.ocMode = !save.ocMode;
+            document.getElementById('ocBtn').innerText = save.ocMode ? "Disable Overclock" : "Enable Overclock (2x Hash, +45°C)";
+            logMsg(save.ocMode ? `<span style="color:#e74c3c;">[SYSTEM] Overclock ENABLED. Warning: Extreme temperatures detected.</span>` : `<span style="color:#4ade80;">[SYSTEM] Overclock DISABLED. Thermals normalizing.</span>`);
+            updateUI();
+        };
+
+        document.getElementById('formatBtn').onclick = () => {
+            if (confirm("WARNING: Formatting C:\\ will wipe all Hardware, Cache, and Data. You will earn Quantum Tokens. Proceed?")) {
+                let tokensToGet = Math.floor(save.data / 1000000000000); // 1 Trillion = 1 Token
+                if (tokensToGet < 1) return alert("You need at least 1 Trillion Data to earn a Quantum Token!");
+                save.qTokens += tokensToGet;
+                
+                save.data = 0; save.cache = 0; save.cpuIdx = 0; save.gpuIdx = 0; save.npuIdx = 0; save.ramGb = 8; 
+                save.ddrGen = 2; save.storageIdx = 0; save.coolerIdx = 0; save.netIdx = 0; save.busIdx = 0; save.softIdx = 0; save.ocMode = false;
+                
+                logMsg(`<span style="color:#9b59b6; font-size:16px;">[FORMAT COMPLETE] Rebooting with ${save.qTokens} Quantum Tokens! Hashrate permanently multiplied.</span>`);
+                updateUI();
+            }
+        };
+
+        document.getElementById('convertTeaBtn').onclick = () => {
+            if (!globalLB[loggedInUser]) return;
+            if (globalLB[loggedInUser].score >= 1000) {
+                globalLB[loggedInUser].score -= 1000; save.energy += 50;
+                logMsg("<span style='color:#3498db'>[INTEGRATION] 1,000 Cloud Tea converted to 50 Energy.</span>");
+                updateUI(); cloudSync(); 
+            } else logMsg("<span class='text-red'>ERROR: Insufficient Cloud Tea.</span>");
+        };
+
+        // --- RESTORED CLOUD SYNC ---
+        async function cloudSync() {
+            if (!loggedInUser || !CONFIG.GITHUB_TOKEN) return;
+            globalLB[loggedInUser].mypc = save;
+            const payload = { message: `Auto-save My PC`, content: btoa(unescape(encodeURIComponent(JSON.stringify(globalLB, null, 2)))) };
+            if (fileSha) payload.sha = fileSha;
+
+            try {
+                const res = await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/leaderboard.json`, {
+                    method: 'PUT', headers: { 'Authorization': `Bearer ${CONFIG.GITHUB_TOKEN}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+                });
+                if (res.ok) {
+                    const data = await res.json(); fileSha = data.content.sha;
+                    let indicator = document.getElementById('saveIndicator');
+                    indicator.innerText = "[Cloud Sync OK]"; indicator.style.color = "#4ade80";
+                    setTimeout(() => { indicator.style.opacity = 0; }, 1500);
+                }
+            } catch (e) {
+                let indicator = document.getElementById('saveIndicator');
+                indicator.innerText = "[Sync Failed - Local Saved]"; indicator.style.color = "#ff6b6b";
+                setTimeout(() => { indicator.style.opacity = 0; }, 2000);
+            }
+        }
+
         // Game Loop
         setInterval(() => { 
             if (!gameActive) return;
@@ -467,8 +527,12 @@
         }, 100);
 
         setInterval(() => {
-            if (!gameActive) return; save.lastTime = Date.now();
+            if (!gameActive) return; 
+            save.lastTime = Date.now();
             localStorage.setItem('mypc_local_backup', JSON.stringify(save));
+            let ind = document.getElementById('saveIndicator');
+            ind.innerText = "[Syncing...]"; ind.style.color = "#f1c40f"; ind.style.opacity = 1;
+            cloudSync();
         }, 10000);
     </script>
 </body>
