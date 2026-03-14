@@ -28,6 +28,7 @@
         .ach-card.locked:hover { transform: none; background: rgba(255,255,255,.08); }
         .ach-card.locked .ach-info h3 { color: #888; }
         
+        .navBtn { display: inline-flex; align-items: center; gap: 6px; z-index: 50; }
         .lucide { width: 1.2em; height: 1.2em; vertical-align: -0.125em; }
 
         @media (max-width: 768px) { .ach-grid { grid-template-columns: 1fr; } }
@@ -36,7 +37,8 @@
 <body>
     <div class="bg-left"></div>
     <div class="bg-right"></div>
-    <a class="navBtn" href="shortcuts" style="display: flex; align-items: center; gap: 6px;"><i data-lucide="zap"></i> Shortcuts</a>
+    
+    <a class="navBtn" id="dynamicBackBtn" href="index"><i data-lucide="home"></i> Home</a>
 
     <div class="header">
         <h1>Trophy Room</h1>
@@ -48,6 +50,24 @@
     <script src="js/config.js"></script>
     <script src="js/achievements.js"></script>
     <script>
+        // Dynamic Back Button Logic
+        window.addEventListener('DOMContentLoaded', () => {
+            const backBtn = document.getElementById('dynamicBackBtn');
+            const referrer = document.referrer.toLowerCase();
+            
+            if (referrer.includes('shortcuts')) {
+                backBtn.href = 'shortcuts';
+                backBtn.innerHTML = '<i data-lucide="zap"></i> Shortcuts';
+            } else if (referrer.includes('redeem')) {
+                backBtn.href = 'redeem';
+                backBtn.innerHTML = '<i data-lucide="ticket"></i> Redeem';
+            } else {
+                backBtn.href = 'index';
+                backBtn.innerHTML = '<i data-lucide="home"></i> Home';
+            }
+            lucide.createIcons();
+        });
+
         window.addEventListener('DOMContentLoaded', () => {
             const grid = document.getElementById('achGrid');
             const progressDisplay = document.getElementById('progressDisplay');
@@ -76,7 +96,6 @@
                 grid.appendChild(card);
             });
 
-            // Crucial: Render the Lucide SVG icons AFTER the cards are injected into the DOM
             lucide.createIcons();
         });
     </script>
