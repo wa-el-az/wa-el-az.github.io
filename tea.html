@@ -48,7 +48,7 @@
         #syncControls { display: none; }
         #loggedInAs { color: #4ade80; font-weight: bold; font-size: 18px; margin-bottom: 15px; display: none;}
         
-        .navBtn { display: inline-flex; align-items: center; gap: 6px; }
+        .navBtn { display: inline-flex; align-items: center; gap: 6px; z-index: 50; }
         .lucide { width: 1.2em; height: 1.2em; vertical-align: -0.125em; }
         
         @media (max-width: 860px) { .container { grid-template-columns: 1fr; margin-top: 40px; } }
@@ -56,7 +56,8 @@
 </head>
 <body>
     <div class="bg-left"></div><div class="bg-right"></div>
-    <a class="navBtn" href="index"><i data-lucide="home"></i> Home</a>
+    
+    <a class="navBtn" id="dynamicBackBtn" href="index"><i data-lucide="home"></i> Home</a>
     
     <div class="container">
         <div class="card">
@@ -90,7 +91,23 @@
     <script src="js/config.js"></script>
     <script src="js/achievements.js"></script>
     <script>
-        lucide.createIcons();
+        // Dynamic Back Button Logic
+        window.addEventListener('DOMContentLoaded', () => {
+            const backBtn = document.getElementById('dynamicBackBtn');
+            const referrer = document.referrer.toLowerCase();
+            
+            if (referrer.includes('shortcuts')) {
+                backBtn.href = 'shortcuts';
+                backBtn.innerHTML = '<i data-lucide="zap"></i> Shortcuts';
+            } else if (referrer.includes('redeem')) {
+                backBtn.href = 'redeem';
+                backBtn.innerHTML = '<i data-lucide="ticket"></i> Redeem';
+            } else {
+                backBtn.href = 'index';
+                backBtn.innerHTML = '<i data-lucide="home"></i> Home';
+            }
+            lucide.createIcons();
+        });
 
         let score = parseInt(localStorage.getItem('tea_local_score')) || parseInt(localStorage.getItem('tea_score')) || 0;
         let pointsPerClick = 1; 
