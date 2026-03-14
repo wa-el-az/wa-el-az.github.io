@@ -1,35 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/u-term/apple-emoji-css@master/apple-emoji.css">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Wael — Status Editor</title>
     <link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
     <link rel="stylesheet" href="css/style.css" />
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        body { padding: 20px; display: flex; align-items: center; justify-content: center; }
-        .card { max-width: 500px; text-align: center; width: 100%; }
-        #apiMsg { margin-top: 15px; font-weight: bold; font-size: 14px; }
+        body { padding: 20px; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+        .card { max-width: 500px; text-align: center; width: 100%; position: relative; z-index: 10; }
+        #apiMsg { margin-top: 15px; font-weight: bold; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .navBtn { display: inline-flex; align-items: center; gap: 6px; }
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; width: 100%; }
+        .lucide { width: 1.2em; height: 1.2em; vertical-align: -0.125em; }
     </style>
 </head>
 <body>
     <div class="bg-left"></div>
     <div class="bg-right"></div>
-    <a class="navBtn" href="admin">Back to Hub</a>
+    <a class="navBtn" href="admin" style="position: absolute; top: 20px; right: 20px;"><i data-lucide="arrow-left"></i> Back to Hub</a>
 
     <div class="card">
-        <h1>Update Status</h1>
+        <h1 style="display: flex; align-items: center; justify-content: center; gap: 10px;"><i data-lucide="activity"></i> Update Status</h1>
         <p class="sub">This updates the green badge on your Home Page.</p>
         
         <input type="text" id="statusInput" placeholder="e.g. Playing Asphalt 8" autocomplete="off">
         
-        <button class="btn" id="pushBtn" style="background: #4ade80;">Update Live Status</button>
+        <button class="btn" id="pushBtn" style="background: #4ade80;"><i data-lucide="refresh-cw"></i> Update Live Status</button>
         <p id="apiMsg"></p>
     </div>
 
     <script src="js/config.js"></script>
     <script>
+        lucide.createIcons();
         let fileSha = null;
 
         window.onload = async () => {
@@ -45,9 +49,7 @@
                     const content = JSON.parse(decodeURIComponent(escape(atob(data.content))));
                     document.getElementById('statusInput').value = content.status;
                 }
-            } catch (e) {
-                // Ignore if missing
-            }
+            } catch (e) {}
         };
 
         document.getElementById('pushBtn').addEventListener('click', async () => {
@@ -55,7 +57,8 @@
             const msg = document.getElementById('apiMsg');
             
             msg.style.color = "#fff";
-            msg.innerText = "Pushing...";
+            msg.innerHTML = `<i data-lucide="loader-2" class="lucide-spin"></i> Pushing...`;
+            lucide.createIcons();
 
             const payload = {
                 message: "Update status",
@@ -74,14 +77,15 @@
                     const data = await res.json();
                     fileSha = data.content.sha;
                     msg.style.color = "#4ade80";
-                    msg.innerText = "✓ Status Updated!";
+                    msg.innerHTML = `<i data-lucide="check-circle-2"></i> Status Updated!`;
                 } else {
                     throw new Error("API Error");
                 }
             } catch (e) {
                 msg.style.color = "#ff6b6b";
-                msg.innerText = "✗ Failed to update.";
+                msg.innerHTML = `<i data-lucide="x-circle"></i> Failed to update.`;
             }
+            lucide.createIcons();
         });
     </script>
 </body>
