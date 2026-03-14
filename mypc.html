@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/u-term/apple-emoji-css@master/apple-emoji.css">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>WaelOS — My PC Terminal</title>
     <link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
     <link rel="stylesheet" href="css/style.css" />
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body { padding: 80px 3vw 40px; display: flex; justify-content: center; min-height: 100vh; overflow-x: hidden; }
         .terminal-wrap { display: flex; flex-direction: row; gap: 25px; width: 100%; max-width: 1500px; position: relative; z-index: 10; align-items: flex-start; }
@@ -31,7 +31,7 @@
         #uploadBox { cursor: pointer; border-color: #3498db; background: rgba(52, 152, 219, 0.1); }
         #uploadBox:hover { background: rgba(52, 152, 219, 0.3); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3); }
 
-        .btn-term { background: transparent; border: 1px solid #4ade80; color: #4ade80; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.2s; font-family: monospace; font-size: 13px; margin-bottom: 8px; }
+        .btn-term { background: transparent; border: 1px solid #4ade80; color: #4ade80; padding: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.2s; font-family: monospace; font-size: 13px; margin-bottom: 8px; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn-term:hover:not(:disabled) { background: #4ade80; color: #000; }
         .btn-term:disabled { border-color: #333; color: #555; cursor: not-allowed; }
         .btn-energy { border-color: #f1c40f; color: #f1c40f; }
@@ -49,7 +49,7 @@
         .btn-darknet:disabled { border-color: #440000; color: #660000; background: transparent; }
         #darknetStore { display: none; }
         .dark-card { border-color: #ff003c !important; background: rgba(20, 0, 0, 0.8) !important; }
-        .dark-card h3 { color: #ff003c !important; border-bottom-color: #ff003c !important; text-shadow: 0 0 10px #ff003c; }
+        .dark-card h3 { color: #ff003c !important; border-bottom-color: #ff003c !important; text-shadow: 0 0 10px #ff003c; display: flex; align-items: center; gap: 8px; }
 
         .hardware-list { margin-top: 15px; font-size: 13px; line-height: 1.6; flex-shrink: 0; }
         .hardware-item { display: flex; justify-content: space-between; border-bottom: 1px dashed #333; padding: 6px 0; }
@@ -62,7 +62,7 @@
         #cliLine { display: flex; margin-top: 15px; border-top: 1px dashed #333; padding-top: 15px; align-items: center; flex-shrink: 0; }
         #termInput { background: transparent; border: none; color: #fff; flex: 1; outline: none; font-family: monospace; font-size: 14px; margin-left: 10px; }
         
-        #ddosBtn { display: none; background: #e74c3c; color: #fff; border: 2px solid #c0392b; font-size: 20px; padding: 15px; border-radius: 8px; cursor: pointer; font-weight: 900; text-align: center; margin-bottom: 15px; animation: pulse 1s infinite; }
+        #ddosBtn { display: none; background: #e74c3c; color: #fff; border: 2px solid #c0392b; font-size: 20px; padding: 15px; border-radius: 8px; cursor: pointer; font-weight: 900; text-align: center; margin-bottom: 15px; animation: pulse 1s infinite; align-items: center; justify-content: center; gap: 10px; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.02); } 100% { transform: scale(1); } }
 
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.6); backdrop-filter: blur(8px); display: flex; align-items: center; justify-content: center; z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
@@ -71,11 +71,14 @@
         .modal-overlay.active .modal-card { transform: translateY(0); }
         .modal-title { margin: 0 0 12px; font-size: 26px; color: #fff; }
         .modal-text { margin: 0 0 26px; color: rgba(255,255,255,.85); line-height: 1.5; }
+        
+        /* Utility to align icons naturally */
+        .lucide { width: 1.2em; height: 1.2em; vertical-align: -0.125em; }
     </style>
 </head>
 <body>
     <div class="bg-left"></div><div class="bg-right"></div>
-    <a class="navBtn" href="index" style="z-index: 50;">Home</a>
+    <a class="navBtn" href="index" style="z-index: 50; display: flex; align-items: center; gap: 6px;"><i data-lucide="home"></i> Home</a>
 
     <div class="terminal-wrap">
         <div class="terminal" id="terminalLog">
@@ -84,7 +87,7 @@
                 <span id="saveIndicator" style="color: #4ade80; font-size: 12px; opacity: 0; transition: opacity 0.5s; font-family: monospace;">[Local Save]</span>
             </h2>
             
-            <button id="ddosBtn">⚠️ DEPLOY FIREWALL ⚠️</button>
+            <button id="ddosBtn"><i data-lucide="alert-triangle"></i> DEPLOY FIREWALL <i data-lucide="alert-triangle"></i></button>
 
             <div class="stats-grid">
                 <div class="stat-box">Extracted Data<div class="stat-value" id="dataDisp">0</div></div>
@@ -118,48 +121,48 @@
         <div class="sidebar" id="normalStore">
             <div class="store-card" style="border-color: rgba(231, 76, 60, 0.4); background: rgba(231, 76, 60, 0.05);">
                 <h3 style="color: #e74c3c; border-bottom-color: rgba(231, 76, 60, 0.2);">System Overrides</h3>
-                <button class="btn-term btn-danger-sys" id="ocBtn">Enable Overclock (2x Hash, +45°C)</button>
-                <button class="btn-term btn-prestige" id="formatBtn">Format C:\ (Prestige)</button>
+                <button class="btn-term btn-danger-sys" id="ocBtn"><i data-lucide="flame"></i> Enable Overclock (2x Hash)</button>
+                <button class="btn-term btn-prestige" id="formatBtn"><i data-lucide="hard-drive"></i> Format C:\ (Prestige)</button>
             </div>
 
             <div class="store-card">
                 <h3>Core Hardware</h3>
-                <button class="btn-term" id="upCpuBtn">Buy CPU Upgrade</button>
-                <button class="btn-term" id="upGpuBtn">Buy GPU Upgrade</button>
-                <button class="btn-term" id="upNpuBtn">Install NPU (AI Core)</button>
-                <button class="btn-term" id="upRamCapBtn">Upgrade RAM</button>
-                <button class="btn-term" id="upCoolerBtn">Upgrade Cooler</button>
+                <button class="btn-term" id="upCpuBtn"><i data-lucide="cpu"></i> Buy CPU Upgrade</button>
+                <button class="btn-term" id="upGpuBtn"><i data-lucide="monitor"></i> Buy GPU Upgrade</button>
+                <button class="btn-term" id="upNpuBtn"><i data-lucide="brain-circuit"></i> Install NPU</button>
+                <button class="btn-term" id="upRamCapBtn"><i data-lucide="memory-stick"></i> Upgrade RAM</button>
+                <button class="btn-term" id="upCoolerBtn"><i data-lucide="fan"></i> Upgrade Cooler</button>
             </div>
 
             <div class="store-card">
                 <h3>Software & Infrastructure</h3>
-                <button class="btn-term" id="upBusBtn">Upgrade Data Bus</button>
-                <button class="btn-term" id="upSoftBtn">Upgrade Algorithm</button>
-                <button class="btn-term btn-energy" id="upNetBtn">Upgrade Network</button>
+                <button class="btn-term" id="upBusBtn"><i data-lucide="git-merge"></i> Upgrade Data Bus</button>
+                <button class="btn-term" id="upSoftBtn"><i data-lucide="code-2"></i> Upgrade Algorithm</button>
+                <button class="btn-term btn-energy" id="upNetBtn"><i data-lucide="wifi"></i> Upgrade Network</button>
             </div>
 
             <div class="store-card" style="border-color: rgba(52, 152, 219, 0.4); background: rgba(52, 152, 219, 0.05);">
                 <h3 style="color: #3498db; border-bottom-color: rgba(52, 152, 219, 0.2);">Cross-System Link</h3>
                 <p style="font-size: 12px; color: #aaa; margin-top: 0; margin-bottom: 10px;">Cloud Tea: <strong id="teaDispStore" style="color:#fff;">0</strong></p>
-                <button class="btn-term btn-tea" id="convertTeaBtn">Convert 1,000 Tea ➔ 50 Energy</button>
+                <button class="btn-term btn-tea" id="convertTeaBtn"><i data-lucide="coffee"></i> Convert 1,000 Tea ➔ 50 Energy</button>
             </div>
         </div>
 
         <div class="sidebar" id="darknetStore">
             <div class="store-card dark-card">
-                <h3>☠️ THE SILK ROAD</h3>
+                <h3><i data-lucide="skull"></i> THE SILK ROAD</h3>
                 <p style="font-size: 12px; color: #aaa; margin-top: 0;">Prices listed in BTC.</p>
                 
-                <button class="btn-term btn-darknet" id="buyBotnetBtn">Buy Botnet Controller (0.5 BTC)</button>
+                <button class="btn-term btn-darknet" id="buyBotnetBtn"><i data-lucide="bot"></i> Buy Botnet Controller (0.5 BTC)</button>
                 <p style="font-size: 11px; color:#aaa; margin: -5px 0 10px;">Automatically flushes Cache every 10s.</p>
 
-                <button class="btn-term btn-darknet" id="buyFirewallAiBtn">Buy AI Firewall (0.1 BTC)</button>
+                <button class="btn-term btn-darknet" id="buyFirewallAiBtn"><i data-lucide="shield-alert"></i> Buy AI Firewall (0.1 BTC)</button>
                 <p style="font-size: 11px; color:#aaa; margin: -5px 0 10px;">Blocks 1 DDoS Attack (+1 Charge).</p>
 
-                <button class="btn-term btn-darknet" id="buyZeroDayBtn">Buy Zero-Day Exploit (5 BTC)</button>
+                <button class="btn-term btn-darknet" id="buyZeroDayBtn"><i data-lucide="terminal-square"></i> Buy Zero-Day Exploit (5 BTC)</button>
                 <p style="font-size: 11px; color:#aaa; margin: -5px 0 10px;">Permanent 10x Hashrate Multiplier.</p>
 
-                <button class="btn-term btn-darknet" id="buyChillerBtn">Buy Sub-Zero Chiller (15 BTC)</button>
+                <button class="btn-term btn-darknet" id="buyChillerBtn"><i data-lucide="snowflake"></i> Buy Sub-Zero Chiller (15 BTC)</button>
                 <p style="font-size: 11px; color:#aaa; margin: -5px 0 10px;">Disables Thermal Throttling permanently.</p>
             </div>
         </div>
@@ -175,7 +178,6 @@
         </div>
     </div>
 
-    <script src="js/config.js"></script>
     <script>
         // NEW NUMBER FORMATTER (Supports up to Decillion)
         function formatNum(num) {
@@ -223,7 +225,7 @@
 
         async function fetchDB() {
             try {
-                const res = await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/leaderboard.json`);
+                const res = await fetch(`https://api.github.com/repos/wa-el-az/waelos/contents/leaderboard.json`);
                 if (res.ok) {
                     const data = await res.json(); fileSha = data.sha;
                     globalLB = JSON.parse(decodeURIComponent(escape(atob(data.content))));
@@ -264,7 +266,6 @@
         function startGame(username) {
             loggedInUser = username; document.getElementById('cliPrompt').innerText = `${username}@wael-os:~# `;
             
-            // Economy Balance: Auto-upgrade old saves to new Quadrillion BTC standard
             if(!save.btcPrice || save.btcPrice < 50000000000000) save.btcPrice = 1000000000000000; 
             if(!save.firewallCharges) save.firewallCharges = 0;
             
@@ -335,9 +336,7 @@
                     let amt = parseInt(args[2]);
                     if (isNaN(amt) || amt <= 0) return logMsg(`<span style="color:#ff6b6b;">Invalid amount.</span>`);
                     if (save.qTokens >= amt) {
-                        save.qTokens -= amt;
-                        let btcGain = amt / 1000;
-                        save.btc += btcGain;
+                        save.qTokens -= amt; let btcGain = amt / 1000; save.btc += btcGain;
                         logMsg(`<span style="color:#9b59b6;">Transmuted ${formatNum(amt)} Quantum Tokens into ${btcGain.toFixed(4)} BTC.</span>`);
                         updateUI();
                     } else logMsg(`<span style="color:#ff6b6b;">Insufficient Quantum Tokens.</span>`);
@@ -359,7 +358,6 @@
 
         setInterval(() => {
             if(!gameActive) return;
-            // New market fluctuation: Between 500 Trillion and 2.5 Quadrillion
             save.btcPrice = Math.floor(Math.random() * 2000000000000000) + 500000000000000;
             logMsg(`<span style="color:#f39c12">[MARKET UPDATE] BTC Price changed to ${formatNum(save.btcPrice)} Data.</span>`);
         }, 300000);
@@ -387,10 +385,12 @@
                     save.firewallCharges--; logMsg(`<span style="color:#4ade80;">[AI FIREWALL] Automatically neutralized DDoS threat! (${save.firewallCharges} charges left)</span>`); updateUI(); return;
                 }
                 logMsg(`<span style="color:#e74c3c;">[WARNING] DDOS ATTACK DETECTED! Deploy Firewall!</span>`);
-                let btn = document.getElementById('ddosBtn'); btn.style.display = 'block';
-                let timeLeft = 10; btn.innerText = `DEPLOY FIREWALL (${timeLeft}s)`;
+                let btn = document.getElementById('ddosBtn'); btn.style.display = 'flex';
+                let timeLeft = 10; btn.innerHTML = `<i data-lucide="alert-triangle"></i> DEPLOY FIREWALL (${timeLeft}s) <i data-lucide="alert-triangle"></i>`;
+                lucide.createIcons();
                 let attackInterval = setInterval(() => {
-                    timeLeft--; btn.innerText = `DEPLOY FIREWALL (${timeLeft}s)`;
+                    timeLeft--; btn.innerHTML = `<i data-lucide="alert-triangle"></i> DEPLOY FIREWALL (${timeLeft}s) <i data-lucide="alert-triangle"></i>`;
+                    lucide.createIcons();
                     if (timeLeft <= 0) {
                         clearInterval(attackInterval); btn.style.display = 'none';
                         let lost = save.cache * 0.2; save.cache -= lost;
@@ -407,7 +407,6 @@
             let currentTea = (globalLB[loggedInUser] && globalLB[loggedInUser].score) ? globalLB[loggedInUser].score : 0;
             document.getElementById('teaDispStore').innerText = formatNum(currentTea);
 
-            // Format numbers applied to Stats
             document.getElementById('dataDisp').innerText = formatNum(save.data);
             document.getElementById('cacheDisp').innerText = formatNum(save.cache);
             document.getElementById('energyDisp').innerText = formatNum(save.energy);
@@ -424,45 +423,47 @@
             document.getElementById('ramSpdDisp').innerText = `${save.ramGb}GB DDR${save.ddrGen}`;
             document.getElementById('networkDisp').innerText = `${networks[save.netIdx].name} (Bus Lv.${save.busIdx})`;
 
-            // Format numbers applied to Store Buttons
             let nextCpu = cpus[save.cpuIdx + 1];
-            document.getElementById('upCpuBtn').innerText = nextCpu ? `Upgrade CPU (${formatNum(nextCpu.cost)})` : "MAXED";
+            document.getElementById('upCpuBtn').innerHTML = nextCpu ? `<i data-lucide="cpu"></i> Upgrade CPU (${formatNum(nextCpu.cost)})` : `<i data-lucide="cpu"></i> MAXED`;
             document.getElementById('upCpuBtn').disabled = !nextCpu || save.data < nextCpu.cost;
 
             let nextGpu = gpus[save.gpuIdx + 1];
-            document.getElementById('upGpuBtn').innerText = nextGpu ? `Upgrade GPU (${formatNum(nextGpu.cost)})` : "MAXED";
+            document.getElementById('upGpuBtn').innerHTML = nextGpu ? `<i data-lucide="monitor"></i> Upgrade GPU (${formatNum(nextGpu.cost)})` : `<i data-lucide="monitor"></i> MAXED`;
             document.getElementById('upGpuBtn').disabled = !nextGpu || save.data < nextGpu.cost;
 
             let nextNpu = npus[save.npuIdx + 1];
-            document.getElementById('upNpuBtn').innerText = nextNpu ? `Install NPU (${formatNum(nextNpu.cost)})` : "MAXED";
+            document.getElementById('upNpuBtn').innerHTML = nextNpu ? `<i data-lucide="brain-circuit"></i> Install NPU (${formatNum(nextNpu.cost)})` : `<i data-lucide="brain-circuit"></i> MAXED`;
             document.getElementById('upNpuBtn').disabled = !nextNpu || save.data < nextNpu.cost;
 
             let addAmt = save.ramGb >= 1024 ? 1024 : (save.ramGb >= 64 ? 32 : (save.ramGb >= 32 ? 16 : 8));
             let ramCost = save.ramGb * 35; 
-            document.getElementById('upRamCapBtn').innerText = `Add +${addAmt}GB RAM (${formatNum(ramCost)})`; 
+            document.getElementById('upRamCapBtn').innerHTML = `<i data-lucide="memory-stick"></i> Add +${addAmt}GB RAM (${formatNum(ramCost)})`; 
             document.getElementById('upRamCapBtn').disabled = save.data < ramCost;
 
             let nextNet = networks[save.netIdx + 1];
             let netCost = (save.netIdx + 1) * 15;
-            document.getElementById('upNetBtn').innerText = nextNet ? `Upgrade Network (${formatNum(netCost)} Energy)` : "MAXED";
+            document.getElementById('upNetBtn').innerHTML = nextNet ? `<i data-lucide="wifi"></i> Upgrade Network (${formatNum(netCost)} Energy)` : `<i data-lucide="wifi"></i> MAXED`;
             document.getElementById('upNetBtn').disabled = !nextNet || save.energy < netCost;
 
             let nextCooler = coolers[save.coolerIdx + 1]; 
-            document.getElementById('upCoolerBtn').innerText = nextCooler ? `Upgrade Cooler (${formatNum(nextCooler.cost)})` : "MAXED"; 
+            document.getElementById('upCoolerBtn').innerHTML = nextCooler ? `<i data-lucide="fan"></i> Upgrade Cooler (${formatNum(nextCooler.cost)})` : `<i data-lucide="fan"></i> MAXED`; 
             document.getElementById('upCoolerBtn').disabled = !nextCooler || save.data < nextCooler.cost;
             
             let busCost = Math.pow(10, save.busIdx + 5); 
-            document.getElementById('upBusBtn').innerText = `Upgrade Bus (${formatNum(busCost)})`; 
+            document.getElementById('upBusBtn').innerHTML = `<i data-lucide="git-merge"></i> Upgrade Bus (${formatNum(busCost)})`; 
             document.getElementById('upBusBtn').disabled = save.data < busCost;
             
             let nextSoft = softwareUpgrades[save.softIdx + 1]; 
-            document.getElementById('upSoftBtn').innerText = nextSoft ? `Upgrade Algorithm (${formatNum(Math.pow(10, save.softIdx + 4))})` : "MAXED"; 
+            document.getElementById('upSoftBtn').innerHTML = nextSoft ? `<i data-lucide="code-2"></i> Upgrade Algorithm (${formatNum(Math.pow(10, save.softIdx + 4))})` : `<i data-lucide="code-2"></i> MAXED`; 
             document.getElementById('upSoftBtn').disabled = !nextSoft || save.data < Math.pow(10, save.softIdx + 4);
 
-            document.getElementById('buyBotnetBtn').disabled = save.botnet || save.btc < 0.5; document.getElementById('buyBotnetBtn').innerText = save.botnet ? "Botnet Active" : "Buy Botnet Controller (0.5 BTC)";
-            document.getElementById('buyZeroDayBtn').disabled = save.zeroDay || save.btc < 5; document.getElementById('buyZeroDayBtn').innerText = save.zeroDay ? "Exploit Injected" : "Buy Zero-Day Exploit (5 BTC)";
-            document.getElementById('buyChillerBtn').disabled = save.subZero || save.btc < 15; document.getElementById('buyChillerBtn').innerText = save.subZero ? "System Frozen" : "Buy Sub-Zero Chiller (15 BTC)";
-            document.getElementById('buyFirewallAiBtn').disabled = save.btc < 0.1; document.getElementById('buyFirewallAiBtn').innerText = `Buy AI Firewall (0.1 BTC) [${save.firewallCharges} Active]`;
+            document.getElementById('buyBotnetBtn').disabled = save.botnet || save.btc < 0.5; document.getElementById('buyBotnetBtn').innerHTML = save.botnet ? `<i data-lucide="bot"></i> Botnet Active` : `<i data-lucide="bot"></i> Buy Botnet Controller (0.5 BTC)`;
+            document.getElementById('buyZeroDayBtn').disabled = save.zeroDay || save.btc < 5; document.getElementById('buyZeroDayBtn').innerHTML = save.zeroDay ? `<i data-lucide="terminal-square"></i> Exploit Injected` : `<i data-lucide="terminal-square"></i> Buy Zero-Day Exploit (5 BTC)`;
+            document.getElementById('buyChillerBtn').disabled = save.subZero || save.btc < 15; document.getElementById('buyChillerBtn').innerHTML = save.subZero ? `<i data-lucide="snowflake"></i> System Frozen` : `<i data-lucide="snowflake"></i> Buy Sub-Zero Chiller (15 BTC)`;
+            document.getElementById('buyFirewallAiBtn').disabled = save.btc < 0.1; document.getElementById('buyFirewallAiBtn').innerHTML = `<i data-lucide="shield-alert"></i> Buy AI Firewall (0.1 BTC) [${save.firewallCharges} Active]`;
+            
+            // Re-render icons if buttons updated
+            lucide.createIcons();
         }
 
         document.getElementById('uploadBox').onclick = () => {
@@ -471,7 +472,6 @@
             if (actualExtraction > 0) { save.cache -= actualExtraction; save.data += actualExtraction; logMsg(`<span style='color:#3498db'>[MANUAL FLUSH] Uploaded ${formatNum(actualExtraction)} Data!</span>`); updateUI(); }
         };
 
-        // Standard Upgrades
         document.getElementById('upCpuBtn').onclick = () => { save.data -= cpus[save.cpuIdx + 1].cost; save.cpuIdx++; updateUI(); };
         document.getElementById('upGpuBtn').onclick = () => { save.data -= gpus[save.gpuIdx + 1].cost; save.gpuIdx++; updateUI(); };
         document.getElementById('upNpuBtn').onclick = () => { save.data -= npus[save.npuIdx + 1].cost; save.npuIdx++; logMsg("<span style='color:#f39c12'>NPU Installed. Neural processing initiated.</span>"); updateUI(); };
@@ -479,9 +479,7 @@
         document.getElementById('upRamCapBtn').onclick = () => { 
             let addAmt = save.ramGb >= 1024 ? 1024 : (save.ramGb >= 64 ? 32 : (save.ramGb >= 32 ? 16 : 8));
             let ramCost = save.ramGb * 35;
-            save.data -= ramCost; 
-            save.ramGb += addAmt; 
-            updateUI(); 
+            save.data -= ramCost; save.ramGb += addAmt; updateUI(); 
         };
         
         document.getElementById('upCoolerBtn').onclick = () => { save.data -= coolers[save.coolerIdx + 1].cost; save.coolerIdx++; updateUI(); };
@@ -494,16 +492,14 @@
             logMsg("<span style='color:#3498db'>[SYSTEM] Network Upgraded. Extraction limits increased.</span>"); updateUI(); 
         };
 
-        // Darknet Upgrades
         document.getElementById('buyBotnetBtn').onclick = () => { save.btc -= 0.5; save.botnet = true; logMsg("<span style='color:#ff003c'>Botnet active. Automated cache flushing enabled.</span>"); updateUI(); };
         document.getElementById('buyZeroDayBtn').onclick = () => { save.btc -= 5; save.zeroDay = true; logMsg("<span style='color:#ff003c'>Zero-Day injected. Hashrate permanently multiplied x10.</span>"); updateUI(); };
         document.getElementById('buyChillerBtn').onclick = () => { save.btc -= 15; save.subZero = true; logMsg("<span style='color:#ff003c'>Sub-Zero Chiller installed. Thermal limiters removed.</span>"); updateUI(); };
         document.getElementById('buyFirewallAiBtn').onclick = () => { save.btc -= 0.1; save.firewallCharges++; logMsg(`<span style='color:#ff003c'>AI Firewall purchased. Charges remaining: ${save.firewallCharges}</span>`); updateUI(); };
 
-        // --- CORE FUNCTIONS (RESTORED) ---
         document.getElementById('ocBtn').onclick = () => {
             save.ocMode = !save.ocMode;
-            document.getElementById('ocBtn').innerText = save.ocMode ? "Disable Overclock" : "Enable Overclock (2x Hash, +45°C)";
+            document.getElementById('ocBtn').innerHTML = save.ocMode ? `<i data-lucide="flame"></i> Disable Overclock` : `<i data-lucide="flame"></i> Enable Overclock (2x Hash)`;
             logMsg(save.ocMode ? `<span style="color:#e74c3c;">[SYSTEM] Overclock ENABLED. Warning: Extreme temperatures detected.</span>` : `<span style="color:#4ade80;">[SYSTEM] Overclock DISABLED. Thermals normalizing.</span>`);
             updateUI();
         };
@@ -538,7 +534,7 @@
             if (fileSha) payload.sha = fileSha;
 
             try {
-                const res = await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/leaderboard.json`, {
+                const res = await fetch(`https://api.github.com/repos/wa-el-az/waelos/contents/leaderboard.json`, {
                     method: 'PUT', headers: { 'Authorization': `Bearer ${CONFIG.GITHUB_TOKEN}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
                 });
                 if (res.ok) {
@@ -554,7 +550,6 @@
             }
         }
 
-        // Game Loop
         setInterval(() => { 
             if (!gameActive) return;
             save.cache += calculateHashrate() / 10; 
@@ -571,6 +566,9 @@
             ind.innerText = "[Syncing...]"; ind.style.color = "#f1c40f"; ind.style.opacity = 1;
             cloudSync();
         }, 10000);
+
+        // Initialize Lucide Icons on first load
+        lucide.createIcons();
     </script>
 </body>
 </html>
