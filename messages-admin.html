@@ -1,38 +1,42 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/u-term/apple-emoji-css@master/apple-emoji.css">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Wael — Inbox</title>
     <link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
     <link rel="stylesheet" href="css/style.css" />
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body { padding: 80px 5vw; }
         .wrapper { position: relative; z-index: 10; max-width: 800px; margin: 0 auto; }
-        h1 { margin-bottom: 30px; }
+        h1 { margin-bottom: 30px; display: flex; align-items: center; gap: 10px; }
         .msg-card { background: rgba(0,0,0,0.4); border: 1px solid rgba(255,255,255,0.15); border-radius: 16px; padding: 20px; margin-bottom: 20px; backdrop-filter: blur(10px); }
         .msg-header { display: flex; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; margin-bottom: 10px; }
         .msg-title { font-weight: bold; font-size: 18px; }
-        .msg-date { color: var(--muted); font-size: 14px; }
-        .msg-email { color: #4ade80; font-size: 14px; margin-bottom: 15px; display: block; }
+        .msg-date { color: var(--muted); font-size: 14px; display: flex; align-items: center; gap: 6px; }
+        .msg-email { color: #4ade80; font-size: 14px; margin-bottom: 15px; display: flex; align-items: center; gap: 6px; }
         .msg-body { line-height: 1.5; white-space: pre-wrap; margin-bottom: 15px; }
+        .navBtn { display: inline-flex; align-items: center; gap: 6px; }
+        .btn-danger { display: inline-flex; align-items: center; gap: 6px; }
+        .lucide { width: 1.2em; height: 1.2em; vertical-align: -0.125em; }
     </style>
 </head>
 <body>
     <div class="bg-left"></div>
     <div class="bg-right"></div>
-    <a class="navBtn" href="admin">Back to Hub</a>
+    <a class="navBtn" href="admin"><i data-lucide="arrow-left"></i> Back to Hub</a>
 
     <div class="wrapper">
-        <h1>Inbox</h1>
+        <h1><i data-lucide="inbox"></i> Inbox</h1>
         <div id="inboxList">
-            <p style="color: var(--muted);">Loading messages...</p>
+            <p style="color: var(--muted);"><i data-lucide="loader-2" class="lucide-spin"></i> Loading messages...</p>
         </div>
     </div>
 
     <script src="js/config.js"></script>
     <script>
+        lucide.createIcons();
         let db = {};
         let fileSha = null;
 
@@ -58,7 +62,7 @@
 
         function render() {
             const list = document.getElementById('inboxList');
-            list.innerHTML = ''; // Safely clear out the loading text
+            list.innerHTML = ''; 
             const keys = Object.keys(db).reverse();
             
             if (keys.length === 0) {
@@ -69,7 +73,6 @@
             keys.forEach(id => {
                 const msg = db[id];
                 
-                // SAFE DOM CREATION (Prevents XSS)
                 const card = document.createElement('div');
                 card.className = 'msg-card';
                 
@@ -78,18 +81,18 @@
                 
                 const title = document.createElement('span');
                 title.className = 'msg-title';
-                title.textContent = msg.name; // TextContent treats scripts as raw text!
+                title.textContent = msg.name; 
                 
                 const date = document.createElement('span');
                 date.className = 'msg-date';
-                date.textContent = msg.date;
+                date.innerHTML = `<i data-lucide="calendar"></i> ${msg.date}`;
                 
                 header.appendChild(title);
                 header.appendChild(date);
                 
                 const email = document.createElement('span');
                 email.className = 'msg-email';
-                email.textContent = msg.email;
+                email.innerHTML = `<i data-lucide="at-sign"></i> ${msg.email}`;
                 
                 const body = document.createElement('div');
                 body.className = 'msg-body';
@@ -97,7 +100,7 @@
                 
                 const btn = document.createElement('button');
                 btn.className = 'btn-danger';
-                btn.textContent = 'Delete Message';
+                btn.innerHTML = `<i data-lucide="trash-2"></i> Delete Message`;
                 btn.onclick = () => deleteMsg(id);
                 
                 card.appendChild(header);
@@ -107,6 +110,7 @@
                 
                 list.appendChild(card);
             });
+            lucide.createIcons();
         }
 
         async function deleteMsg(id) {
