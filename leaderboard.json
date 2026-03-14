@@ -3,13 +3,13 @@
     "score": 100390000,
     "pass": "Kiloalpha_5@",
     "mypc": {
-      "data": 9999999989663,
-      "cache": 4959100230553.72,
+      "data": 9737451610848,
+      "cache": 747567163591643000,
       "energy": 3325,
       "btc": 989969.5000000023,
       "qTokens": 3120885932,
       "lastLogin": "",
-      "cpuIdx": 14,
+      "cpuIdx": 68,
       "gpuIdx": 0,
       "npuIdx": 0,
       "ramGb": 8,
@@ -25,7 +25,7 @@
       "zeroDay": true,
       "subZero": true,
       "firewallCharges": 100,
-      "lastTime": 1773512572131
+      "lastTime": 1773512582136
     }
   }
 }
