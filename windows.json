@@ -1,19 +1,14 @@
 [
   { "version": "Windows 11", "edition": "Pro", "key": "W269N-WFGWX-YVC9B-4J6C9-T83GX" },
-  { "version": "Windows 11", "edition": "Pro Education", "key": "6TP4R-GNPTD-KYYHQ-7B7DP-J447Y" },
-  { "version": "Windows 11", "edition": "Pro for Workstations", "key": "NRG8B-VKK3Q-CXVCJ-9G2XF-6Q84J" },
   { "version": "Windows 11", "edition": "Enterprise", "key": "NPPR9-FWDCX-D2C8J-H872K-2YT43" },
   { "version": "Windows 11", "edition": "Education", "key": "NW6C2-QMPVW-D7KKK-3GKT6-VCFB2" },
-  
   { "version": "Windows 10", "edition": "Pro", "key": "VK7JG-NPHTM-C97JM-9MPGT-3V66T" },
   { "version": "Windows 10", "edition": "Home", "key": "YTMG3-N6DKC-DKB77-7M9GH-8HVX7" },
   { "version": "Windows 10", "edition": "Enterprise", "key": "XGVPP-NMH47-7TTHJ-W3FW7-8HV2C" },
-  { "version": "Windows 10", "edition": "Education", "key": "YNMGQ-8RYV3-4PGQ3-C8XTP-7CFBY" },
-  
   { "version": "Windows 8.1", "edition": "Pro", "key": "GCRJD-8NW9H-F2CDX-CCM8D-9D6T9" },
-  { "version": "Windows 8.1", "edition": "Core", "key": "M9Q9P-WNJJT-6PXPY-DWX8H-6XWKK" },
   { "version": "Windows 8.1", "edition": "Enterprise", "key": "MHF9N-XY6XB-WVXMC-BTDCT-MKKG7" },
-  
   { "version": "Windows 7", "edition": "Professional", "key": "FJ82H-XT6CR-J8D7P-XQJJ2-GPDD4" },
-  { "version": "Windows 7", "edition": "Enterprise", "key": "33PXH-7Y6KF-2VJC9-XBBR8-HVTHH" }
+  { "version": "Office 2024", "edition": "Pro Plus", "key": "2TDPW-NDQ7G-FMG99-DXQ7M-TX3T2" },
+  { "version": "Office 2021", "edition": "Pro Plus", "key": "FXYTK-NJJ8C-GB6DW-3DYQT-6F7TH" },
+  { "version": "Office 2019", "edition": "Pro Plus", "key": "NMMKJ-6RK4F-KMJVX-8PN3J-QXB3X" }
 ]
