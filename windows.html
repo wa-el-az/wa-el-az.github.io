@@ -46,7 +46,7 @@
     <a class="navBtn" id="dynamicBackBtn" href="index"><i data-lucide="home"></i> Home</a>
 
     <div class="header">
-        <h1><i data-lucide="key"></i> Windows Vault</h1>
+        <h1><img src="https://img.icons8.com/ios11/512/FFFFFF/windows-11.png" alt="Windows Logo" style="width: 48px; height: 48px; object-fit: contain; margin-top: -4px;"> Windows Vault</h1>
         <p>Official generic license keys for activation and testing.</p>
     </div>
 
@@ -56,13 +56,13 @@
                 <label>Windows Version</label>
                 <select id="versionSelect">
                     <option value="all">All Versions</option>
-                    </select>
+                </select>
             </div>
             <div class="filter-group">
                 <label>Edition</label>
                 <select id="editionSelect">
                     <option value="all">All Editions</option>
-                    </select>
+                </select>
             </div>
         </div>
 
@@ -98,7 +98,6 @@
             const filterSection = document.getElementById('filterSection');
             
             try {
-                // Fetch the JSON file
                 const response = await fetch('windows.json');
                 if (!response.ok) throw new Error("Database not found");
                 
@@ -111,7 +110,7 @@
                 renderKeys(keysDatabase);
 
             } catch (e) {
-                loading.innerHTML = `<i data-lucide="alert-circle"></i> Error loading Windows keys. Make sure windows.json exists.`;
+                loading.innerHTML = `<i data-lucide="alert-circle"></i> Error loading Windows keys.`;
                 lucide.createIcons();
             }
         });
@@ -120,7 +119,6 @@
             const versionSelect = document.getElementById('versionSelect');
             const editionSelect = document.getElementById('editionSelect');
             
-            // Extract unique versions and editions
             const versions = [...new Set(keysDatabase.map(item => item.version))];
             const editions = [...new Set(keysDatabase.map(item => item.edition))];
             
@@ -136,7 +134,6 @@
                 editionSelect.appendChild(opt);
             });
 
-            // Add Event Listeners for filtering
             versionSelect.addEventListener('change', filterData);
             editionSelect.addEventListener('change', filterData);
         }
