@@ -3,8 +3,8 @@
     "score": 103000,
     "pass": "4606",
     "mypc": {
-      "data": 0.5,
-      "cache": 0.31000000000000016,
+      "data": 44,
+      "cache": 29.709999999999976,
       "energy": 10004750,
       "btc": 100,
       "qTokens": 2,
@@ -19,8 +19,8 @@
       "netIdx": 0,
       "busIdx": 0,
       "softIdx": 0,
-      "ocMode": false,
-      "lastTime": 1773507346996,
+      "ocMode": true,
+      "lastTime": 1773507355706,
       "secretFound": false
     }
   }
