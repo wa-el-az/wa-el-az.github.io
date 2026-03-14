@@ -4,7 +4,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/u-term/apple-emoji-css@master/apple-emoji.css">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Wael — My PC Terminal</title>
+    <title>WaelOS — My PC Terminal</title>
     <link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
     <link rel="stylesheet" href="css/style.css" />
     <style>
@@ -37,6 +37,14 @@
         .btn-prestige { border-color: #9b59b6; color: #9b59b6; }
         .btn-prestige:hover:not(:disabled) { background: #9b59b6; color: #fff; }
 
+        /* Darknet Styles */
+        .btn-darknet { border-color: #ff003c; color: #ff003c; background: rgba(255,0,60,0.05); }
+        .btn-darknet:hover:not(:disabled) { background: #ff003c; color: #000; box-shadow: 0 0 15px #ff003c; }
+        .btn-darknet:disabled { border-color: #440000; color: #660000; background: transparent; }
+        #darknetStore { display: none; }
+        .dark-card { border-color: #ff003c !important; background: rgba(20, 0, 0, 0.8) !important; }
+        .dark-card h3 { color: #ff003c !important; border-bottom-color: #ff003c !important; text-shadow: 0 0 10px #ff003c; }
+
         .hardware-list { margin-top: 15px; font-size: 13px; line-height: 1.6; }
         .hardware-item { display: flex; justify-content: space-between; border-bottom: 1px dashed #333; padding: 6px 0; }
         .highlight { color: #fff; font-weight: bold; text-align: right; }
@@ -61,7 +69,7 @@
 </head>
 <body>
     <div class="bg-left"></div><div class="bg-right"></div>
-    <a class="navBtn" href="index" style="z-index: 50;">Exit</a>
+    <a class="navBtn" href="index" style="z-index: 50;">Home</a>
 
     <div class="terminal-wrap">
         <div class="terminal" id="terminalLog">
@@ -88,8 +96,9 @@
             <div class="hardware-list">
                 <div class="hardware-item"><span>CPU:</span> <span class="highlight" id="cpuDisp"></span></div>
                 <div class="hardware-item"><span>GPU:</span> <span class="highlight" id="gpuDisp"></span></div>
-                <div class="hardware-item"><span>RAM Capacity:</span> <span class="highlight" id="ramSpdDisp"></span></div>
-                <div class="hardware-item"><span>Network / Data Bus:</span> <span class="highlight" id="networkDisp"></span></div>
+                <div class="hardware-item"><span>NPU (AI):</span> <span class="highlight" id="npuDisp" style="color:#f39c12;"></span></div>
+                <div class="hardware-item"><span>RAM:</span> <span class="highlight" id="ramSpdDisp"></span></div>
+                <div class="hardware-item"><span>Network / Bus:</span> <span class="highlight" id="networkDisp"></span></div>
             </div>
             
             <div id="systemLog"></div>
@@ -100,7 +109,7 @@
             </div>
         </div>
 
-        <div class="sidebar">
+        <div class="sidebar" id="normalStore">
             <div class="store-card" style="border-color: rgba(231, 76, 60, 0.4); background: rgba(231, 76, 60, 0.05);">
                 <h3 style="color: #e74c3c; border-bottom-color: rgba(231, 76, 60, 0.2);">System Overrides</h3>
                 <button class="btn-term btn-danger-sys" id="ocBtn">Enable Overclock (2x Hash, +45°C)</button>
@@ -111,21 +120,41 @@
                 <h3>Core Hardware</h3>
                 <button class="btn-term" id="upCpuBtn">Buy CPU Upgrade</button>
                 <button class="btn-term" id="upGpuBtn">Buy GPU Upgrade</button>
+                <button class="btn-term" id="upNpuBtn">Install NPU (AI Core)</button>
                 <button class="btn-term" id="upRamCapBtn">Upgrade RAM</button>
                 <button class="btn-term" id="upCoolerBtn">Upgrade Cooler</button>
             </div>
 
             <div class="store-card">
                 <h3>Software & Infrastructure</h3>
-                <button class="btn-term" id="upBusBtn">Upgrade Data Bus (Multiplies Extraction)</button>
-                <button class="btn-term" id="upSoftBtn">Upgrade OS Algorithm (Multiplies Hash)</button>
+                <button class="btn-term" id="upBusBtn">Upgrade Data Bus</button>
+                <button class="btn-term" id="upSoftBtn">Upgrade Algorithm</button>
                 <button class="btn-term btn-energy" id="upNetBtn">Upgrade Network</button>
             </div>
 
             <div class="store-card" style="border-color: rgba(52, 152, 219, 0.4); background: rgba(52, 152, 219, 0.05);">
                 <h3 style="color: #3498db; border-bottom-color: rgba(52, 152, 219, 0.2);">Cross-System Link</h3>
-                <p style="font-size: 12px; color: #aaa; margin-top: 0; margin-bottom: 10px;">Cloud Tea Balance: <strong id="teaDispStore" style="color:#fff;">0</strong></p>
+                <p style="font-size: 12px; color: #aaa; margin-top: 0; margin-bottom: 10px;">Cloud Tea: <strong id="teaDispStore" style="color:#fff;">0</strong></p>
                 <button class="btn-term btn-tea" id="convertTeaBtn">Convert 1,000 Tea ➔ 50 Energy</button>
+            </div>
+        </div>
+
+        <div class="sidebar" id="darknetStore">
+            <div class="store-card dark-card">
+                <h3>☠️ THE SILK ROAD</h3>
+                <p style="font-size: 12px; color: #aaa; margin-top: 0;">Prices listed in BTC.</p>
+                
+                <button class="btn-term btn-darknet" id="buyBotnetBtn">Buy Botnet Controller (0.5 BTC)</button>
+                <p style="font-size: 11px; color:#aaa; margin: -5px 0 10px;">Automatically flushes Cache every 10s.</p>
+
+                <button class="btn-term btn-darknet" id="buyFirewallAiBtn">Buy AI Firewall (0.1 BTC)</button>
+                <p style="font-size: 11px; color:#aaa; margin: -5px 0 10px;">Blocks 1 DDoS Attack (+1 Charge).</p>
+
+                <button class="btn-term btn-darknet" id="buyZeroDayBtn">Buy Zero-Day Exploit (5 BTC)</button>
+                <p style="font-size: 11px; color:#aaa; margin: -5px 0 10px;">Permanent 10x Hashrate Multiplier.</p>
+
+                <button class="btn-term btn-darknet" id="buyChillerBtn">Buy Sub-Zero Chiller (15 BTC)</button>
+                <p style="font-size: 11px; color:#aaa; margin: -5px 0 10px;">Disables Thermal Throttling permanently.</p>
             </div>
         </div>
     </div>
@@ -133,272 +162,256 @@
     <div class="modal-overlay" id="loginModal" style="z-index: 10001;">
         <div class="modal-card">
             <h2 class="modal-title">Cloud Terminal Login</h2>
-            <p class="modal-text">Enter your Wael OS credentials to sync. <strong style="color: #4ade80;">If your username doesn't exist, an account will be created!</strong></p>
             <input type="text" id="usernameInput" class="input" placeholder="Username" autocomplete="off" />
             <input type="password" id="passwordInput" class="input" placeholder="Password" />
             <p id="loginMsg" style="font-size: 13px; font-weight: bold; margin-top: 0;"></p>
-            <button class="btn" id="loginBtn">Authenticate / Register</button>
+            <button class="btn" id="loginBtn">Authenticate</button>
         </div>
     </div>
 
     <script src="js/config.js"></script>
-    <script src="js/achievements.js"></script>
     <script>
         const storageTiers = [{ name: "Floppy Disk", mult: 0.05 }, { name: "HDD", mult: 0.5 }, { name: "SATA SSD", mult: 1.0 }, { name: "NVMe Gen4", mult: 5.0 }];
-        const coolers = [{ name: "Stock Cooler", capacity: 50, cost: 0 }, { name: "Tower Air Cooler", capacity: 150, cost: 2500 }, { name: "360mm AIO Liquid", capacity: 450, cost: 150000 }, { name: "Sub-Zero Chiller", capacity: 1200, cost: 2000000 }, { name: "Liquid Nitrogen", capacity: 5000, cost: 50000000 }];
-        const psus = [{ name: "Generic 300W", watts: 300, cost: 0 }, { name: "750W Gold", watts: 750, cost: 5000 }, { name: "1600W Titanium", watts: 1600, cost: 300000 }, { name: "Industrial Power Station", watts: 10000, cost: 10000000 }];
+        const coolers = [{ name: "Stock Cooler", capacity: 50, cost: 0 }, { name: "Tower Air Cooler", capacity: 150, cost: 2500 }, { name: "360mm AIO Liquid", capacity: 450, cost: 150000 }, { name: "Industrial Liquid", capacity: 1200, cost: 2000000 }, { name: "Liquid Nitrogen", capacity: 5000, cost: 50000000 }];
         const networks = [{ name: "Dial-Up", speed: 5 }, { name: "Broadband", speed: 250 }, { name: "Gigabit Fiber", speed: 10000 }, { name: "Dark Web Node", speed: 500000 }, { name: "Quantum Link", speed: 50000000 }];
-        const softwareUpgrades = [{ name: "Base OS", mult: 1 }, { name: "Hash Optimizer v1", mult: 2 }, { name: "Data Compression", mult: 5 }, { name: "AI Core Logic", mult: 15 }, { name: "Quantum Routing", mult: 50 }];
+        const softwareUpgrades = [{ name: "Base OS", mult: 1 }, { name: "Hash Optimizer", mult: 2 }, { name: "Data Compression", mult: 5 }, { name: "AI Core Logic", mult: 15 }, { name: "Quantum Routing", mult: 50 }];
 
-        const cpus = []; const cpuPrefixes = ["i3", "i5", "i7", "i9", "Xeon", "Threadripper"];
+        // Expanded CPUs with Core Ultra
+        const cpus = []; 
+        const cpuPrefixes = ["i3", "i5", "i7", "i9", "Xeon", "Threadripper"];
         for(let i=0; i<60; i++) { cpus.push({ name: `${cpuPrefixes[Math.floor(i/10)]} Gen ${i%10 + 1}`, power: Math.floor(Math.pow(1.2, i) * 5), cost: Math.floor(Math.pow(1.25, i) * 100), watts: 35 + Math.floor(i * 5) }); }
-        const gpuNames = ["GTX 1060", "RTX 2060", "RTX 3060", "RTX 4090", "RTX 5090", "Blackwell Pro"];
-        const gpus = []; gpuNames.forEach((name, i) => { gpus.push({ name: name, power: Math.floor(Math.pow(1.5, i) * 20), cost: Math.floor(Math.pow(1.6, i) * 500), watts: 50 + Math.floor(i * 20) }); });
+        // The New Elite Core Ultras
+        const ultraPrefixes = ["Core Ultra 5", "Core Ultra 7", "Core Ultra 9"];
+        for(let i=0; i<9; i++) { cpus.push({ name: `${ultraPrefixes[Math.floor(i/3)]} Gen ${i%3 + 1}`, power: Math.floor(Math.pow(1.3, i+60) * 5), cost: Math.floor(Math.pow(1.35, i+60) * 100), watts: 400 + (i*50) }); }
 
-        let globalLB = {};
-        let fileSha = null;
-        let loggedInUser = null;
-        let gameActive = false;
+        // Expanded GPUs
+        const gpuNames = ["GTX 1060", "RTX 2060", "RTX 3060", "RTX 4090", "RTX 5090", "Blackwell Pro", "NVIDIA RTX ULTRA 7000 WOS edition"];
+        const gpus = []; gpuNames.forEach((name, i) => { gpus.push({ name: name, power: Math.floor(Math.pow(1.6, i) * 50), cost: Math.floor(Math.pow(1.7, i) * 500), watts: 50 + Math.floor(i * 30) }); });
 
-        // NEW SAVES IMPLEMENTED
+        // New NPU Category
+        const npus = [
+            { name: "None", cost: 0, cooldown: 0 },
+            { name: "Intel Core 9 AI", cost: 500000000000, cooldown: 90 },     // 500 Billion
+            { name: "Ryzen 9 AI", cost: 10000000000000, cooldown: 45 },      // 10 Trillion
+            { name: "Nvidia NX AI", cost: 500000000000000, cooldown: 15 }    // 500 Trillion
+        ];
+
+        let globalLB = {}; let fileSha = null; let loggedInUser = null; let gameActive = false;
+        let hackActive = false; let hackAnswer = 0; let hackMult = 0; let hackDiff = "";
+        let inDarknet = false;
+
         let save = {
             data: 0, cache: 0, energy: 0, btc: 0, qTokens: 0, lastLogin: "", 
-            cpuIdx: 0, gpuIdx: 0, ramGb: 8, ddrGen: 2, storageIdx: 0, coolerIdx: 0, psuIdx: 0, netIdx: 0,
-            busIdx: 0, softIdx: 0, ocMode: false,
-            lastTime: Date.now(), secretFound: false
+            cpuIdx: 0, gpuIdx: 0, npuIdx: 0, ramGb: 8, ddrGen: 2, storageIdx: 0, coolerIdx: 0, netIdx: 0, busIdx: 0, softIdx: 0, 
+            ocMode: false, btcPrice: 1000000000, 
+            botnet: false, zeroDay: false, subZero: false, firewallCharges: 0,
+            lastTime: Date.now()
         };
-
-        // HACKING VARIABLES
-        let hackActive = false;
-        let hackAnswer = 0;
 
         async function fetchDB() {
             try {
                 const res = await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/leaderboard.json`);
                 if (res.ok) {
-                    const data = await res.json();
-                    fileSha = data.sha;
+                    const data = await res.json(); fileSha = data.sha;
                     globalLB = JSON.parse(decodeURIComponent(escape(atob(data.content))));
-                    for (let key in globalLB) {
-                        if (typeof globalLB[key] === 'number') globalLB[key] = { score: globalLB[key], pass: "1234" };
-                    }
+                    for (let key in globalLB) { if (typeof globalLB[key] === 'number') globalLB[key] = { score: globalLB[key], pass: "1234" }; }
                     checkAutoLogin();
                 } else throw new Error();
-            } catch (e) {
-                document.getElementById('termHeader').innerText = "> DATABASE CONNECTION FAILED. LOCAL MODE ONLY.";
-                checkAutoLogin(true);
-            }
+            } catch (e) { document.getElementById('termHeader').innerText = "> DB OFFLINE. LOCAL MODE."; checkAutoLogin(true); }
         }
         fetchDB();
 
         function checkAutoLogin(offline = false) {
-            let savedUser = localStorage.getItem('mypc_user');
-            let savedPass = localStorage.getItem('mypc_pass');
-
+            let savedUser = localStorage.getItem('mypc_user'); let savedPass = localStorage.getItem('mypc_pass');
             if (savedUser && savedPass && !offline) {
                 if (globalLB[savedUser] && globalLB[savedUser].pass === savedPass) {
-                    if(globalLB[savedUser].mypc) {
-                        save = { ...save, ...globalLB[savedUser].mypc }; // Merge old saves with new variables
-                    }
+                    if(globalLB[savedUser].mypc) save = { ...save, ...globalLB[savedUser].mypc };
                     startGame(savedUser);
                 } else document.getElementById('loginModal').classList.add('active');
             } else if (offline) {
                 let local = JSON.parse(localStorage.getItem('mypc_local_backup'));
-                if (local) save = { ...save, ...local };
-                startGame("offline_user");
+                if (local) save = { ...save, ...local }; startGame("offline_user");
             } else document.getElementById('loginModal').classList.add('active');
         }
 
         document.getElementById('loginBtn').onclick = () => {
-            const user = document.getElementById('usernameInput').value.trim();
-            const pass = document.getElementById('passwordInput').value.trim();
-            const msg = document.getElementById('loginMsg');
-            if (!user || !pass) return msg.innerText = "Please enter both fields!";
-
+            const user = document.getElementById('usernameInput').value.trim(); const pass = document.getElementById('passwordInput').value.trim();
+            if (!user || !pass) return;
             if (globalLB[user]) {
                 if (globalLB[user].pass === pass) {
                     localStorage.setItem('mypc_user', user); localStorage.setItem('mypc_pass', pass);
                     if(globalLB[user].mypc) save = { ...save, ...globalLB[user].mypc };
-                    document.getElementById('loginModal').classList.remove('active');
-                    startGame(user);
-                } else { msg.style.color = "#ff6b6b"; msg.innerText = "✗ Incorrect password!"; }
+                    document.getElementById('loginModal').classList.remove('active'); startGame(user);
+                } else alert("Incorrect password!");
             } else {
                 globalLB[user] = { score: 0, pass: pass, mypc: save };
                 localStorage.setItem('mypc_user', user); localStorage.setItem('mypc_pass', pass);
-                document.getElementById('loginModal').classList.remove('active');
-                startGame(user); cloudSync(); 
+                document.getElementById('loginModal').classList.remove('active'); startGame(user);
             }
         };
 
         function startGame(username) {
-            loggedInUser = username;
-            document.getElementById('cliPrompt').innerText = `${username}@wael-os:~# `;
+            loggedInUser = username; document.getElementById('cliPrompt').innerText = `${username}@wael-os:~# `;
+            if(!save.btcPrice) save.btcPrice = 1000000000;
+            if(!save.firewallCharges) save.firewallCharges = 0;
             
-            const today = new Date().toDateString();
-            if (save.lastLogin !== today) { save.energy += 100; save.lastLogin = today; logMsg("[SYS] DAILY LOGIN: +100 Energy."); }
-
-            const secondsOffline = Math.floor((Date.now() - save.lastTime) / 1000);
-            if (secondsOffline > 60) {
-                let offlineHash = calculateHashrate();
-                let generated = offlineHash * secondsOffline;
-                save.cache += generated;
-                
-                let busMult = Math.pow(5, save.busIdx);
-                let networkCapacity = (networks[save.netIdx].speed * busMult) * secondsOffline;
-                let extracted = Math.min(save.cache, networkCapacity);
-                save.cache -= extracted; save.data += extracted;
-                logMsg(`[SYS] OFFLINE REPORT: Extracted ${Math.floor(extracted).toLocaleString()} Data to balance.`);
-            }
-
-            gameActive = true;
-            document.getElementById('ocBtn').innerText = save.ocMode ? "Disable Overclock" : "Enable Overclock (2x Hash, +45°C)";
-            updateUI();
+            gameActive = true; updateUI();
+            logMsg(`[SYS] Boot sequence complete. BTC Market currently trading at ${save.btcPrice.toLocaleString()} Data.`);
         }
 
         function getTemp() {
+            if (save.subZero) return 30; // Sub-Zero Chiller makes temps permanent 30C
             let heatGeneration = cpus[save.cpuIdx].watts + gpus[save.gpuIdx].watts;
             let coolingPower = coolers[save.coolerIdx].capacity;
             let temp = 35 + (heatGeneration * 0.2) - (coolingPower * 0.1);
-            if (save.ocMode) temp += 45; // Overclock Heat Penalty
+            if (save.ocMode) temp += 45;
             return Math.max(30, Math.min(100, temp + (Math.random()*2 - 1)));
         }
 
         function calculateHashrate() {
             let base = (cpus[save.cpuIdx].power + gpus[save.gpuIdx].power);
             let rawHash = (base * (1 + (save.ramGb / 100)) * save.ddrGen) * storageTiers[save.storageIdx].mult;
-            
-            rawHash *= softwareUpgrades[save.softIdx].mult; // Software Multiplier
-            if (save.qTokens > 0) rawHash *= (1 + save.qTokens); // Prestige Multiplier
-            if (save.ocMode) rawHash *= 2; // Overclock Multiplier
-            
-            if (getTemp() >= 95) rawHash *= 0.1; // Extreme Thermal Throttling
+            rawHash *= softwareUpgrades[save.softIdx].mult;
+            if (save.qTokens > 0) rawHash *= (1 + save.qTokens);
+            if (save.ocMode) rawHash *= 2;
+            if (save.zeroDay) rawHash *= 10; // Zero Day Black Market Exploit
+            if (getTemp() >= 95 && !save.subZero) rawHash *= 0.1; 
             return rawHash;
         }
 
         function logMsg(msg) {
             const log = document.getElementById('systemLog');
-            log.innerHTML += `<div>${msg}</div>`;
-            log.scrollTop = log.scrollHeight;
+            log.innerHTML += `<div>${msg}</div>`; log.scrollTop = log.scrollHeight;
         }
 
-        // --- THE TERMINAL CLI LOGIC ---
+        function triggerHack() {
+            let rand = Math.random();
+            let a, b;
+            if (rand < 0.5) { hackDiff = "EASY"; a = Math.floor(Math.random()*10)+2; b = Math.floor(Math.random()*10)+2; hackMult = 300; }
+            else if (rand < 0.85) { hackDiff = "MEDIUM"; a = Math.floor(Math.random()*40)+10; b = Math.floor(Math.random()*40)+10; hackMult = 1500; }
+            else { hackDiff = "HARD"; a = Math.floor(Math.random()*150)+50; b = Math.floor(Math.random()*15)+5; hackMult = 8000; }
+            hackAnswer = a * b; hackActive = true;
+            document.getElementById('cliPrompt').style.color = "#e74c3c";
+            logMsg(`<span style="color:#f1c40f;">[HACK: ${hackDiff}] Solve to bypass firewall: <b>${a} x ${b}</b> = ?</span>`);
+        }
+
+        // --- COMMAND LINE INTERFACE ---
         document.getElementById('termInput').addEventListener('keypress', function (e) {
             if (e.key === 'Enter') {
-                let val = this.value.trim();
-                this.value = '';
+                let val = this.value.trim().toLowerCase(); this.value = '';
                 if (!val) return;
-                
                 logMsg(`<span style="color:#fff;">> ${val}</span>`);
 
-                // Check if waiting for Hack answer
                 if (hackActive) {
                     if (parseInt(val) === hackAnswer) {
-                        let reward = calculateHashrate() * 300; // 5 minutes worth of data
+                        let reward = calculateHashrate() * hackMult;
                         save.data += reward;
-                        logMsg(`<span style="color:#4ade80;">[HACK SUCCESS] Firewall bypassed. Injecting ${Math.floor(reward).toLocaleString()} Data!</span>`);
-                    } else {
-                        logMsg(`<span style="color:#ff6b6b;">[HACK FAILED] Incorrect sequence. IP Logged.</span>`);
-                    }
-                    hackActive = false;
-                    document.getElementById('cliPrompt').style.color = "#4ade80";
+                        logMsg(`<span style="color:#4ade80;">[HACK SUCCESS] Injected ${Math.floor(reward).toLocaleString()} Data!</span>`);
+                    } else logMsg(`<span style="color:#ff6b6b;">[HACK FAILED] Incorrect sequence. IP Logged.</span>`);
+                    hackActive = false; document.getElementById('cliPrompt').style.color = inDarknet ? "#ff003c" : "#4ade80";
                     return;
                 }
 
                 let args = val.split(' ');
-                let cmd = args[0].toLowerCase();
+                let cmd = args[0];
 
-                if (cmd === 'hack') {
-                    let a = Math.floor(Math.random() * 12) + 2;
-                    let b = Math.floor(Math.random() * 12) + 2;
-                    hackAnswer = a * b;
-                    hackActive = true;
-                    document.getElementById('cliPrompt').style.color = "#e74c3c";
-                    logMsg(`<span style="color:#f1c40f;">[HACK INITIATED] Target IP Acquired. Solve to bypass firewall: <b>${a} x ${b}</b> = ?</span>`);
-                } 
-                else if (cmd === 'convert' && args[1]) {
-                    let amt = parseFloat(args[1].replace(/,/g, ''));
-                    if (isNaN(amt) || amt <= 0) {
-                        logMsg(`<span style="color:#ff6b6b;">Invalid amount. Usage: convert [data_amount]</span>`);
-                        return;
-                    }
-                    if (save.data >= amt) {
-                        save.data -= amt;
-                        let btcGain = amt / 1000000000;
-                        save.btc += btcGain;
-                        logMsg(`<span style="color:#4ade80;">[EXCHANGE] Sent ${amt.toLocaleString()} Data to Blockchain. Received ${btcGain.toFixed(8)} BTC.</span>`);
-                        updateUI();
-                    } else logMsg(`<span style="color:#ff6b6b;">[EXCHANGE ERROR] Insufficient Data Balance.</span>`);
+                if (cmd === 'hack') { triggerHack(); } 
+                else if (cmd === 'buy' && args[1] === 'btc' && args[2]) {
+                    let amt = parseFloat(args[2]);
+                    let cost = amt * save.btcPrice;
+                    if (save.data >= cost) { save.data -= cost; save.btc += amt; logMsg(`<span style="color:#4ade80;">Bought ${amt} BTC for ${cost.toLocaleString()} Data.</span>`); updateUI(); } 
+                    else logMsg(`<span style="color:#ff6b6b;">Insufficient Data.</span>`);
                 }
-                else if (cmd === 'help') {
-                    logMsg(`Commands:<br>- <b>hack</b>: Manual hacking override for Data.<br>- <b>convert [amount]</b>: Turn Data into Bitcoin (1B Data = 1 BTC).<br>- <b>clear</b>: Clear terminal history.`);
-                } 
+                else if (cmd === 'sell' && args[1] === 'btc' && args[2]) {
+                    let amt = parseFloat(args[2]);
+                    if (save.btc >= amt) { save.btc -= amt; let gain = amt * save.btcPrice; save.data += gain; logMsg(`<span style="color:#4ade80;">Sold ${amt} BTC for ${gain.toLocaleString()} Data.</span>`); updateUI(); }
+                    else logMsg(`<span style="color:#ff6b6b;">Insufficient BTC.</span>`);
+                }
+                else if (val === 'ssh darknet') {
+                    inDarknet = true; document.getElementById('normalStore').style.display = 'none'; document.getElementById('darknetStore').style.display = 'flex';
+                    document.getElementById('cliPrompt').style.color = "#ff003c";
+                    logMsg(`<span style="color:#ff003c; font-weight:bold;">[CONNECTED TO SILK ROAD] Warning: Unregulated market. Type 'exit' to leave.</span>`);
+                }
+                else if (cmd === 'exit' && inDarknet) {
+                    inDarknet = false; document.getElementById('normalStore').style.display = 'flex'; document.getElementById('darknetStore').style.display = 'none';
+                    document.getElementById('cliPrompt').style.color = "#4ade80";
+                    logMsg(`<span style="color:#4ade80;">[CONNECTION SEVERED] Returned to local OS.</span>`);
+                }
+                else if (cmd === 'help') { logMsg(`Commands:<br>- <b>hack</b>: Manual override for Data.<br>- <b>buy/sell btc [amt]</b>: Trade crypto.<br>- <b>clear</b>: Clear history.<br>- <b>ssh darknet</b>: ???`); } 
                 else if (cmd === 'clear') { document.getElementById('systemLog').innerHTML = ''; }
-                else { logMsg(`<span style="color:#ff6b6b;">Command not recognized. Type 'help'.</span>`); }
+                else { logMsg(`<span style="color:#ff6b6b;">Command not recognized.</span>`); }
             }
         });
 
-        // --- DDOS LOGIC ---
+        // BTC Market Fluctuations
+        setInterval(() => {
+            if(!gameActive) return;
+            save.btcPrice = Math.floor(Math.random() * 1500000000) + 500000000;
+            logMsg(`<span style="color:#f39c12">[MARKET UPDATE] BTC Price changed to ${save.btcPrice.toLocaleString()} Data.</span>`);
+        }, 300000);
+
+        // NPU Auto-Hacker
+        setInterval(() => {
+            if(!gameActive || save.npuIdx === 0) return;
+            let n = npus[save.npuIdx];
+            if (Math.random() < (1 / n.cooldown)) {
+                let diff = Math.random() < 0.7 ? 300 : (Math.random() < 0.9 ? 1500 : 8000); // Same diff odds
+                let reward = calculateHashrate() * diff;
+                save.data += reward;
+                logMsg(`<span style="color:#f39c12; font-size:11px;">[NPU AI] ${n.name} auto-solved a node. +${Math.floor(reward).toLocaleString()} Data.</span>`);
+            }
+        }, 1000);
+
+        // Botnet Auto-Upload
+        setInterval(() => {
+            if(!gameActive || !save.botnet) return;
+            let actualExtraction = Math.min(save.cache, (networks[save.netIdx].speed * Math.pow(5, save.busIdx)) * 10);
+            if (actualExtraction > 0) { save.cache -= actualExtraction; save.data += actualExtraction; updateUI(); }
+        }, 10000);
+
+        // DDOS LOGIC + AI FIREWALL
         setInterval(() => {
             if (!gameActive || document.getElementById('ddosBtn').style.display === 'block') return;
-            if (Math.random() < 0.1) { // 10% chance every minute
-                logMsg(`<span style="color:#e74c3c; font-size:14px; font-weight:bold;">[WARNING] DDOS ATTACK DETECTED! Deploy Firewall immediately!</span>`);
-                let btn = document.getElementById('ddosBtn');
-                btn.style.display = 'block';
-                
-                let timeLeft = 10;
-                btn.innerText = `DEPLOY FIREWALL (${timeLeft}s)`;
-                
+            if (Math.random() < 0.1) {
+                if (save.firewallCharges > 0) {
+                    save.firewallCharges--;
+                    logMsg(`<span style="color:#4ade80;">[AI FIREWALL] Automatically neutralized DDoS threat! (${save.firewallCharges} charges left)</span>`);
+                    updateUI(); return;
+                }
+                logMsg(`<span style="color:#e74c3c;">[WARNING] DDOS ATTACK DETECTED! Deploy Firewall!</span>`);
+                let btn = document.getElementById('ddosBtn'); btn.style.display = 'block';
+                let timeLeft = 10; btn.innerText = `DEPLOY FIREWALL (${timeLeft}s)`;
                 let attackInterval = setInterval(() => {
-                    timeLeft--;
-                    btn.innerText = `DEPLOY FIREWALL (${timeLeft}s)`;
+                    timeLeft--; btn.innerText = `DEPLOY FIREWALL (${timeLeft}s)`;
                     if (timeLeft <= 0) {
-                        clearInterval(attackInterval);
-                        btn.style.display = 'none';
-                        let lost = save.cache * 0.2;
-                        save.cache -= lost;
-                        logMsg(`<span style="color:#e74c3c;">[BREACHED] DDOS successful. Lost ${Math.floor(lost).toLocaleString()} Cache!</span>`);
-                        updateUI();
+                        clearInterval(attackInterval); btn.style.display = 'none';
+                        let lost = save.cache * 0.2; save.cache -= lost;
+                        logMsg(`<span style="color:#e74c3c;">[BREACHED] Lost ${Math.floor(lost).toLocaleString()} Cache!</span>`); updateUI();
                     }
                 }, 1000);
-
-                btn.onclick = () => {
-                    clearInterval(attackInterval);
-                    btn.style.display = 'none';
-                    logMsg(`<span style="color:#4ade80;">[DEFLECTED] Firewall successfully blocked the attack.</span>`);
-                };
+                btn.onclick = () => { clearInterval(attackInterval); btn.style.display = 'none'; logMsg(`<span style="color:#4ade80;">[DEFLECTED] Firewall blocked the attack.</span>`); };
             }
         }, 60000);
 
-
         function updateUI() {
             if(!gameActive) return;
-
-            let currentTea = (globalLB[loggedInUser] && globalLB[loggedInUser].score) ? globalLB[loggedInUser].score : 0;
-            document.getElementById('teaDispStore').innerText = currentTea.toLocaleString();
-
             let currentTemp = getTemp();
-            let isThrottling = currentTemp >= 95;
-
             document.getElementById('dataDisp').innerText = Math.floor(save.data).toLocaleString();
             document.getElementById('cacheDisp').innerText = Math.floor(save.cache).toLocaleString();
             document.getElementById('energyDisp').innerText = save.energy;
             document.getElementById('hashDisp').innerText = Math.floor(calculateHashrate()).toLocaleString() + " /s";
-            
-            let busMult = Math.pow(5, save.busIdx);
-            document.getElementById('netDisp').innerText = (networks[save.netIdx].speed * busMult).toLocaleString() + " /s";
-            
+            document.getElementById('netDisp').innerText = (networks[save.netIdx].speed * Math.pow(5, save.busIdx)).toLocaleString() + " /s";
             document.getElementById('btcDisp').innerText = save.btc.toFixed(4) + " BTC";
             document.getElementById('tokenDisp').innerText = save.qTokens;
-
-            document.getElementById('tempDisp').innerText = Math.floor(currentTemp) + "°C";
-            document.getElementById('tempBox').className = isThrottling ? "stat-box warning-box" : "stat-box";
+            document.getElementById('tempDisp').innerText = save.subZero ? "30°C (FROZEN)" : Math.floor(currentTemp) + "°C";
+            document.getElementById('tempBox').className = (currentTemp >= 95 && !save.subZero) ? "stat-box warning-box" : "stat-box";
 
             document.getElementById('cpuDisp').innerText = cpus[save.cpuIdx].name;
             document.getElementById('gpuDisp').innerText = gpus[save.gpuIdx].name;
+            document.getElementById('npuDisp').innerText = npus[save.npuIdx].name;
             document.getElementById('ramSpdDisp').innerText = `${save.ramGb}GB DDR${save.ddrGen}`;
-            document.getElementById('networkDisp').innerText = `${networks[save.netIdx].name} (Bus Lv.${save.busIdx})`;
 
-            // CPU/GPU Upgrades
+            // Store Buttons
             let nextCpu = cpus[save.cpuIdx + 1];
             document.getElementById('upCpuBtn').innerText = nextCpu ? `Upgrade CPU (${nextCpu.cost.toLocaleString()})` : "MAXED";
             document.getElementById('upCpuBtn').disabled = !nextCpu || save.data < nextCpu.cost;
@@ -407,140 +420,55 @@
             document.getElementById('upGpuBtn').innerText = nextGpu ? `Upgrade GPU (${nextGpu.cost.toLocaleString()})` : "MAXED";
             document.getElementById('upGpuBtn').disabled = !nextGpu || save.data < nextGpu.cost;
 
-            // SCALING RAM UPGRADE
-            let addAmt = 8;
-            if (save.ramGb >= 64) addAmt = 32;
-            else if (save.ramGb >= 32) addAmt = 16;
-            let ramCost = save.ramGb * 35;
-            document.getElementById('upRamCapBtn').innerText = `Add +${addAmt}GB RAM (${ramCost.toLocaleString()})`;
-            document.getElementById('upRamCapBtn').disabled = save.data < ramCost;
+            let nextNpu = npus[save.npuIdx + 1];
+            document.getElementById('upNpuBtn').innerText = nextNpu ? `Install NPU (${nextNpu.cost.toLocaleString()})` : "MAXED";
+            document.getElementById('upNpuBtn').disabled = !nextNpu || save.data < nextNpu.cost;
 
-            // Cooler
-            let nextCooler = coolers[save.coolerIdx + 1];
-            document.getElementById('upCoolerBtn').innerText = nextCooler ? `Upgrade Cooler (${nextCooler.cost.toLocaleString()})` : "MAXED";
-            document.getElementById('upCoolerBtn').disabled = !nextCooler || save.data < nextCooler.cost;
+            let ramCost = save.ramGb * 35; document.getElementById('upRamCapBtn').innerText = `Add RAM (${ramCost.toLocaleString()})`; document.getElementById('upRamCapBtn').disabled = save.data < ramCost;
+            let nextCooler = coolers[save.coolerIdx + 1]; document.getElementById('upCoolerBtn').innerText = nextCooler ? `Upgrade Cooler (${nextCooler.cost.toLocaleString()})` : "MAXED"; document.getElementById('upCoolerBtn').disabled = !nextCooler || save.data < nextCooler.cost;
+            let busCost = Math.pow(10, save.busIdx + 5); document.getElementById('upBusBtn').innerText = `Upgrade Bus (${busCost.toLocaleString()})`; document.getElementById('upBusBtn').disabled = save.data < busCost;
+            let nextSoft = softwareUpgrades[save.softIdx + 1]; document.getElementById('upSoftBtn').innerText = nextSoft ? `Upgrade Algorithm (${(Math.pow(10, save.softIdx + 4)).toLocaleString()})` : "MAXED"; document.getElementById('upSoftBtn').disabled = !nextSoft || save.data < Math.pow(10, save.softIdx + 4);
 
-            // Bus & Software (Costing Data)
-            let busCost = Math.pow(10, save.busIdx + 5);
-            document.getElementById('upBusBtn').innerText = `Upgrade Data Bus (${busCost.toLocaleString()})`;
-            document.getElementById('upBusBtn').disabled = save.data < busCost;
-
-            let nextSoft = softwareUpgrades[save.softIdx + 1];
-            document.getElementById('upSoftBtn').innerText = nextSoft ? `Upgrade Algorithm (${(Math.pow(10, save.softIdx + 4)).toLocaleString()})` : "MAXED";
-            document.getElementById('upSoftBtn').disabled = !nextSoft || save.data < Math.pow(10, save.softIdx + 4);
-
-            // Network (Energy)
-            let netCost = (save.netIdx + 1) * 15;
-            document.getElementById('upNetBtn').innerText = save.netIdx < networks.length-1 ? `Upgrade Network (${netCost} Energy)` : "MAXED";
-            document.getElementById('upNetBtn').disabled = save.netIdx >= networks.length-1 || save.energy < netCost;
+            // Darknet Buttons
+            document.getElementById('buyBotnetBtn').disabled = save.botnet || save.btc < 0.5; document.getElementById('buyBotnetBtn').innerText = save.botnet ? "Botnet Active" : "Buy Botnet Controller (0.5 BTC)";
+            document.getElementById('buyZeroDayBtn').disabled = save.zeroDay || save.btc < 5; document.getElementById('buyZeroDayBtn').innerText = save.zeroDay ? "Exploit Injected" : "Buy Zero-Day Exploit (5 BTC)";
+            document.getElementById('buyChillerBtn').disabled = save.subZero || save.btc < 15; document.getElementById('buyChillerBtn').innerText = save.subZero ? "System Frozen" : "Buy Sub-Zero Chiller (15 BTC)";
+            document.getElementById('buyFirewallAiBtn').disabled = save.btc < 0.1; document.getElementById('buyFirewallAiBtn').innerText = `Buy AI Firewall (0.1 BTC) [${save.firewallCharges} Active]`;
         }
 
-        // --- BUTTON INTERACTIONS ---
         document.getElementById('uploadBox').onclick = () => {
             if(!gameActive) return;
-            let busMult = Math.pow(5, save.busIdx);
-            let burstAmount = (networks[save.netIdx].speed * busMult) * 10;
-            let actualExtraction = Math.min(save.cache, burstAmount);
-            
-            if (actualExtraction > 0) {
-                save.cache -= actualExtraction; save.data += actualExtraction;
-                logMsg(`<span style='color:#3498db'>[MANUAL FLUSH] Uploaded ${Math.floor(actualExtraction).toLocaleString()} Data!</span>`);
-                updateUI();
-            }
+            let actualExtraction = Math.min(save.cache, (networks[save.netIdx].speed * Math.pow(5, save.busIdx)) * 10);
+            if (actualExtraction > 0) { save.cache -= actualExtraction; save.data += actualExtraction; logMsg(`<span style='color:#3498db'>[MANUAL FLUSH] Uploaded ${Math.floor(actualExtraction).toLocaleString()} Data!</span>`); updateUI(); }
         };
 
-        document.getElementById('ocBtn').onclick = () => {
-            save.ocMode = !save.ocMode;
-            document.getElementById('ocBtn').innerText = save.ocMode ? "Disable Overclock" : "Enable Overclock (2x Hash, +45°C)";
-            logMsg(save.ocMode ? `<span style="color:#e74c3c;">[SYSTEM] Overclock ENABLED. Warning: Extreme temperatures detected.</span>` : `<span style="color:#4ade80;">[SYSTEM] Overclock DISABLED. Thermals normalizing.</span>`);
-            updateUI();
-        };
+        // Standard Upgrades
+        document.getElementById('upCpuBtn').onclick = () => { save.data -= cpus[save.cpuIdx + 1].cost; save.cpuIdx++; updateUI(); };
+        document.getElementById('upGpuBtn').onclick = () => { save.data -= gpus[save.gpuIdx + 1].cost; save.gpuIdx++; updateUI(); };
+        document.getElementById('upNpuBtn').onclick = () => { save.data -= npus[save.npuIdx + 1].cost; save.npuIdx++; logMsg("<span style='color:#f39c12'>NPU Installed. Neural processing initiated.</span>"); updateUI(); };
+        document.getElementById('upRamCapBtn').onclick = () => { save.data -= save.ramGb * 35; save.ramGb += save.ramGb >= 64 ? 32 : (save.ramGb >= 32 ? 16 : 8); updateUI(); };
+        document.getElementById('upCoolerBtn').onclick = () => { save.data -= coolers[save.coolerIdx + 1].cost; save.coolerIdx++; updateUI(); };
+        document.getElementById('upBusBtn').onclick = () => { save.data -= Math.pow(10, save.busIdx + 5); save.busIdx++; updateUI(); };
+        document.getElementById('upSoftBtn').onclick = () => { save.data -= Math.pow(10, save.softIdx + 4); save.softIdx++; updateUI(); };
 
-        document.getElementById('formatBtn').onclick = () => {
-            if (confirm("WARNING: Formatting C:\\ will wipe all Hardware, Cache, and Data. You will earn Quantum Tokens. Proceed?")) {
-                let tokensToGet = Math.floor(save.data / 1000000000000); // 1 Trillion = 1 Token
-                if (tokensToGet < 1) return alert("You need at least 1 Trillion Data to earn a Quantum Token!");
-                save.qTokens += tokensToGet;
-                
-                // Wipe Stats
-                save.data = 0; save.cache = 0; save.cpuIdx = 0; save.gpuIdx = 0; save.ramGb = 8; 
-                save.ddrGen = 2; save.storageIdx = 0; save.coolerIdx = 0; save.psuIdx = 0; 
-                save.netIdx = 0; save.busIdx = 0; save.softIdx = 0; save.ocMode = false;
-                
-                logMsg(`<span style="color:#9b59b6; font-size:16px;">[FORMAT COMPLETE] Rebooting with ${save.qTokens} Quantum Tokens! Hashrate permanently multiplied.</span>`);
-                updateUI();
-            }
-        };
+        // Darknet Upgrades
+        document.getElementById('buyBotnetBtn').onclick = () => { save.btc -= 0.5; save.botnet = true; logMsg("<span style='color:#ff003c'>Botnet active. Automated cache flushing enabled.</span>"); updateUI(); };
+        document.getElementById('buyZeroDayBtn').onclick = () => { save.btc -= 5; save.zeroDay = true; logMsg("<span style='color:#ff003c'>Zero-Day injected. Hashrate permanently multiplied x10.</span>"); updateUI(); };
+        document.getElementById('buyChillerBtn').onclick = () => { save.btc -= 15; save.subZero = true; logMsg("<span style='color:#ff003c'>Sub-Zero Chiller installed. Thermal limiters removed.</span>"); updateUI(); };
+        document.getElementById('buyFirewallAiBtn').onclick = () => { save.btc -= 0.1; save.firewallCharges++; logMsg(`<span style='color:#ff003c'>AI Firewall purchased. Charges remaining: ${save.firewallCharges}</span>`); updateUI(); };
 
-        document.getElementById('upCpuBtn').onclick = () => { save.data -= cpus[save.cpuIdx + 1].cost; save.cpuIdx++; logMsg("CPU Upgraded. Temps increasing."); updateUI(); };
-        document.getElementById('upGpuBtn').onclick = () => { save.data -= gpus[save.gpuIdx + 1].cost; save.gpuIdx++; logMsg("GPU Upgraded."); updateUI(); };
-        document.getElementById('upRamCapBtn').onclick = () => { 
-            let addAmt = save.ramGb >= 64 ? 32 : (save.ramGb >= 32 ? 16 : 8);
-            save.data -= save.ramGb * 35; save.ramGb += addAmt; logMsg(`RAM Capacity Increased by ${addAmt}GB.`); updateUI(); 
-        };
-        document.getElementById('upCoolerBtn').onclick = () => { save.data -= coolers[save.coolerIdx + 1].cost; save.coolerIdx++; logMsg("Cooling improved."); updateUI(); };
-        document.getElementById('upNetBtn').onclick = () => { save.energy -= (save.netIdx + 1) * 15; save.netIdx++; logMsg("Network Upgraded."); updateUI(); };
-        document.getElementById('upBusBtn').onclick = () => { save.data -= Math.pow(10, save.busIdx + 5); save.busIdx++; logMsg("Data Bus Upgraded. Extraction limits multiplied x5!"); updateUI(); };
-        document.getElementById('upSoftBtn').onclick = () => { save.data -= Math.pow(10, save.softIdx + 4); save.softIdx++; logMsg("Software Algorithm Optimized."); updateUI(); };
-
-        document.getElementById('convertTeaBtn').onclick = () => {
-            if (!globalLB[loggedInUser]) return;
-            if (globalLB[loggedInUser].score >= 1000) {
-                globalLB[loggedInUser].score -= 1000; save.energy += 50;
-                logMsg("<span style='color:#3498db'>[INTEGRATION] 1,000 Cloud Tea converted to 50 Energy.</span>");
-                updateUI(); cloudSync(); 
-            } else logMsg("<span class='text-red'>ERROR: Insufficient Cloud Tea.</span>");
-        };
-
-        // --- GAME LOOP ---
+        // Game Loop
         setInterval(() => { 
             if (!gameActive) return;
             save.cache += calculateHashrate() / 10; 
-            
-            let busMult = Math.pow(5, save.busIdx);
-            let extractionLimit = (networks[save.netIdx].speed * busMult) / 10;
-            let actualExtraction = Math.min(save.cache, extractionLimit);
-            
-            save.cache -= actualExtraction;
-            save.data += actualExtraction;
-
-            let warningLimit = (networks[save.netIdx].speed * busMult) * 2;
-            document.getElementById('cacheDisp').parentElement.className = save.cache > warningLimit ? "stat-box warning-box" : "stat-box";
-            
+            let actualExtraction = Math.min(save.cache, (networks[save.netIdx].speed * Math.pow(5, save.busIdx)) / 10);
+            save.cache -= actualExtraction; save.data += actualExtraction;
             updateUI(); 
         }, 100);
 
-        // --- CLOUD SYNC ---
-        async function cloudSync() {
-            if (!loggedInUser || !CONFIG.GITHUB_TOKEN) return;
-            globalLB[loggedInUser].mypc = save;
-            const payload = { message: `Auto-save My PC`, content: btoa(unescape(encodeURIComponent(JSON.stringify(globalLB, null, 2)))) };
-            if (fileSha) payload.sha = fileSha;
-
-            try {
-                const res = await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/leaderboard.json`, {
-                    method: 'PUT', headers: { 'Authorization': `Bearer ${CONFIG.GITHUB_TOKEN}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
-                });
-                if (res.ok) {
-                    const data = await res.json(); fileSha = data.content.sha;
-                    let indicator = document.getElementById('saveIndicator');
-                    indicator.innerText = "[Cloud Sync OK]"; indicator.style.color = "#4ade80";
-                    setTimeout(() => { indicator.style.opacity = 0; }, 1500);
-                }
-            } catch (e) {
-                let indicator = document.getElementById('saveIndicator');
-                indicator.innerText = "[Sync Failed - Local Saved]"; indicator.style.color = "#ff6b6b";
-                setTimeout(() => { indicator.style.opacity = 0; }, 2000);
-            }
-        }
-
         setInterval(() => {
-            if (!gameActive) return;
-            save.lastTime = Date.now();
+            if (!gameActive) return; save.lastTime = Date.now();
             localStorage.setItem('mypc_local_backup', JSON.stringify(save));
-            let ind = document.getElementById('saveIndicator');
-            ind.innerText = "[Syncing...]"; ind.style.color = "#f1c40f"; ind.style.opacity = 1;
-            cloudSync();
         }, 10000);
     </script>
 </body>
