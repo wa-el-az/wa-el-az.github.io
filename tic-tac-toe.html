@@ -1,36 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/u-term/apple-emoji-css@master/apple-emoji.css">
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1" name="viewport"/>
     <title>Wael — Tic-Tac-Toe AI</title>
     <link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
     <link rel="stylesheet" href="css/style.css" />
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body { padding: 60px 5vw; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .card { max-width: 450px; text-align: center; }
+        .card { max-width: 450px; text-align: center; position: relative; z-index: 10; }
         select { width: 100%; padding: 10px; border-radius: 8px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,.18); background: rgba(0,0,0,.3); color: #fff; outline: none; font-size: 16px; font-weight: bold; text-align: center;}
         select option { background: #111; color: #fff; }
-        #statusText { font-size: 20px; font-weight: bold; margin-bottom: 20px; height: 24px; color: #4ade80; }
+        #statusText { font-size: 20px; font-weight: bold; margin-bottom: 20px; height: 24px; color: #4ade80; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .board { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 25px; }
         .cell { aspect-ratio: 1; background: rgba(0, 0, 0, 0.2); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 48px; font-weight: 900; cursor: pointer; transition: 0.2s; user-select: none; }
         .cell:hover { background: rgba(255, 255, 255, 0.1); transform: scale(1.02); }
         .cell.x { color: #fff; }
         .cell.o { color: #ff6b6b; }
+        .navBtn { display: inline-flex; align-items: center; gap: 6px; }
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        .lucide { width: 1.2em; height: 1.2em; vertical-align: -0.125em; }
     </style>
 </head>
 <body>
     <div class="bg-left"></div><div class="bg-right"></div>
-    <a class="navBtn" href="index">Home</a>
+    <a class="navBtn" href="index"><i data-lucide="home"></i> Home</a>
     <div class="card">
-        <h1>Tic-Tac-Toe</h1>
+        <h1 style="display: flex; align-items: center; justify-content: center; gap: 10px;"><i data-lucide="gamepad-2"></i> Tic-Tac-Toe</h1>
         <select id="difficulty" onchange="resetGame()">
             <option value="easy">Difficulty: Easy</option>
             <option value="medium">Difficulty: Medium</option>
             <option value="hard" selected>Difficulty: Unbeatable (AI)</option>
         </select>
-        <div id="statusText">Your turn! (You are X)</div>
+        <div id="statusText"><i data-lucide="user"></i> Your turn! (You are X)</div>
         <div class="board" id="board">
             <div class="cell" onclick="makeMove(0)"></div>
             <div class="cell" onclick="makeMove(1)"></div>
@@ -42,12 +45,13 @@
             <div class="cell" onclick="makeMove(7)"></div>
             <div class="cell" onclick="makeMove(8)"></div>
         </div>
-        <button class="btn" onclick="resetGame()">Restart Game</button>
+        <button class="btn" onclick="resetGame()"><i data-lucide="rotate-ccw"></i> Restart Game</button>
     </div>
 
     <script src="js/config.js"></script>
     <script src="js/achievements.js"></script>
     <script>
+        lucide.createIcons();
         let origBoard;
         const huPlayer = 'X'; const aiPlayer = 'O';
         const winCombos = [ [0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8], [0,4,8], [6,4,2] ];
@@ -59,8 +63,9 @@
 
         function startGame() {
             gameActive = true;
-            statusText.innerText = "Your turn! (You are X)";
+            statusText.innerHTML = `<i data-lucide="user"></i> Your turn! (You are X)`;
             statusText.style.color = "#4ade80";
+            lucide.createIcons();
             origBoard = Array.from(Array(9).keys());
             for (let i = 0; i < cells.length; i++) {
                 cells[i].innerText = ''; cells[i].classList.remove('x', 'o'); cells[i].style.cursor = 'pointer';
@@ -71,9 +76,10 @@
             if (gameActive && typeof origBoard[squareId] == 'number') {
                 turn(squareId, huPlayer);
                 
-                // If the human didn't win or tie, let AI play
                 if (gameActive) {
-                    statusText.innerText = "AI is thinking..."; statusText.style.color = "#fff";
+                    statusText.innerHTML = `<i data-lucide="cpu"></i> AI is thinking...`; 
+                    statusText.style.color = "#fff";
+                    lucide.createIcons();
                     setTimeout(() => { turn(bestSpot(), aiPlayer); }, 300);
                 }
             }
@@ -87,10 +93,11 @@
             if (gameWon) {
                 gameOver(gameWon);
             } else if (checkTie()) {
-                // checkTie() returns true if the game is a tie, stopping further actions
                 return;
             } else if (player === aiPlayer && gameActive) { 
-                statusText.innerText = "Your turn! (You are X)"; statusText.style.color = "#4ade80"; 
+                statusText.innerHTML = `<i data-lucide="user"></i> Your turn! (You are X)`; 
+                statusText.style.color = "#4ade80"; 
+                lucide.createIcons();
             }
         }
 
@@ -106,13 +113,14 @@
         function gameOver(gameWon) {
             gameActive = false;
             if (gameWon.player == huPlayer) { 
-                statusText.innerText = "You Win!"; 
+                statusText.innerHTML = `<i data-lucide="trophy"></i> You Win!`; 
                 statusText.style.color = "#4ade80"; 
                 window.unlockAchievement('ttt_win');
             } else { 
-                statusText.innerText = "AI Wins!"; 
+                statusText.innerHTML = `<i data-lucide="skull"></i> AI Wins!`; 
                 statusText.style.color = "#ff6b6b"; 
             }
+            lucide.createIcons();
         }
 
         function emptySquares() { return origBoard.filter(s => typeof s == 'number'); }
@@ -130,9 +138,10 @@
         function checkTie() {
             if (emptySquares().length == 0) { 
                 gameActive = false; 
-                statusText.innerText = "It's a Tie!"; 
+                statusText.innerHTML = `<i data-lucide="handshake"></i> It's a Tie!`; 
                 statusText.style.color = "#f5f7fa"; 
                 window.unlockAchievement('ttt_tie');
+                lucide.createIcons();
                 return true; 
             }
             return false;
