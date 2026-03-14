@@ -1,11 +1,11 @@
 {
   "Wael": {
-    "score": 100464000,
+    "score": 100460000,
     "pass": "Kiloalpha_5@",
     "mypc": {
-      "data": 51,
-      "cache": 9.588000000000008,
-      "energy": 300,
+      "data": 55,
+      "cache": 10.340000000000003,
+      "energy": 500,
       "btc": 0,
       "qTokens": 0,
       "lastLogin": "",
