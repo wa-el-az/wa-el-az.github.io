@@ -1,26 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/u-term/apple-emoji-css@master/apple-emoji.css">
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1" name="viewport"/>
     <title>Wael — Message Me</title>
     <link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
     <link rel="stylesheet" href="css/style.css" />
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body { display: flex; align-items: center; justify-content: center; padding: 20px; overflow-x: hidden; }
         .card { width: 100%; max-width: 500px; }
         label { display: block; margin-bottom: 6px; font-size: 14px; color: var(--muted); }
         textarea { min-height: 120px; resize: vertical; }
+        .btn { display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        #statusMsg { text-align: center; margin-top: 15px; font-weight: bold; }
+        #statusMsg { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 15px; font-weight: bold; }
+        .navBtn { display: flex; align-items: center; gap: 6px; }
+        .lucide { width: 1.2em; height: 1.2em; vertical-align: -0.125em; }
     </style>
 </head>
 <body>
     <div class="bg-left"></div><div class="bg-right"></div>
-    <a class="navBtn" href="index">Home</a>
+    <a class="navBtn" href="index"><i data-lucide="home"></i> Home</a>
     <div class="card">
-        <h1>Send a Message</h1>
+        <h1 style="display: flex; align-items: center; justify-content: center; gap: 10px;"><i data-lucide="send"></i> Send a Message</h1>
         <p class="sub">This goes directly to my Admin Inbox.</p>
         <form id="msgForm">
             <label>Your Name</label>
@@ -29,7 +32,7 @@
             <input type="email" id="mEmail" placeholder="tea@wael.work.gd" autocomplete="off">
             <label>Message</label>
             <textarea id="mText" required placeholder="Hi Wael!"></textarea>
-            <button type="submit" class="btn" id="sendBtn">Send Message</button>
+            <button type="submit" class="btn" id="sendBtn"><i data-lucide="mail"></i> Send Message</button>
         </form>
         <p id="statusMsg"></p>
     </div>
@@ -37,12 +40,14 @@
     <script src="js/config.js"></script>
     <script src="js/achievements.js"></script>
     <script>
+        lucide.createIcons();
         document.getElementById('msgForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('sendBtn');
             const msgOut = document.getElementById('statusMsg');
             btn.disabled = true;
-            btn.innerText = "Sending...";
+            btn.innerHTML = `<i data-lucide="loader-2" class="lucide-spin"></i> Sending...`;
+            lucide.createIcons();
             msgOut.innerText = "";
 
             let currentData = {};
@@ -80,7 +85,7 @@
 
                 if (push.ok) {
                     msgOut.style.color = "#4ade80";
-                    msgOut.innerText = "✓ Message sent! I'll read it soon.";
+                    msgOut.innerHTML = `<i data-lucide="check-circle-2"></i> Message sent! I'll read it soon.`;
                     window.unlockAchievement('exp_mail');
                     document.getElementById('msgForm').reset();
                 } else { 
@@ -88,10 +93,11 @@
                 }
             } catch (err) {
                 msgOut.style.color = "#ff6b6b";
-                msgOut.innerText = "✗ Failed to send. Error: " + err.message;
+                msgOut.innerHTML = `<i data-lucide="x-circle"></i> Failed to send. Error: ${err.message}`;
             }
             btn.disabled = false;
-            btn.innerText = "Send Message";
+            btn.innerHTML = `<i data-lucide="mail"></i> Send Message`;
+            lucide.createIcons();
         });
     </script>
 </body>
