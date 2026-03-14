@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/u-term/apple-emoji-css@master/apple-emoji.css">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Wael — Codes Admin</title>
     <link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
     <link rel="stylesheet" href="css/style.css" />
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body { padding: 60px 20px; }
         .container { position: relative; z-index: 10; max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
@@ -15,10 +15,13 @@
         .code-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid rgba(255,255,255,.05); }
         .code-item:last-child { border-bottom: none; }
         .bypasses-box { background: rgba(0,0,0,.3); border: 1px solid rgba(255,255,255,.1); border-radius: 12px; padding: 15px; margin-top: 20px; }
-        .bypasses-box h3 { margin: 0 0 10px; font-size: 16px; color: #4ade80; }
+        .bypasses-box h3 { margin: 0 0 10px; font-size: 16px; color: #4ade80; display: flex; align-items: center; gap: 6px; }
         .bypasses-box ul { margin: 0; padding-left: 20px; color: var(--muted); font-size: 14px; line-height: 1.6; }
         .bypasses-box li strong { color: #fff; }
         textarea { resize: vertical; }
+        .navBtn { display: inline-flex; align-items: center; gap: 6px; }
+        .btn-danger { display: flex; align-items: center; justify-content: center; gap: 4px; }
+        .lucide { width: 1.2em; height: 1.2em; vertical-align: -0.125em; }
 
         @media (max-width: 768px) { 
             .container { grid-template-columns: 1fr; margin-top: 40px; } 
@@ -28,11 +31,11 @@
 <body>
     <div class="bg-left"></div>
     <div class="bg-right"></div>
-    <a class="navBtn" href="admin">Back to Hub</a>
+    <a class="navBtn" href="admin"><i data-lucide="arrow-left"></i> Back to Hub</a>
 
     <div class="container card">
         <div>
-            <h1 style="margin-top: 0;">Add Code</h1>
+            <h1 style="margin-top: 0; display: flex; align-items: center; gap: 10px;"><i data-lucide="plus-circle"></i> Add Code</h1>
             <form id="addCodeForm">
                 <label>New Code</label>
                 <input type="text" id="newCode" required autocomplete="off" style="text-transform: uppercase;">
@@ -59,21 +62,21 @@
                     <textarea id="customScript" placeholder="alert('Code Activated!'); window.unlockAchievement('hack_captain');" style="width: 100%; min-height: 100px; background: rgba(0,0,0,0.3); color: #fff; border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; padding: 10px; outline: none; font-family: monospace;"></textarea>
                 </div>
                 
-                <button type="submit" class="btn" style="margin-top: 15px;">Add to List</button>
+                <button type="submit" class="btn" style="margin-top: 15px; display: flex; align-items: center; justify-content: center; gap: 6px;"><i data-lucide="save"></i> Add to List</button>
             </form>
 
             <div style="background: rgba(0,0,0,.25); padding: 15px; border-radius: 12px; margin-top: 20px; border: 1px solid rgba(255,255,255,.1);">
-                <button class="btn" id="pushBtn" style="background: #4ade80;">Push to GitHub</button>
-                <p id="apiMsg" style="margin-top: 10px; font-weight: bold; font-size: 14px; text-align: center;"></p>
+                <button class="btn" id="pushBtn" style="background: #4ade80; display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%;"><i data-lucide="upload-cloud"></i> Push to GitHub</button>
+                <p id="apiMsg" style="margin-top: 10px; font-weight: bold; font-size: 14px; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px;"></p>
             </div>
         </div>
 
         <div>
-            <h2 style="margin-top: 0;">Current Codes</h2>
+            <h2 style="margin-top: 0; display: flex; align-items: center; gap: 10px;"><i data-lucide="key"></i> Current Codes</h2>
             <div class="code-list" id="codeList"></div>
 
             <div class="bypasses-box">
-                <h3>System Bypasses</h3>
+                <h3><i data-lucide="shield-alert"></i> System Bypasses</h3>
                 <ul>
                     <li><strong>UNLOCK-ALL</strong>: Trophies Override</li>
                     <li><strong>ADMIN</strong>: Admin Hub</li>
@@ -86,6 +89,7 @@
 
     <script src="js/config.js"></script>
     <script>
+        lucide.createIcons();
         let db = {};
         let fileSha = null;
 
@@ -113,7 +117,6 @@
                     db = JSON.parse(decodeURIComponent(escape(atob(data.content))));
                 }
             } catch (e) {
-                // Ignore error if file is missing
             }
             updateUI();
         };
@@ -157,15 +160,17 @@
                             <strong style="color:#fff;">${code}</strong><br>
                             <span style="font-size:12px; color:#aaa;">${data.type}</span>
                         </div>
-                        <button class="btn-danger" onclick="deleteCode('${code}')">Delete</button>
+                        <button class="btn-danger" onclick="deleteCode('${code}')"><i data-lucide="trash-2"></i> Delete</button>
                     </div>`;
             }
+            lucide.createIcons();
         }
 
         document.getElementById('pushBtn').addEventListener('click', async () => {
             const msg = document.getElementById('apiMsg');
             msg.style.color = "#fff";
-            msg.innerText = "Pushing...";
+            msg.innerHTML = `<i data-lucide="loader-2" class="lucide-spin"></i> Pushing...`;
+            lucide.createIcons();
 
             const payload = {
                 message: "Updated codes",
@@ -184,14 +189,15 @@
                     const data = await res.json();
                     fileSha = data.content.sha;
                     msg.style.color = "#4ade80";
-                    msg.innerText = "✓ Codes Updated Live!";
+                    msg.innerHTML = `<i data-lucide="check-circle-2"></i> Codes Updated Live!`;
                 } else {
                     throw new Error("API Error");
                 }
             } catch (e) {
                 msg.style.color = "#ff6b6b";
-                msg.innerText = "✗ Failed to update.";
+                msg.innerHTML = `<i data-lucide="x-circle"></i> Failed to update.`;
             }
+            lucide.createIcons();
         });
     </script>
 </body>
