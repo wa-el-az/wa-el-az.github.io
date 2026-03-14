@@ -1,83 +1,137 @@
 /* 1. Import Inter for non-Apple devices to clone the San Francisco look */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
-/* 2. Force download Apple Emojis for Windows/Android */
+/* 2. Force download Apple Emojis (Direct GitHub Release URL) */
 @font-face {
   font-family: 'Apple Color Emoji';
   src: local('Apple Color Emoji'), 
-       url('https://cdn.jsdelivr.net/gh/samuelngs/apple-emoji-linux/apple-color-emoji.woff2') format('woff2');
+       url('https://github.com/GORAlexComp/AppleColorEmojiFont/releases/download/v1/AppleColorEmoji.ttf') format('truetype');
 }
 
+/* =========================================
+   THEME ENGINE: DEFAULT (Moroccan Heritage)
+   ========================================= */
 :root {
-  /* Original Variables */
-  --text: #f5f7fa;
-  --muted: rgba(255, 255, 255, .78);
+  --text-main: #f5f7fa;
+  --text-muted: rgba(255, 255, 255, .78);
+  
+  --bg-left-grad: linear-gradient(135deg,#052e21 0%,#063826 60%,#052b1f 100%);
+  --bg-right-grad: linear-gradient(135deg,#4a0707 0%,#5b0b0b 60%,#360606 100%);
+  
+  --card-bg: rgba(255, 255, 255, .08);
+  --card-border: rgba(255, 255, 255, .15);
+  
+  --btn-bg: #fff;
+  --btn-text: #111;
+  --btn-hover: #e0e0e0;
+  
+  --nav-bg: rgba(255, 255, 255, .12);
+  --nav-border: rgba(255, 255, 255, .25);
+  --nav-text: #fff;
+  
+  --input-bg: rgba(0, 0, 0, .18);
+  
   --radius: 16px;
   --terminal-green: #4ade80;
-  
-  /* Wael OS Custom Variables */
-  --moroccan-red: #c1272d;
-  --moroccan-green: #006233;
-  --bg-dark: #121212;
-  --glass-bg: rgba(255, 255, 255, 0.05);
-  --glass-border: rgba(255, 255, 255, 0.1);
 }
 
+/* =========================================
+   THEME 1: Terminal Hacker
+   ========================================= */
+body.theme-terminal {
+  --text-main: #4ade80;
+  --text-muted: rgba(74, 222, 128, 0.7);
+  --bg-left-grad: linear-gradient(135deg, #050505 0%, #0a0a0a 100%);
+  --bg-right-grad: linear-gradient(135deg, #020202 0%, #050505 100%);
+  --card-bg: rgba(0, 0, 0, 0.85);
+  --card-border: rgba(74, 222, 128, 0.4);
+  --btn-bg: #4ade80;
+  --btn-text: #000;
+  --btn-hover: #38c168;
+  --nav-bg: rgba(74, 222, 128, 0.1);
+  --nav-border: #4ade80;
+  --nav-text: #4ade80;
+  --input-bg: rgba(74, 222, 128, 0.05);
+}
+
+/* =========================================
+   THEME 2: Midnight Mint
+   ========================================= */
+body.theme-mint {
+  --text-main: #f3f4f6;
+  --text-muted: #9ca3af;
+  --bg-left-grad: linear-gradient(135deg, #1a1b1e 0%, #141517 100%);
+  --bg-right-grad: linear-gradient(135deg, #232529 0%, #1c1d21 100%);
+  --card-bg: rgba(255, 255, 255, 0.03);
+  --card-border: rgba(52, 211, 153, 0.3);
+  --btn-bg: #34d399;
+  --btn-text: #000;
+  --btn-hover: #10b981;
+  --nav-bg: rgba(52, 211, 153, 0.1);
+  --nav-border: rgba(52, 211, 153, 0.4);
+  --nav-text: #34d399;
+  --input-bg: rgba(0, 0, 0, 0.4);
+}
+
+/* =========================================
+   THEME 3: Quantum Core (Light Mode)
+   ========================================= */
+body.theme-quantum {
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --bg-left-grad: linear-gradient(135deg, #f0f4f8 0%, #e1e8f0 100%);
+  --bg-right-grad: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  --card-bg: rgba(255, 255, 255, 0.6);
+  --card-border: #0ea5e9;
+  --btn-bg: #0ea5e9;
+  --btn-text: #fff;
+  --btn-hover: #0284c7;
+  --nav-bg: rgba(14, 165, 233, 0.1);
+  --nav-border: #0ea5e9;
+  --nav-text: #0ea5e9;
+  --input-bg: rgba(255, 255, 255, 0.5);
+}
+
+/* =========================================
+   CORE STYLES (Wired to Variables)
+   ========================================= */
 * { box-sizing: border-box; }
 
 body {
   margin: 0;
   min-height: 100vh;
-  
-  /* The Magic Apple Font & Emoji Stack */
+  /* Font stack prioritizes the Apple Color Emoji font */
   font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  
-  /* macOS crisp text rendering */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  
-  color: var(--text);
+  color: var(--text-main);
   background: #0b0b0b;
+  transition: color 0.3s ease, background 0.3s ease;
 }
 
-/* Restored Split Background */
-.bg-left, .bg-right { position: fixed; top: 0; bottom: 0; }
-.bg-left { left: 0; width: 58%; z-index: -2; background: linear-gradient(135deg,#052e21 0%,#063826 60%,#052b1f 100%); }
-.bg-right { right: 0; width: 52%; z-index: -1; background: linear-gradient(135deg,#4a0707 0%,#5b0b0b 60%,#360606 100%); }
-.bg-right::before { content: ""; position: absolute; left: -140px; top: -10%; width: 280px; height: 120%; background: inherit; transform: skewX(-14deg); box-shadow: -20px 0 50px rgba(0,0,0,.35); }
+.bg-left, .bg-right { position: fixed; top: 0; bottom: 0; transition: background 0.5s ease; }
+.bg-left { left: 0; width: 58%; z-index: -2; background: var(--bg-left-grad); }
+.bg-right { right: 0; width: 52%; z-index: -1; background: var(--bg-right-grad); }
+.bg-right::before { content: ""; position: absolute; left: -140px; top: -10%; width: 280px; height: 120%; background: inherit; transform: skewX(-14deg); box-shadow: -20px 0 50px rgba(0,0,0,.35); transition: background 0.5s ease; }
 
-/* Restored Navigation Button */
-.navBtn { position: absolute; top: 20px; right: 20px; padding: 12px 22px; z-index: 20; border-radius: 999px; background: rgba(255, 255, 255, .12); border: 1px solid rgba(255, 255, 255, .25); backdrop-filter: blur(10px); color: #fff; font-weight: 700; text-decoration: none; transition: 0.2s; }
-.navBtn:hover { background: rgba(255, 255, 255, .2); transform: translateY(-1px); }
+.navBtn { position: absolute; top: 20px; right: 20px; padding: 12px 22px; z-index: 20; border-radius: 999px; background: var(--nav-bg); border: 1px solid var(--nav-border); backdrop-filter: blur(10px); color: var(--nav-text); font-weight: 700; text-decoration: none; transition: 0.2s; }
+.navBtn:hover { transform: translateY(-1px); filter: brightness(1.2); }
 
-/* Restored Card Layout */
-.card { background: rgba(255, 255, 255, .08); border: 1px solid rgba(255, 255, 255, .15); border-radius: 28px; backdrop-filter: blur(14px); box-shadow: 0 25px 70px rgba(0,0,0,.35); padding: 35px 30px; }
+.card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 28px; backdrop-filter: blur(14px); box-shadow: 0 25px 70px rgba(0,0,0,.35); padding: 35px 30px; transition: background 0.3s ease, border-color 0.3s ease; }
 
-/* Restored Inputs */
-input, select, textarea { width: 100%; padding: 14px; border-radius: 12px; margin-bottom: 15px; border: 1px solid rgba(255, 255, 255, .18); background: rgba(0, 0, 0, .18); color: #fff; outline: none; font-family: inherit; font-size: 16px; }
+input, select, textarea { width: 100%; padding: 14px; border-radius: 12px; margin-bottom: 15px; border: 1px solid var(--card-border); background: var(--input-bg); color: var(--text-main); outline: none; font-family: inherit; font-size: 16px; transition: 0.3s ease; }
 
-/* Restored Buttons */
-.btn { padding: 14px 20px; border-radius: 12px; border: 0; background: #fff; color: #111; font-weight: 800; cursor: pointer; width: 100%; font-size: 16px; transition: 0.2s; font-family: inherit; }
-.btn:hover { background: #e0e0e0; transform: translateY(-2px); }
+.btn { padding: 14px 20px; border-radius: 12px; border: 0; background: var(--btn-bg); color: var(--btn-text); font-weight: 800; cursor: pointer; width: 100%; font-size: 16px; transition: 0.2s; font-family: inherit; }
+.btn:hover { background: var(--btn-hover); transform: translateY(-2px); }
 
 .btn-danger { background: #ff4757; color: white; padding: 6px 12px; border-radius: 8px; border: 0; cursor: pointer; font-weight: bold; transition: 0.2s; font-family: inherit; }
 
-/* Apple-style Typography Tweaks */
 h1 { margin: 0 0 5px; font-size: 32px; font-weight: 600; letter-spacing: -0.02em; }
-p.sub { color: var(--muted); margin: 0 0 25px; font-size: 15px; }
+p.sub { color: var(--text-muted); margin: 0 0 25px; font-size: 15px; transition: color 0.3s ease; }
 
-/* FIX FOR ACHIEVEMENT CLICKS - RESTORED */
-.heroImg img, .frame img {
-  position: relative;
-  z-index: 99;
-  pointer-events: auto !important;
-}
+.heroImg img, .frame img { position: relative; z-index: 99; pointer-events: auto !important; }
+.heroImg, .frame { pointer-events: none; }
 
-.heroImg, .frame {
-  pointer-events: none;
-}
-
-/* Mobile Responsiveness - RESTORED */
 @media (max-width: 860px) {
   .bg-right::before { display: none; }
   .bg-left, .bg-right { position: fixed; height: 50vh; width: 100%; }
