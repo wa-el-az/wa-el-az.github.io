@@ -525,7 +525,7 @@
         document.getElementById('buyChillerBtn').onclick = () => { save.btc -= 15; save.subZero = true; logMsg("<span style='color:#ff003c'>Sub-Zero Chiller installed. Thermal limiters removed.</span>"); updateUI(); };
         document.getElementById('buyFirewallAiBtn').onclick = () => { save.btc -= 0.1; save.firewallCharges++; logMsg(`<span style='color:#ff003c'>AI Firewall purchased. Charges remaining: ${save.firewallCharges}</span>`); updateUI(); };
 
-        // Core Functions
+        // --- CORE FUNCTIONS (RESTORED) ---
         document.getElementById('ocBtn').onclick = () => {
             save.ocMode = !save.ocMode;
             document.getElementById('ocBtn').innerText = save.ocMode ? "Disable Overclock" : "Enable Overclock (2x Hash, +45°C)";
