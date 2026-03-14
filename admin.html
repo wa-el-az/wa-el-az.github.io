@@ -6,23 +6,25 @@
     <title>Wael — Admin Hub</title>
     <link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
     <link rel="stylesheet" href="css/style.css" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/u-term/apple-emoji-css@master/apple-emoji.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         .wrapper { position: relative; z-index: 10; padding: 60px 5vw; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; }
         .top-nav { position: absolute; top: 20px; right: 20px; z-index: 20; display: flex; gap: 12px; }
+        .navBtn { display: flex; align-items: center; gap: 6px; }
         .card { max-width: 420px; margin: 0 auto; text-align: center; }
         #dashboardMenu { display: none; width: 100%; max-width: 500px; gap: 15px; flex-direction: column; }
-        .dash-link { display: block; padding: 18px; border-radius: 16px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.15); color: #fff; text-decoration: none; font-weight: 700; font-size: 18px; transition: 0.2s; } 
+        .dash-link { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 18px; border-radius: 16px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.15); color: #fff; text-decoration: none; font-weight: 700; font-size: 18px; transition: 0.2s; } 
         .dash-link:hover { background: rgba(255,255,255,0.1); transform: scale(1.02); }
-        #loginMsg { margin-top: 15px; font-weight: 600; font-size: 14px; color: #ff6b6b; }
+        #loginMsg { margin-top: 15px; font-weight: 600; font-size: 14px; color: #ff6b6b; display: flex; align-items: center; justify-content: center; gap: 6px; }
+        .lucide { width: 1.2em; height: 1.2em; vertical-align: -0.125em; }
         @media (max-width:860px){ .top-nav { top: 15px; right: 15px; } }
     </style>
 </head>
 <body>
     <div class="bg-left"></div><div class="bg-right"></div>
     <div class="top-nav">
-        <a class="navBtn" style="position: relative; top: 0; right: 0;" href="index">Exit</a>
-        <button class="navBtn" style="position: relative; top: 0; right: 0;" id="logoutBtn">Logout</button>
+        <a class="navBtn" style="position: relative; top: 0; right: 0;" href="index"><i data-lucide="log-out"></i> Exit</a>
+        <button class="navBtn" style="position: relative; top: 0; right: 0;" id="logoutBtn"><i data-lucide="user-minus"></i> Logout</button>
     </div>
     <div class="wrapper">
         <div class="card" id="loginCard">
@@ -31,22 +33,23 @@
             <input type="text" id="username" placeholder="Username" autocomplete="off">
             <input type="password" id="password" placeholder="Password">
             <button class="btn" id="loginBtn">Login</button>
-            <p id="loginMsg"></p>
+            <div id="loginMsg"></div>
         </div>
         <div id="dashboardMenu" class="card" style="padding: 40px;">
             <h1 style="margin-bottom: 20px;">Welcome, Wael</h1>
-            <p style="color: #4ade80; font-weight: bold; margin-bottom: 25px;">✓ System Authenticated.</p>
+            <p style="color: #4ade80; font-weight: bold; margin-bottom: 25px; display: flex; align-items: center; justify-content: center; gap: 6px;"><i data-lucide="check-circle-2"></i> System Authenticated.</p>
             
-            <a href="messages-admin" class="dash-link">📥 View Inbox</a>
-            <a href="codes-admin" class="dash-link">🔑 Codes Manager</a>
-            <a href="projects-admin" class="dash-link">📁 Projects Manager</a>
-            <a href="status-admin" class="dash-link">🟢 Status Manager</a>
-            <a href="json-admin" class="dash-link">🛠️ JSON Editor</a>
+            <a href="messages-admin" class="dash-link"><i data-lucide="inbox"></i> View Inbox</a>
+            <a href="codes-admin" class="dash-link"><i data-lucide="key"></i> Codes Manager</a>
+            <a href="projects-admin" class="dash-link"><i data-lucide="folder"></i> Projects Manager</a>
+            <a href="status-admin" class="dash-link"><i data-lucide="activity"></i> Status Manager</a>
+            <a href="json-admin" class="dash-link"><i data-lucide="settings"></i> JSON Editor</a>
         </div>
     </div>
     <script src="js/config.js"></script>
     <script src="js/achievements.js"></script>
     <script>
+        lucide.createIcons();
         const loginCard = document.getElementById('loginCard'); 
         const dashboardMenu = document.getElementById('dashboardMenu'); 
         const loginMsg = document.getElementById('loginMsg');
@@ -66,7 +69,8 @@
                 loginCard.style.display = "none"; 
                 dashboardMenu.style.display = "flex";
             } else { 
-                loginMsg.innerText = "✗ Incorrect credentials."; 
+                loginMsg.innerHTML = `<i data-lucide="x-circle"></i> Incorrect credentials.`;
+                lucide.createIcons();
                 window.unlockAchievement('hack_denied');
             }
         });
