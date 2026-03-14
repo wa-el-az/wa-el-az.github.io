@@ -14,15 +14,20 @@
         .header h1 { margin: 0; font-size: clamp(36px, 5vw, 56px); display: flex; align-items: center; justify-content: center; gap: 12px; }
         .header p { color: var(--muted); font-size: 18px; margin-top: 10px; }
         
-        .filters { display: flex; gap: 15px; margin-bottom: 30px; flex-wrap: wrap; justify-content: center; background: rgba(0,0,0,0.3); padding: 20px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); }
-        .filter-group { display: flex; flex-direction: column; gap: 8px; flex: 1; min-width: 200px; }
-        .filter-group label { font-size: 14px; color: var(--muted); font-weight: bold; text-transform: uppercase; letter-spacing: 1px; }
-        select { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid rgba(255,255,255,.18); background: rgba(0,0,0,.4); color: #fff; outline: none; font-size: 16px; font-family: "SF Pro", sans-serif; cursor: pointer; }
-        select option { background: #111; color: #fff; }
-        
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-        .key-card { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.15); border-radius: 16px; padding: 20px; backdrop-filter: blur(14px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: transform 0.2s, background 0.2s; display: flex; flex-direction: column; }
-        .key-card:hover { transform: translateY(-5px); background: rgba(255,255,255,.08); border-color: rgba(74, 222, 128, 0.4); }
+        /* CATEGORY CARDS (Main Menu) */
+        .category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .cat-card { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.15); border-radius: 24px; padding: 30px 20px; backdrop-filter: blur(14px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: 0.3s; display: flex; flex-direction: column; align-items: center; cursor: pointer; text-decoration: none; color: #fff; }
+        .cat-card:hover { transform: translateY(-8px); background: rgba(255,255,255,.1); border-color: rgba(255,255,255,0.4); }
+        .cat-card img { width: 80px; height: 80px; object-fit: contain; margin-bottom: 15px; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3)); }
+        .cat-card h2 { font-size: 22px; margin: 0; font-family: 'Space Grotesk', sans-serif; }
+
+        /* KEYS VIEW */
+        .back-to-vault { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; color: #fff; font-weight: bold; cursor: pointer; transition: 0.2s; margin-bottom: 20px; text-decoration: none; }
+        .back-to-vault:hover { background: rgba(255,255,255,0.2); }
+
+        .keys-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+        .key-card { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.15); border-radius: 16px; padding: 20px; backdrop-filter: blur(14px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: transform 0.2s; display: flex; flex-direction: column; }
+        .key-card:hover { transform: translateY(-5px); border-color: rgba(74, 222, 128, 0.4); }
         
         .kc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 10px; }
         .kc-title { font-size: 20px; font-weight: bold; font-family: 'Space Grotesk', sans-serif; margin: 0; color: #fff; }
@@ -34,7 +39,7 @@
         .copy-btn:hover { background: #e0e0e0; }
         .copy-btn.copied { background: #4ade80; color: #000; }
         
-        #loading { display: flex; align-items: center; justify-content: center; gap: 8px; text-align: center; color: var(--muted); font-size: 18px; margin-top: 40px; }
+        #loading { display: flex; align-items: center; justify-content: center; gap: 8px; color: var(--muted); font-size: 18px; margin-top: 40px; }
         .navBtn { display: inline-flex; align-items: center; gap: 6px; z-index: 50; }
         .lucide { width: 1.2em; height: 1.2em; vertical-align: -0.125em; }
     </style>
@@ -47,45 +52,54 @@
 
     <div class="header">
         <h1><img src="https://img.icons8.com/ios11/512/FFFFFF/windows-11.png" alt="Windows Logo" style="width: 48px; height: 48px; object-fit: contain; margin-top: -4px;"> Windows Vault</h1>
-        <p>Official generic license keys for activation and testing.</p>
+        <p id="headerDesc">Select a system to view official activation keys.</p>
     </div>
 
     <div class="content-area">
-        <div class="filters" id="filterSection" style="display: none;">
-            <div class="filter-group">
-                <label>Windows Version</label>
-                <select id="versionSelect">
-                    <option value="all">All Versions</option>
-                </select>
-            </div>
-            <div class="filter-group">
-                <label>Edition</label>
-                <select id="editionSelect">
-                    <option value="all">All Editions</option>
-                </select>
-            </div>
+        <div id="loading"><i data-lucide="loader-2" class="lucide-spin"></i> Accessing database...</div>
+        
+        <div id="home-view" class="category-grid" style="display: none;">
+            <a href="#11" class="cat-card">
+                <img src="1773531853500.jpeg" alt="Windows 11" style="border-radius: 12px;">
+                <h2>Windows 11</h2>
+            </a>
+            <a href="#10" class="cat-card">
+                <img src="https://depkep.com/wp-content/uploads/2023/12/Windows_logo_bg.png" alt="Windows 10">
+                <h2>Windows 10</h2>
+            </a>
+            <a href="#8" class="cat-card">
+                <img src="https://images.icon-icons.com/2415/PNG/512/windows_original_logo_icon_146292.png" alt="Windows 8/8.1">
+                <h2>Windows 8 / 8.1</h2>
+            </a>
+            <a href="#7" class="cat-card">
+                <img src="https://upload.wikimedia.org/wikipedia/en/e/e4/Windows_7_logo.png" alt="Windows 7">
+                <h2>Windows 7</h2>
+            </a>
+            <a href="#office" class="cat-card">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Microsoft_365_%282022%29.svg/500px-Microsoft_365_%282022%29.svg.png" alt="Office">
+                <h2>Microsoft Office</h2>
+            </a>
         </div>
 
-        <div id="loading"><i data-lucide="loader-2" class="lucide-spin"></i> Accessing database...</div>
-        <div class="grid" id="keysGrid"></div>
+        <div id="keys-view" style="display: none;">
+            <a href="#" class="back-to-vault"><i data-lucide="arrow-left"></i> Back to Vault Categories</a>
+            <div class="keys-grid" id="keysGrid"></div>
+        </div>
     </div>
 
     <script src="js/config.js"></script>
     <script>
-        // Dynamic Back Button Logic
+        // Dynamic Back Button Logic (Global)
         window.addEventListener('DOMContentLoaded', () => {
             const backBtn = document.getElementById('dynamicBackBtn');
             const referrer = document.referrer.toLowerCase();
             
             if (referrer.includes('shortcuts')) {
-                backBtn.href = 'shortcuts';
-                backBtn.innerHTML = '<i data-lucide="zap"></i> Shortcuts';
+                backBtn.href = 'shortcuts'; backBtn.innerHTML = '<i data-lucide="zap"></i> Shortcuts';
             } else if (referrer.includes('redeem')) {
-                backBtn.href = 'redeem';
-                backBtn.innerHTML = '<i data-lucide="ticket"></i> Redeem';
+                backBtn.href = 'redeem'; backBtn.innerHTML = '<i data-lucide="ticket"></i> Redeem';
             } else {
-                backBtn.href = 'index';
-                backBtn.innerHTML = '<i data-lucide="home"></i> Home';
+                backBtn.href = 'index'; backBtn.innerHTML = '<i data-lucide="home"></i> Home';
             }
             lucide.createIcons();
         });
@@ -93,62 +107,47 @@
         let keysDatabase = [];
 
         window.addEventListener('DOMContentLoaded', async () => {
-            const grid = document.getElementById('keysGrid');
-            const loading = document.getElementById('loading');
-            const filterSection = document.getElementById('filterSection');
-            
             try {
                 const response = await fetch('windows.json');
                 if (!response.ok) throw new Error("Database not found");
-                
                 keysDatabase = await response.json();
                 
-                loading.style.display = 'none';
-                filterSection.style.display = 'flex';
-
-                populateFilters();
-                renderKeys(keysDatabase);
-
+                document.getElementById('loading').style.display = 'none';
+                handleRouting(); // Initialize view based on current URL
             } catch (e) {
-                loading.innerHTML = `<i data-lucide="alert-circle"></i> Error loading Windows keys.`;
+                document.getElementById('loading').innerHTML = `<i data-lucide="alert-circle"></i> Error loading Windows keys.`;
                 lucide.createIcons();
             }
         });
 
-        function populateFilters() {
-            const versionSelect = document.getElementById('versionSelect');
-            const editionSelect = document.getElementById('editionSelect');
-            
-            const versions = [...new Set(keysDatabase.map(item => item.version))];
-            const editions = [...new Set(keysDatabase.map(item => item.edition))];
-            
-            versions.forEach(v => {
-                const opt = document.createElement('option');
-                opt.value = v; opt.textContent = v;
-                versionSelect.appendChild(opt);
-            });
-            
-            editions.forEach(e => {
-                const opt = document.createElement('option');
-                opt.value = e; opt.textContent = e;
-                editionSelect.appendChild(opt);
-            });
+        // Hash Routing Engine (e.g. windows.html#11)
+        window.addEventListener('hashchange', handleRouting);
 
-            versionSelect.addEventListener('change', filterData);
-            editionSelect.addEventListener('change', filterData);
-        }
+        function handleRouting() {
+            const hash = window.location.hash.substring(1).toLowerCase(); // gets "11", "10", "office"
+            const homeView = document.getElementById('home-view');
+            const keysView = document.getElementById('keys-view');
+            const desc = document.getElementById('headerDesc');
 
-        function filterData() {
-            const selectedVersion = document.getElementById('versionSelect').value;
-            const selectedEdition = document.getElementById('editionSelect').value;
-            
-            const filtered = keysDatabase.filter(item => {
-                const matchVersion = selectedVersion === 'all' || item.version === selectedVersion;
-                const matchEdition = selectedEdition === 'all' || item.edition === selectedEdition;
-                return matchVersion && matchEdition;
-            });
-            
-            renderKeys(filtered);
+            if (!hash) {
+                homeView.style.display = 'grid';
+                keysView.style.display = 'none';
+                desc.innerText = "Select a system to view official activation keys.";
+            } else {
+                homeView.style.display = 'none';
+                keysView.style.display = 'block';
+                
+                let filteredKeys = [];
+                if (hash === 'office') {
+                    filteredKeys = keysDatabase.filter(k => k.version.toLowerCase().includes('office'));
+                    desc.innerText = "Displaying keys for Microsoft Office.";
+                } else {
+                    filteredKeys = keysDatabase.filter(k => k.version.includes(hash));
+                    desc.innerText = `Displaying keys for Windows ${hash}.`;
+                }
+                
+                renderKeys(filteredKeys);
+            }
         }
 
         function renderKeys(dataArray) {
@@ -156,7 +155,7 @@
             grid.innerHTML = '';
 
             if (dataArray.length === 0) {
-                grid.innerHTML = '<p style="text-align:center; color:#aaa; grid-column: 1/-1;">No keys match your filters.</p>';
+                grid.innerHTML = '<p style="text-align:center; color:#aaa; grid-column: 1/-1;">No keys found for this category.</p>';
                 return;
             }
 
@@ -175,7 +174,6 @@
                 `;
                 grid.appendChild(card);
             });
-            
             lucide.createIcons();
         }
 
