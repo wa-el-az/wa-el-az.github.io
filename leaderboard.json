@@ -3,7 +3,7 @@
     "score": 100390000,
     "pass": "Kiloalpha_5@",
     "mypc": {
-      "data": 1.6998828000034863e+21,
+      "data": 1.7151795873780775e+21,
       "cache": 0,
       "energy": 3325,
       "btc": 999969.5000000023,
@@ -25,7 +25,7 @@
       "zeroDay": true,
       "subZero": true,
       "firewallCharges": 100,
-      "lastTime": 1773512368089
+      "lastTime": 1773512450087
     }
   }
 }
