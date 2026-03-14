@@ -3,7 +3,7 @@
     "score": 103000,
     "pass": "4606",
     "mypc": {
-      "data": 2116142.7287999624,
+      "data": 138445.68879996246,
       "cache": 0,
       "energy": 10004900,
       "btc": 0,
@@ -14,13 +14,13 @@
       "ramGb": 192,
       "ddrGen": 2,
       "storageIdx": 0,
-      "coolerIdx": 2,
+      "coolerIdx": 3,
       "psuIdx": 0,
       "netIdx": 4,
       "busIdx": 1,
       "softIdx": 2,
-      "ocMode": false,
-      "lastTime": 1773448514050,
+      "ocMode": true,
+      "lastTime": 1773448524054,
       "secretFound": false
     }
   }
