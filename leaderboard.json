@@ -3,9 +3,9 @@
     "score": 0,
     "pass": "4606",
     "mypc": {
-      "data": 169.51239999999677,
+      "data": 208.9523999999958,
       "cache": 0,
-      "energy": 85,
+      "energy": 10,
       "btc": 0,
       "qTokens": 0,
       "lastLogin": "Sat Mar 14 2026",
@@ -16,11 +16,11 @@
       "storageIdx": 0,
       "coolerIdx": 0,
       "psuIdx": 0,
-      "netIdx": 1,
+      "netIdx": 3,
       "busIdx": 0,
       "softIdx": 0,
       "ocMode": false,
-      "lastTime": 1773446927545,
+      "lastTime": 1773446937543,
       "secretFound": false
     }
   }
