@@ -3,7 +3,7 @@
     "score": 103000,
     "pass": "4606",
     "mypc": {
-      "data": 612420216148.3845,
+      "data": 615613096089.5049,
       "cache": 0,
       "energy": 10004750,
       "btc": 100,
@@ -11,7 +11,7 @@
       "lastLogin": "Sat Mar 14 2026",
       "cpuIdx": 59,
       "gpuIdx": 5,
-      "ramGb": 5920,
+      "ramGb": 7392,
       "ddrGen": 2,
       "storageIdx": 0,
       "coolerIdx": 4,
@@ -20,7 +20,7 @@
       "busIdx": 6,
       "softIdx": 4,
       "ocMode": true,
-      "lastTime": 1773507275702,
+      "lastTime": 1773507285706,
       "secretFound": false
     }
   }
