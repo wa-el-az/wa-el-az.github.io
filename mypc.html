@@ -218,7 +218,7 @@
         let save = {
             data: 0, cache: 0, energy: 0, btc: 0, qTokens: 0, lastLogin: "", 
             cpuIdx: 0, gpuIdx: 0, npuIdx: 0, ramGb: 8, ddrGen: 2, storageIdx: 0, coolerIdx: 0, netIdx: 0, busIdx: 0, softIdx: 0, 
-            ocMode: false, btcPrice: 1000000000, botnet: false, zeroDay: false, subZero: false, firewallCharges: 0, lastTime: Date.now()
+            ocMode: false, btcPrice: 1000000000000000, botnet: false, zeroDay: false, subZero: false, firewallCharges: 0, lastTime: Date.now()
         };
 
         async function fetchDB() {
@@ -263,7 +263,11 @@
 
         function startGame(username) {
             loggedInUser = username; document.getElementById('cliPrompt').innerText = `${username}@wael-os:~# `;
-            if(!save.btcPrice) save.btcPrice = 1000000000; if(!save.firewallCharges) save.firewallCharges = 0;
+            
+            // Economy Balance: Auto-upgrade old saves to new Quadrillion BTC standard
+            if(!save.btcPrice || save.btcPrice < 50000000000000) save.btcPrice = 1000000000000000; 
+            if(!save.firewallCharges) save.firewallCharges = 0;
+            
             gameActive = true; updateUI();
             logMsg(`[SYS] Boot sequence complete. BTC Market currently trading at ${formatNum(save.btcPrice)} Data.`);
         }
@@ -327,6 +331,17 @@
                     if (save.btc >= amt) { save.btc -= amt; let gain = amt * save.btcPrice; save.data += gain; logMsg(`<span style="color:#4ade80;">Sold ${amt} BTC for ${formatNum(gain)} Data.</span>`); updateUI(); }
                     else logMsg(`<span style="color:#ff6b6b;">Insufficient BTC.</span>`);
                 }
+                else if (cmd === 'trade' && args[1] === 'tokens' && args[2]) {
+                    let amt = parseInt(args[2]);
+                    if (isNaN(amt) || amt <= 0) return logMsg(`<span style="color:#ff6b6b;">Invalid amount.</span>`);
+                    if (save.qTokens >= amt) {
+                        save.qTokens -= amt;
+                        let btcGain = amt / 1000;
+                        save.btc += btcGain;
+                        logMsg(`<span style="color:#9b59b6;">Transmuted ${formatNum(amt)} Quantum Tokens into ${btcGain.toFixed(4)} BTC.</span>`);
+                        updateUI();
+                    } else logMsg(`<span style="color:#ff6b6b;">Insufficient Quantum Tokens.</span>`);
+                }
                 else if (val === 'ssh darknet') {
                     inDarknet = true; document.getElementById('normalStore').style.display = 'none'; document.getElementById('darknetStore').style.display = 'flex';
                     document.getElementById('cliPrompt').style.color = "#ff003c";
@@ -336,7 +351,7 @@
                     inDarknet = false; document.getElementById('normalStore').style.display = 'flex'; document.getElementById('darknetStore').style.display = 'none';
                     document.getElementById('cliPrompt').style.color = "#4ade80"; logMsg(`<span style="color:#4ade80;">[CONNECTION SEVERED] Returned to local OS.</span>`);
                 }
-                else if (cmd === 'help') { logMsg(`Commands:<br>- <b>hack</b>: Manual override for Data.<br>- <b>buy/sell btc [amt]</b>: Trade crypto.<br>- <b>clear</b>: Clear history.<br>- <b>ssh darknet</b>: ???`); } 
+                else if (cmd === 'help') { logMsg(`Commands:<br>- <b>hack</b>: Manual override.<br>- <b>buy/sell btc [amt]</b>: Trade crypto.<br>- <b>trade tokens [amt]</b>: 1000 Tokens = 1 BTC.<br>- <b>clear</b>: Clear history.<br>- <b>ssh darknet</b>: ???`); } 
                 else if (cmd === 'clear') { document.getElementById('systemLog').innerHTML = ''; }
                 else { logMsg(`<span style="color:#ff6b6b;">Command not recognized.</span>`); }
             }
@@ -344,7 +359,8 @@
 
         setInterval(() => {
             if(!gameActive) return;
-            save.btcPrice = Math.floor(Math.random() * 1500000000) + 500000000;
+            // New market fluctuation: Between 500 Trillion and 2.5 Quadrillion
+            save.btcPrice = Math.floor(Math.random() * 2000000000000000) + 500000000000000;
             logMsg(`<span style="color:#f39c12">[MARKET UPDATE] BTC Price changed to ${formatNum(save.btcPrice)} Data.</span>`);
         }, 300000);
 
@@ -398,7 +414,7 @@
             document.getElementById('hashDisp').innerText = formatNum(calculateHashrate()) + " /s";
             document.getElementById('netDisp').innerText = formatNum(networks[save.netIdx].speed * Math.pow(5, save.busIdx)) + " /s";
             document.getElementById('btcDisp').innerText = save.btc.toFixed(4) + " BTC";
-            document.getElementById('tokenDisp').innerText = save.qTokens;
+            document.getElementById('tokenDisp').innerText = formatNum(save.qTokens);
             document.getElementById('tempDisp').innerText = save.subZero ? "30°C (FROZEN)" : Math.floor(currentTemp) + "°C";
             document.getElementById('tempBox').className = (currentTemp >= 95 && !save.subZero) ? "stat-box warning-box" : "stat-box";
 
