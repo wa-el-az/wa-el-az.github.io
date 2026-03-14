@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/u-term/apple-emoji-css@master/apple-emoji.css">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Wael — Redeem</title>
     <link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
     <link rel="stylesheet" href="css/style.css" />
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         .wrap { min-height: 100vh; position: relative; overflow: hidden; }
         .left, .right { position: absolute; top: 0; bottom: 0; }
@@ -18,10 +18,12 @@
         .formRow { display: flex; gap: 12px; flex-wrap: wrap; }
         .input { flex: 1 1 260px; min-width: 220px; padding: 14px 16px; border-radius: 16px; border: 1px solid rgba(255,255,255,.18); background: rgba(0,0,0,.18); color: #fff; outline: none; }
         .input::placeholder { color: rgba(255,255,255,.55); }
-        .btn-red { flex: 0 0 auto; padding: 14px 22px; border-radius: 999px; border: 0; background: #fff; color: #111; font-weight: 850; cursor: pointer; }
-        .help { margin: 14px 0 0; font-size: 13px; color: rgba(255,255,255,.72); }
-        #statusMessage { margin: 14px 0 0; font-size: 14px; font-weight: 600; display: none; }
+        .btn-red { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 6px; padding: 14px 22px; border-radius: 999px; border: 0; background: #fff; color: #111; font-weight: 850; cursor: pointer; transition: 0.2s ease; }
+        .btn-red:hover { transform: translateY(-2px); }
+        .help { margin: 14px 0 0; font-size: 13px; color: rgba(255,255,255,.72); display: flex; align-items: center; gap: 6px; }
+        #statusMessage { margin: 14px 0 0; font-size: 14px; font-weight: 600; display: none; align-items: center; gap: 6px; }
         .error-text { color: #ff6b6b; }
+        .navBtn { display: inline-flex; align-items: center; gap: 6px; }
         .heroImg { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
         .heroImg .frame { width: 420px; height: 420px; max-width: 80%; max-height: 80%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); border-radius: 28px; backdrop-filter: blur(14px); box-shadow: 0 25px 70px rgba(0,0,0,.45); }
         .heroImg img { max-width: 75%; max-height: 75%; object-fit: contain; display: block; filter: drop-shadow(0 30px 60px rgba(0,0,0,.55)); }
@@ -29,8 +31,9 @@
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
         .modal-card { width: min(420px, 90%); background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); border-radius: 28px; padding: 32px 26px; text-align: center; box-shadow: 0 25px 70px rgba(0,0,0,.55); transform: translateY(20px); transition: transform 0.3s ease; }
         .modal-overlay.active .modal-card { transform: translateY(0); }
-        .modal-title { margin: 0 0 12px; font-size: 26px; }
+        .modal-title { margin: 0 0 12px; font-size: 26px; display: flex; align-items: center; justify-content: center; gap: 8px; }
         .modal-text { margin: 0 0 26px; color: rgba(255,255,255,.85); line-height: 1.5; }
+        .lucide { width: 1.2em; height: 1.2em; vertical-align: -0.125em; }
         @media (max-width: 860px) {
             .left, .right { position: relative; width: 100%; }
             .right { height: 44vh; }
@@ -43,7 +46,7 @@
 </head>
 <body>
     <main class="wrap">
-        <a class="navBtn" href="index">Home</a>
+        <a class="navBtn" href="index"><i data-lucide="home"></i> Home</a>
         <section class="left">
             <div class="card">
                 <p class="kicker">Redeem</p>
@@ -51,10 +54,10 @@
                 <form id="redeemForm">
                     <div class="formRow">
                         <input id="code" class="input" type="text" autocomplete="off" placeholder="e.g. WAEL-1234" required />
-                        <button class="btn-red" type="submit">Redeem</button>
+                        <button class="btn-red" type="submit"><i data-lucide="unlock"></i> Redeem</button>
                     </div>
                     <p id="statusMessage"></p>
-                    <p class="help">Tip: paste your code exactly as you received it.</p>
+                    <p class="help"><i data-lucide="info"></i> Tip: paste your code exactly as you received it.</p>
                 </form>
             </div>
         </section>
@@ -69,7 +72,7 @@
 
     <div class="modal-overlay" id="popupModal">
         <div class="modal-card">
-            <h2 class="modal-title">Code Redeemed!</h2>
+            <h2 class="modal-title"><i data-lucide="check-circle-2" style="color: #4ade80;"></i> Code Redeemed!</h2>
             <p class="modal-text" id="popupText"></p>
             <button class="btn" id="closePopup">Awesome</button>
         </div>
@@ -78,6 +81,7 @@
     <script src="js/config.js"></script>
     <script src="js/achievements.js"></script>
     <script>
+        lucide.createIcons();
         let failCount = 0;
         document.getElementById('redeemForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -88,7 +92,6 @@
 
             const upperCode = codeInput.toUpperCase();
 
-            // Achievement Bypasses
             if (upperCode === "UNLOCK-ALL") {
                 Object.keys(ACHIEVEMENTS).forEach(id => {
                     window.unlockAchievement(id);
@@ -119,7 +122,7 @@
                 const codeData = database[upperCode];
 
                 if (codeData) {
-                    failCount = 0; // Reset fails on success
+                    failCount = 0; 
                     if (codeData.type === 'redirect') {
                         window.location.href = codeData.url;
                     } else if (codeData.type === 'popup') {
@@ -131,23 +134,25 @@
                             eval(codeData.script);
                             document.getElementById('code').value = '';
                         } catch (err) {
-                            console.error("Script execution error:", err);
-                            statusMsg.textContent = "Error executing code script.";
+                            statusMsg.innerHTML = `<i data-lucide="alert-triangle"></i> Error executing code script.`;
                             statusMsg.className = 'error-text';
-                            statusMsg.style.display = 'block';
+                            statusMsg.style.display = 'flex';
+                            lucide.createIcons();
                         }
                     }
                 } else {
                     failCount++;
                     if (failCount >= 3) window.unlockAchievement('hack_brute');
-                    statusMsg.textContent = "Invalid code. Please try again.";
+                    statusMsg.innerHTML = `<i data-lucide="x-circle"></i> Invalid code. Please try again.`;
                     statusMsg.className = 'error-text';
-                    statusMsg.style.display = 'block';
+                    statusMsg.style.display = 'flex';
+                    lucide.createIcons();
                 }
             } catch (error) {
-                statusMsg.textContent = "Error: Unable to verify code.";
+                statusMsg.innerHTML = `<i data-lucide="wifi-off"></i> Error: Unable to verify code.`;
                 statusMsg.className = 'error-text';
-                statusMsg.style.display = 'block';
+                statusMsg.style.display = 'flex';
+                lucide.createIcons();
             }
         });
         
