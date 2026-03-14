@@ -10,14 +10,20 @@
     <style>
         body { padding: 80px 3vw 40px; display: flex; justify-content: center; min-height: 100vh; overflow-x: hidden; }
         .terminal-wrap { display: flex; flex-direction: row; gap: 25px; width: 100%; max-width: 1500px; position: relative; z-index: 10; align-items: flex-start; }
-        .terminal { flex: 1; background: #050505; border: 1px solid #333; border-radius: 12px; padding: 25px; font-family: 'Courier New', Courier, monospace; box-shadow: 0 10px 40px rgba(0,0,0,0.8); height: 85vh; display: flex; flex-direction: column; color: #4ade80; }
-        .sidebar { width: 340px; display: flex; flex-direction: column; gap: 15px; flex-shrink: 0; max-height: 85vh; overflow-y: auto; padding-right: 5px; }
+        .terminal { flex: 1; background: #050505; border: 1px solid #333; border-radius: 12px; padding: 25px; font-family: 'Courier New', Courier, monospace; box-shadow: 0 10px 40px rgba(0,0,0,0.8); height: 90vh; display: flex; flex-direction: column; color: #4ade80; }
+        .sidebar { width: 340px; display: flex; flex-direction: column; gap: 15px; flex-shrink: 0; max-height: 90vh; overflow-y: auto; padding-right: 5px; }
         .sidebar::-webkit-scrollbar { width: 6px; }
         .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
-        @media (max-width: 950px) { .terminal-wrap { flex-direction: column; } .sidebar { width: 100%; max-height: none; overflow-y: visible; } .terminal { height: 60vh; width: 100%; } }
+        
+        @media (max-width: 950px) { 
+            .terminal-wrap { flex-direction: column; } 
+            .sidebar { width: 100%; max-height: none; overflow-y: visible; } 
+            .terminal { height: 85vh; width: 100%; } 
+        }
+        
         .terminal h2 { border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 0; color: #fff; font-family: 'Montserrat', sans-serif; display: flex; justify-content: space-between; align-items: center;}
         
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 15px; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 15px; flex-shrink: 0; }
         .stat-box { background: rgba(74, 222, 128, 0.08); border: 1px solid rgba(74, 222, 128, 0.3); padding: 12px; border-radius: 8px; text-align: center; transition: 0.2s; }
         .stat-value { font-size: 18px; font-weight: bold; margin-top: 5px; color: #fff; }
         .warning-box { background: rgba(231, 76, 60, 0.1) !important; border-color: #e74c3c !important; }
@@ -45,15 +51,29 @@
         .dark-card { border-color: #ff003c !important; background: rgba(20, 0, 0, 0.8) !important; }
         .dark-card h3 { color: #ff003c !important; border-bottom-color: #ff003c !important; text-shadow: 0 0 10px #ff003c; }
 
-        .hardware-list { margin-top: 15px; font-size: 13px; line-height: 1.6; }
+        .hardware-list { margin-top: 15px; font-size: 13px; line-height: 1.6; flex-shrink: 0; }
         .hardware-item { display: flex; justify-content: space-between; border-bottom: 1px dashed #333; padding: 6px 0; }
         .highlight { color: #fff; font-weight: bold; text-align: right; }
         .text-red { color: #ff6b6b !important; }
         .store-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 15px; }
         .store-card h3 { margin: 0 0 12px; font-size: 16px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; color: #fff; }
         
-        #systemLog { flex: 1; overflow-y: auto; color: #aaa; font-size: 12px; font-family: monospace; margin-top: 10px; padding-right: 5px; }
-        #cliLine { display: flex; margin-top: 15px; border-top: 1px dashed #333; padding-top: 15px; align-items: center; }
+        /* TERMINAL LOG EXPANDED CSS */
+        #systemLog { 
+            flex: 1; 
+            min-height: 200px; 
+            overflow-y: auto; 
+            color: #aaa; 
+            font-size: 13px; 
+            font-family: monospace; 
+            margin-top: 15px; 
+            padding: 12px; 
+            border: 1px solid #222; 
+            background: #080808; 
+            border-radius: 8px; 
+        }
+        
+        #cliLine { display: flex; margin-top: 15px; border-top: 1px dashed #333; padding-top: 15px; align-items: center; flex-shrink: 0; }
         #termInput { background: transparent; border: none; color: #fff; flex: 1; outline: none; font-family: monospace; font-size: 14px; margin-left: 10px; }
         
         #ddosBtn { display: none; background: #e74c3c; color: #fff; border: 2px solid #c0392b; font-size: 20px; padding: 15px; border-radius: 8px; cursor: pointer; font-weight: 900; text-align: center; margin-bottom: 15px; animation: pulse 1s infinite; }
@@ -173,27 +193,40 @@
     <script>
         const storageTiers = [{ name: "Floppy Disk", mult: 0.05 }, { name: "HDD", mult: 0.5 }, { name: "SATA SSD", mult: 1.0 }, { name: "NVMe Gen4", mult: 5.0 }];
         const coolers = [{ name: "Stock Cooler", capacity: 50, cost: 0 }, { name: "Tower Air Cooler", capacity: 150, cost: 2500 }, { name: "360mm AIO Liquid", capacity: 450, cost: 150000 }, { name: "Industrial Liquid", capacity: 1200, cost: 2000000 }, { name: "Liquid Nitrogen", capacity: 5000, cost: 50000000 }];
-        const networks = [{ name: "Dial-Up", speed: 5 }, { name: "Broadband", speed: 250 }, { name: "Gigabit Fiber", speed: 10000 }, { name: "Dark Web Node", speed: 500000 }, { name: "Quantum Link", speed: 50000000 }];
+        
+        // Expanded Network Tiers (Makes Energy very useful)
+        const networks = [
+            { name: "Dial-Up", speed: 5 }, 
+            { name: "Broadband", speed: 250 }, 
+            { name: "Gigabit Fiber", speed: 10000 }, 
+            { name: "Dark Web Node", speed: 500000 }, 
+            { name: "Quantum Link", speed: 50000000 },
+            { name: "6G Satellite", speed: 5000000000 },
+            { name: "Neural Subnet", speed: 500000000000 },
+            { name: "Planetary Grid", speed: 50000000000000 },
+            { name: "Solar Relay", speed: 5000000000000000 },
+            { name: "Galactic Hub", speed: 500000000000000000 }
+        ];
+        
         const softwareUpgrades = [{ name: "Base OS", mult: 1 }, { name: "Hash Optimizer", mult: 2 }, { name: "Data Compression", mult: 5 }, { name: "AI Core Logic", mult: 15 }, { name: "Quantum Routing", mult: 50 }];
 
         // Expanded CPUs with Core Ultra
         const cpus = []; 
         const cpuPrefixes = ["i3", "i5", "i7", "i9", "Xeon", "Threadripper"];
         for(let i=0; i<60; i++) { cpus.push({ name: `${cpuPrefixes[Math.floor(i/10)]} Gen ${i%10 + 1}`, power: Math.floor(Math.pow(1.2, i) * 5), cost: Math.floor(Math.pow(1.25, i) * 100), watts: 35 + Math.floor(i * 5) }); }
-        // The New Elite Core Ultras
         const ultraPrefixes = ["Core Ultra 5", "Core Ultra 7", "Core Ultra 9"];
         for(let i=0; i<9; i++) { cpus.push({ name: `${ultraPrefixes[Math.floor(i/3)]} Gen ${i%3 + 1}`, power: Math.floor(Math.pow(1.3, i+60) * 5), cost: Math.floor(Math.pow(1.35, i+60) * 100), watts: 400 + (i*50) }); }
 
-        // Expanded GPUs
-        const gpuNames = ["GTX 1060", "RTX 2060", "RTX 3060", "RTX 4090", "RTX 5090", "Blackwell Pro", "NVIDIA RTX ULTRA 7000 WOS edition"];
+        // EXPANDED GPUs (New Endgame Cards)
+        const gpuNames = ["GTX 1060", "RTX 2060", "RTX 3060", "RTX 4090", "RTX 5090", "Blackwell Pro", "NVIDIA RTX ULTRA 7000 WOS edition", "AMD Radeon RX 8900 XTX", "NVIDIA Titan RTX Omega", "Quantum GPU Prototype", "WaelOS Custom Silicon M1", "Dyson Sphere GPU Array", "Matrix Reality Simulator", "Hyper-Dimensional Processor"];
         const gpus = []; gpuNames.forEach((name, i) => { gpus.push({ name: name, power: Math.floor(Math.pow(1.6, i) * 50), cost: Math.floor(Math.pow(1.7, i) * 500), watts: 50 + Math.floor(i * 30) }); });
 
-        // New NPU Category
+        // NPU Category
         const npus = [
             { name: "None", cost: 0, cooldown: 0 },
-            { name: "Intel Core 9 AI", cost: 500000000000, cooldown: 90 },     // 500 Billion
-            { name: "Ryzen 9 AI", cost: 10000000000000, cooldown: 45 },      // 10 Trillion
-            { name: "Nvidia NX AI", cost: 500000000000000, cooldown: 15 }    // 500 Trillion
+            { name: "Intel Core 9 AI", cost: 500000000000, cooldown: 90 },     
+            { name: "Ryzen 9 AI", cost: 10000000000000, cooldown: 45 },      
+            { name: "Nvidia NX AI", cost: 500000000000000, cooldown: 15 }    
         ];
 
         let globalLB = {}; let fileSha = null; let loggedInUser = null; let gameActive = false;
@@ -355,7 +388,7 @@
             if(!gameActive || save.npuIdx === 0) return;
             let n = npus[save.npuIdx];
             if (Math.random() < (1 / n.cooldown)) {
-                let diff = Math.random() < 0.7 ? 300 : (Math.random() < 0.9 ? 1500 : 8000); // Same diff odds
+                let diff = Math.random() < 0.7 ? 300 : (Math.random() < 0.9 ? 1500 : 8000); 
                 let reward = calculateHashrate() * diff;
                 save.data += reward;
                 logMsg(`<span style="color:#f39c12; font-size:11px;">[NPU AI] ${n.name} auto-solved a node. +${Math.floor(reward).toLocaleString()} Data.</span>`);
@@ -415,6 +448,7 @@
             document.getElementById('gpuDisp').innerText = gpus[save.gpuIdx].name;
             document.getElementById('npuDisp').innerText = npus[save.npuIdx].name;
             document.getElementById('ramSpdDisp').innerText = `${save.ramGb}GB DDR${save.ddrGen}`;
+            document.getElementById('networkDisp').innerText = `${networks[save.netIdx].name} (Bus Lv.${save.busIdx})`;
 
             // Store Buttons
             let nextCpu = cpus[save.cpuIdx + 1];
@@ -429,7 +463,18 @@
             document.getElementById('upNpuBtn').innerText = nextNpu ? `Install NPU (${nextNpu.cost.toLocaleString()})` : "MAXED";
             document.getElementById('upNpuBtn').disabled = !nextNpu || save.data < nextNpu.cost;
 
-            let ramCost = save.ramGb * 35; document.getElementById('upRamCapBtn').innerText = `Add RAM (${ramCost.toLocaleString()})`; document.getElementById('upRamCapBtn').disabled = save.data < ramCost;
+            // UPDATED 1024GB+ RAM LOGIC
+            let addAmt = save.ramGb >= 1024 ? 1024 : (save.ramGb >= 64 ? 32 : (save.ramGb >= 32 ? 16 : 8));
+            let ramCost = save.ramGb * 35; 
+            document.getElementById('upRamCapBtn').innerText = `Add +${addAmt}GB RAM (${ramCost.toLocaleString()})`; 
+            document.getElementById('upRamCapBtn').disabled = save.data < ramCost;
+
+            // FIXED NETWORK BUTTON UI
+            let nextNet = networks[save.netIdx + 1];
+            let netCost = (save.netIdx + 1) * 15;
+            document.getElementById('upNetBtn').innerText = nextNet ? `Upgrade Network (${netCost} Energy)` : "MAXED";
+            document.getElementById('upNetBtn').disabled = !nextNet || save.energy < netCost;
+
             let nextCooler = coolers[save.coolerIdx + 1]; document.getElementById('upCoolerBtn').innerText = nextCooler ? `Upgrade Cooler (${nextCooler.cost.toLocaleString()})` : "MAXED"; document.getElementById('upCoolerBtn').disabled = !nextCooler || save.data < nextCooler.cost;
             let busCost = Math.pow(10, save.busIdx + 5); document.getElementById('upBusBtn').innerText = `Upgrade Bus (${busCost.toLocaleString()})`; document.getElementById('upBusBtn').disabled = save.data < busCost;
             let nextSoft = softwareUpgrades[save.softIdx + 1]; document.getElementById('upSoftBtn').innerText = nextSoft ? `Upgrade Algorithm (${(Math.pow(10, save.softIdx + 4)).toLocaleString()})` : "MAXED"; document.getElementById('upSoftBtn').disabled = !nextSoft || save.data < Math.pow(10, save.softIdx + 4);
@@ -451,10 +496,28 @@
         document.getElementById('upCpuBtn').onclick = () => { save.data -= cpus[save.cpuIdx + 1].cost; save.cpuIdx++; updateUI(); };
         document.getElementById('upGpuBtn').onclick = () => { save.data -= gpus[save.gpuIdx + 1].cost; save.gpuIdx++; updateUI(); };
         document.getElementById('upNpuBtn').onclick = () => { save.data -= npus[save.npuIdx + 1].cost; save.npuIdx++; logMsg("<span style='color:#f39c12'>NPU Installed. Neural processing initiated.</span>"); updateUI(); };
-        document.getElementById('upRamCapBtn').onclick = () => { save.data -= save.ramGb * 35; save.ramGb += save.ramGb >= 64 ? 32 : (save.ramGb >= 32 ? 16 : 8); updateUI(); };
+        
+        // UPDATED RAM UPGRADE ONCLICK
+        document.getElementById('upRamCapBtn').onclick = () => { 
+            let addAmt = save.ramGb >= 1024 ? 1024 : (save.ramGb >= 64 ? 32 : (save.ramGb >= 32 ? 16 : 8));
+            let ramCost = save.ramGb * 35;
+            save.data -= ramCost; 
+            save.ramGb += addAmt; 
+            updateUI(); 
+        };
+        
         document.getElementById('upCoolerBtn').onclick = () => { save.data -= coolers[save.coolerIdx + 1].cost; save.coolerIdx++; updateUI(); };
         document.getElementById('upBusBtn').onclick = () => { save.data -= Math.pow(10, save.busIdx + 5); save.busIdx++; updateUI(); };
         document.getElementById('upSoftBtn').onclick = () => { save.data -= Math.pow(10, save.softIdx + 4); save.softIdx++; updateUI(); };
+
+        // RESTORED NETWORK ONCLICK
+        document.getElementById('upNetBtn').onclick = () => { 
+            let netCost = (save.netIdx + 1) * 15;
+            save.energy -= netCost; 
+            save.netIdx++; 
+            logMsg("<span style='color:#3498db'>[SYSTEM] Network Upgraded. Extraction limits increased.</span>"); 
+            updateUI(); 
+        };
 
         // Darknet Upgrades
         document.getElementById('buyBotnetBtn').onclick = () => { save.btc -= 0.5; save.botnet = true; logMsg("<span style='color:#ff003c'>Botnet active. Automated cache flushing enabled.</span>"); updateUI(); };
@@ -462,7 +525,7 @@
         document.getElementById('buyChillerBtn').onclick = () => { save.btc -= 15; save.subZero = true; logMsg("<span style='color:#ff003c'>Sub-Zero Chiller installed. Thermal limiters removed.</span>"); updateUI(); };
         document.getElementById('buyFirewallAiBtn').onclick = () => { save.btc -= 0.1; save.firewallCharges++; logMsg(`<span style='color:#ff003c'>AI Firewall purchased. Charges remaining: ${save.firewallCharges}</span>`); updateUI(); };
 
-        // --- RESTORED CORE FUNCTIONS ---
+        // Core Functions
         document.getElementById('ocBtn').onclick = () => {
             save.ocMode = !save.ocMode;
             document.getElementById('ocBtn').innerText = save.ocMode ? "Disable Overclock" : "Enable Overclock (2x Hash, +45°C)";
@@ -472,7 +535,7 @@
 
         document.getElementById('formatBtn').onclick = () => {
             if (confirm("WARNING: Formatting C:\\ will wipe all Hardware, Cache, and Data. You will earn Quantum Tokens. Proceed?")) {
-                let tokensToGet = Math.floor(save.data / 1000000000000); // 1 Trillion = 1 Token
+                let tokensToGet = Math.floor(save.data / 1000000000000); 
                 if (tokensToGet < 1) return alert("You need at least 1 Trillion Data to earn a Quantum Token!");
                 save.qTokens += tokensToGet;
                 
@@ -493,7 +556,6 @@
             } else logMsg("<span class='text-red'>ERROR: Insufficient Cloud Tea.</span>");
         };
 
-        // --- RESTORED CLOUD SYNC ---
         async function cloudSync() {
             if (!loggedInUser || !CONFIG.GITHUB_TOKEN) return;
             globalLB[loggedInUser].mypc = save;
