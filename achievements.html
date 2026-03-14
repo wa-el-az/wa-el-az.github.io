@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/u-term/apple-emoji-css@master/apple-emoji.css">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Wael — Trophy Room</title>
     <link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
     <link rel="stylesheet" href="css/style.css" />
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body { padding: 80px 5vw; }
         .header { text-align: center; margin-bottom: 40px; position: relative; z-index: 10; }
@@ -18,7 +18,8 @@
         .ach-card { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); border-radius: 20px; padding: 20px; display: flex; align-items: center; gap: 18px; backdrop-filter: blur(14px); box-shadow: 0 10px 30px rgba(0,0,0,0.2); transition: 0.3s; }
         .ach-card:hover { transform: translateY(-3px); background: rgba(255,255,255,.12); }
         
-        .ach-icon { font-size: 42px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2)); }
+        .ach-icon { font-size: 42px; display: flex; align-items: center; justify-content: center; width: 48px; height: 48px; filter: drop-shadow(0 0 10px rgba(255,255,255,0.2)); }
+        .ach-icon svg { width: 100%; height: 100%; }
         .ach-info h3 { margin: 0 0 4px; font-size: 18px; color: #fff; }
         .ach-info p { margin: 0; font-size: 13px; color: var(--muted); line-height: 1.4; }
         
@@ -27,13 +28,15 @@
         .ach-card.locked:hover { transform: none; background: rgba(255,255,255,.08); }
         .ach-card.locked .ach-info h3 { color: #888; }
         
+        .lucide { width: 1.2em; height: 1.2em; vertical-align: -0.125em; }
+
         @media (max-width: 768px) { .ach-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
     <div class="bg-left"></div>
     <div class="bg-right"></div>
-    <a class="navBtn" href="shoetcuts">Shortcuts</a>
+    <a class="navBtn" href="shortcuts" style="display: flex; align-items: center; gap: 6px;"><i data-lucide="zap"></i> Shortcuts</a>
 
     <div class="header">
         <h1>Trophy Room</h1>
@@ -49,15 +52,12 @@
             const grid = document.getElementById('achGrid');
             const progressDisplay = document.getElementById('progressDisplay');
             
-            // ACHIEVEMENTS and unlocked are globally pulled from js/achievements.js!
             const allKeys = Object.keys(ACHIEVEMENTS);
             const total = allKeys.length;
             
-            // Count how many we actually have unlocked
             const unlockedCount = unlocked.filter(key => ACHIEVEMENTS[key]).length;
             progressDisplay.innerText = `Unlocked: ${unlockedCount} / ${total}`;
 
-            // Generate the cards
             allKeys.forEach(key => {
                 const ach = ACHIEVEMENTS[key];
                 const isUnlocked = unlocked.includes(key);
@@ -75,6 +75,9 @@
                 
                 grid.appendChild(card);
             });
+
+            // Crucial: Render the Lucide SVG icons AFTER the cards are injected into the DOM
+            lucide.createIcons();
         });
     </script>
 </body>
