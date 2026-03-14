@@ -3,18 +3,16 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Wael — My PC Terminal</title>
+    <title>WaelOS — My PC Terminal</title>
     <link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
     <link rel="stylesheet" href="css/style.css" />
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* IMPORT THE ULTIMATE HACKER FONT */
         @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap');
 
         body { padding: 80px 3vw 40px; display: flex; justify-content: center; min-height: 100vh; overflow-x: hidden; }
         .terminal-wrap { display: flex; flex-direction: row; gap: 25px; width: 100%; max-width: 1500px; position: relative; z-index: 10; align-items: flex-start; }
         
-        /* APPLY JETBRAINS MONO TO TERMINAL */
         .terminal { flex: 1; background: #050505; border: 1px solid #333; border-radius: 12px; padding: 25px; font-family: 'JetBrains Mono', Courier, monospace; box-shadow: 0 10px 40px rgba(0,0,0,0.8); height: 90vh; display: flex; flex-direction: column; color: #4ade80; }
         
         .sidebar { width: 340px; display: flex; flex-direction: column; gap: 15px; flex-shrink: 0; max-height: 90vh; overflow-y: auto; padding-right: 5px; }
@@ -77,12 +75,14 @@
         .modal-title { margin: 0 0 12px; font-size: 26px; color: #fff; }
         .modal-text { margin: 0 0 26px; color: rgba(255,255,255,.85); line-height: 1.5; }
         
+        .navBtn { display: inline-flex; align-items: center; gap: 6px; }
         .lucide { width: 1.2em; height: 1.2em; vertical-align: -0.125em; }
     </style>
 </head>
 <body>
     <div class="bg-left"></div><div class="bg-right"></div>
-    <a class="navBtn" href="index" style="z-index: 50; display: flex; align-items: center; gap: 6px;"><i data-lucide="home"></i> Home</a>
+    
+    <a class="navBtn" id="dynamicBackBtn" href="index" style="z-index: 50;"><i data-lucide="home"></i> Home</a>
 
     <div class="terminal-wrap">
         <div class="terminal" id="terminalLog">
@@ -184,6 +184,24 @@
 
     <script src="js/config.js"></script>
     <script>
+        // Dynamic Back Button Logic
+        window.addEventListener('DOMContentLoaded', () => {
+            const backBtn = document.getElementById('dynamicBackBtn');
+            const referrer = document.referrer.toLowerCase();
+            
+            if (referrer.includes('shortcuts')) {
+                backBtn.href = 'shortcuts';
+                backBtn.innerHTML = '<i data-lucide="zap"></i> Shortcuts';
+            } else if (referrer.includes('redeem')) {
+                backBtn.href = 'redeem';
+                backBtn.innerHTML = '<i data-lucide="ticket"></i> Redeem';
+            } else {
+                backBtn.href = 'index';
+                backBtn.innerHTML = '<i data-lucide="home"></i> Home';
+            }
+            lucide.createIcons();
+        });
+
         function formatNum(num) {
             if (num < 1000) return Math.floor(num).toString();
             const suffixes = ["", "K", "M", "B", "T", "Qa", "Qi", "Sx", "Sp", "Oc", "No", "Dc"];
