@@ -1,1 +1,31 @@
-{}
+{
+  "Wael": {
+    "score": 0,
+    "pass": "Kiloalpha_5@",
+    "mypc": {
+      "data": 29,
+      "cache": 5.452000000000014,
+      "energy": 0,
+      "btc": 0,
+      "qTokens": 0,
+      "lastLogin": "",
+      "cpuIdx": 0,
+      "gpuIdx": 0,
+      "npuIdx": 0,
+      "ramGb": 8,
+      "ddrGen": 2,
+      "storageIdx": 0,
+      "coolerIdx": 0,
+      "netIdx": 0,
+      "busIdx": 0,
+      "softIdx": 0,
+      "ocMode": false,
+      "btcPrice": 1000000000,
+      "botnet": false,
+      "zeroDay": false,
+      "subZero": false,
+      "firewallCharges": 0,
+      "lastTime": 1773509154067
+    }
+  }
+}
