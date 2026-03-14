@@ -3,10 +3,10 @@
     "score": 100390000,
     "pass": "Kiloalpha_5@",
     "mypc": {
-      "data": 1030677877074433.5,
-      "cache": 56972360268417.27,
+      "data": 1030678853636933.5,
+      "cache": 79968530616617.28,
       "energy": 4000,
-      "btc": 1000000,
+      "btc": 999999.5,
       "qTokens": 5,
       "lastLogin": "",
       "cpuIdx": 68,
@@ -21,11 +21,11 @@
       "softIdx": 4,
       "ocMode": true,
       "btcPrice": 1000000000,
-      "botnet": false,
+      "botnet": true,
       "zeroDay": false,
       "subZero": false,
       "firewallCharges": 0,
-      "lastTime": 1773511515359
+      "lastTime": 1773511525351
     }
   }
 }
