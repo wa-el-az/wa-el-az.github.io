@@ -1,31 +1,31 @@
 {
-  "Wael": {
-    "score": 100390000,
-    "pass": "Kiloalpha_5@",
-    "mypc": {
-      "data": 3936634685.5,
-      "cache": 5013803870563.671,
-      "energy": 4000,
-      "btc": 1000000,
-      "qTokens": 5,
-      "lastLogin": "",
-      "cpuIdx": 60,
-      "gpuIdx": 6,
-      "npuIdx": 0,
-      "ramGb": 4096,
-      "ddrGen": 5,
-      "storageIdx": 0,
-      "coolerIdx": 4,
-      "netIdx": 0,
-      "busIdx": 5,
-      "softIdx": 4,
-      "ocMode": true,
-      "btcPrice": 1000000000,
-      "botnet": false,
-      "zeroDay": false,
-      "subZero": false,
-      "firewallCharges": 0,
-      "lastTime": 1773511438060
+    "Wael": {
+        "score": 100390000,
+        "pass": "Kiloalpha_5@",
+        "mypc": {
+            "data": 393663469999985.5,
+            "cache": 50138.671,
+            "energy": 4000,
+            "btc": 1000000,
+            "qTokens": 5,
+            "lastLogin": "",
+            "cpuIdx": 60,
+            "gpuIdx": 6,
+            "npuIdx": 0,
+            "ramGb": 4096,
+            "ddrGen": 5,
+            "storageIdx": 0,
+            "coolerIdx": 4,
+            "netIdx": 0,
+            "busIdx": 5,
+            "softIdx": 4,
+            "ocMode": true,
+            "btcPrice": 1000000000,
+            "botnet": false,
+            "zeroDay": false,
+            "subZero": false,
+            "firewallCharges": 0,
+            "lastTime": 1773511438060
+        }
     }
-  }
 }
