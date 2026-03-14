@@ -15,13 +15,15 @@
         .btn { display: flex; align-items: center; justify-content: center; gap: 8px; }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
         #statusMsg { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 15px; font-weight: bold; }
-        .navBtn { display: flex; align-items: center; gap: 6px; }
+        .navBtn { display: inline-flex; align-items: center; gap: 6px; z-index: 50;}
         .lucide { width: 1.2em; height: 1.2em; vertical-align: -0.125em; }
     </style>
 </head>
 <body>
     <div class="bg-left"></div><div class="bg-right"></div>
-    <a class="navBtn" href="index"><i data-lucide="home"></i> Home</a>
+    
+    <a class="navBtn" id="dynamicBackBtn" href="index"><i data-lucide="home"></i> Home</a>
+
     <div class="card">
         <h1 style="display: flex; align-items: center; justify-content: center; gap: 10px;"><i data-lucide="send"></i> Send a Message</h1>
         <p class="sub">This goes directly to my Admin Inbox.</p>
@@ -40,7 +42,24 @@
     <script src="js/config.js"></script>
     <script src="js/achievements.js"></script>
     <script>
-        lucide.createIcons();
+        // Dynamic Back Button Logic
+        window.addEventListener('DOMContentLoaded', () => {
+            const backBtn = document.getElementById('dynamicBackBtn');
+            const referrer = document.referrer.toLowerCase();
+            
+            if (referrer.includes('shortcuts')) {
+                backBtn.href = 'shortcuts';
+                backBtn.innerHTML = '<i data-lucide="zap"></i> Shortcuts';
+            } else if (referrer.includes('redeem')) {
+                backBtn.href = 'redeem';
+                backBtn.innerHTML = '<i data-lucide="ticket"></i> Redeem';
+            } else {
+                backBtn.href = 'index';
+                backBtn.innerHTML = '<i data-lucide="home"></i> Home';
+            }
+            lucide.createIcons();
+        });
+
         document.getElementById('msgForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const btn = document.getElementById('sendBtn');
