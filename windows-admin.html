@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wael — Windows Vault Admin</title>
+    <link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { padding: 40px 20px; }
+        .container { position: relative; z-index: 10; max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+        label { display: block; margin-bottom: 6px; font-size: 14px; color: var(--muted); }
+        .keys-list { max-height: 400px; overflow-y: auto; background: rgba(0,0,0,.18); border-radius: 12px; padding: 10px; border: 1px solid rgba(255,255,255,.1); }
+        .key-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid rgba(255,255,255,.05); gap: 10px;}
+        .key-item:last-child { border-bottom: none; }
+        .key-info { flex-grow: 1; }
+        .navBtn { display: inline-flex; align-items: center; gap: 6px; }
+        .btn-danger { display: inline-flex; align-items: center; gap: 6px; }
+        .lucide { width: 1.2em; height: 1.2em; vertical-align: -0.125em; }
+
+        @media (max-width: 768px) { 
+            .container { grid-template-columns: 1fr; margin-top: 40px; } 
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-left"></div>
+    <div class="bg-right"></div>
+    <a class="navBtn" href="admin"><i data-lucide="arrow-left"></i> Back to Hub</a>
+
+    <div class="container card">
+        <div>
+            <h1 style="margin-top: 0; display: flex; align-items: center; gap: 10px;"><i data-lucide="plus-circle"></i> Add License Key</h1>
+            <form id="addKeyForm">
+                <label>Windows Version</label>
+                <input type="text" id="wVersion" placeholder="e.g. Windows 11" required autocomplete="off">
+                
+                <label>Edition</label>
+                <input type="text" id="wEdition" placeholder="e.g. Pro, Home, Enterprise" required autocomplete="off">
+                
+                <label>Product Key</label>
+                <input type="text" id="wKey" placeholder="XXXXX-XXXXX-XXXXX-XXXXX-XXXXX" required autocomplete="off" style="font-family: 'JetBrains Mono', monospace; text-transform: uppercase;">
+                
+                <button type="submit" class="btn" style="display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 10px;"><i data-lucide="save"></i> Add to Database</button>
+            </form>
+            
+            <div style="background: rgba(0,0,0,.25); padding: 15px; border-radius: 12px; margin-top: 30px; border: 1px solid rgba(255,255,255,.1);">
+                <button class="btn" id="pushBtn" style="background: #4ade80; color: #000; display: flex; align-items: center; justify-content: center; gap: 6px; width: 100%;"><i data-lucide="upload-cloud"></i> Push to GitHub</button>
+                <p id="apiMsg" style="margin-top: 10px; font-weight: bold; font-size: 14px; text-align: center; display: flex; align-items: center; justify-content: center; gap: 6px;"></p>
+            </div>
+        </div>
+
+        <div>
+            <h2 style="margin-top: 0; display: flex; align-items: center; gap: 10px;"><i data-lucide="layout-grid"></i> Database Editor</h2>
+            <div class="keys-list" id="keysList">
+                <p style="text-align:center; color:#aaa;"><i data-lucide="loader-2" class="lucide-spin"></i> Loading keys...</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script>
+        lucide.createIcons();
+        let db = []; // Using an Array for windows.json
+        let fileSha = null;
+
+        window.onload = async () => {
+            if (!localStorage.getItem('gh_token')) {
+                window.location.href = "admin";
+                return;
+            }
+            try {
+                const res = await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/windows.json`);
+                if (res.ok) {
+                    const data = await res.json();
+                    fileSha = data.sha;
+                    db = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+                }
+            } catch (e) {
+                console.warn("No existing windows.json found or error fetching.");
+            }
+            updateUI();
+        };
+
+        // Handle Add Key Form Submission
+        document.getElementById('addKeyForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const newEntry = {
+                version: document.getElementById('wVersion').value.trim(),
+                edition: document.getElementById('wEdition').value.trim(),
+                key: document.getElementById('wKey').value.trim().toUpperCase()
+            };
+
+            // Add to beginning of array so it shows up at the top
+            db.unshift(newEntry);
+
+            document.getElementById('wEdition').value = '';
+            document.getElementById('wKey').value = '';
+            // Leaving Version filled in case they want to add multiple editions of the same version
+            
+            updateUI();
+        });
+
+        // Delete function uses the array index
+        function deleteKey(index) {
+            db.splice(index, 1);
+            updateUI();
+        }
+
+        // Render the list
+        function updateUI() {
+            const listDiv = document.getElementById('keysList');
+            listDiv.innerHTML = '';
+            
+            if (db.length === 0) {
+                listDiv.innerHTML = '<p style="text-align:center; color:#aaa;">No keys in database.</p>';
+                return;
+            }
+
+            db.forEach((data, index) => {
+                const item = document.createElement('div');
+                item.className = 'key-item';
+                item.innerHTML = `
+                    <div class="key-info">
+                        <strong style="color:#fff; font-size: 15px;">${data.version} - ${data.edition}</strong><br>
+                        <span style="font-size:13px; color:#4ade80; font-family: 'JetBrains Mono', monospace;">${data.key}</span>
+                    </div>
+                    <button class="btn-danger" onclick="deleteKey(${index})"><i data-lucide="trash-2"></i></button>
+                `;
+                listDiv.appendChild(item);
+            });
+            lucide.createIcons();
+        }
+
+        // Push to GitHub API
+        document.getElementById('pushBtn').addEventListener('click', async () => {
+            const msg = document.getElementById('apiMsg');
+            msg.style.color = "#fff";
+            msg.innerHTML = `<i data-lucide="loader-2" class="lucide-spin"></i> Pushing...`;
+            lucide.createIcons();
+
+            const payload = {
+                message: "Admin: Updated Windows Keys Database",
+                content: btoa(unescape(encodeURIComponent(JSON.stringify(db, null, 2))))
+            };
+            if (fileSha) payload.sha = fileSha;
+
+            try {
+                const res = await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/windows.json`, {
+                    method: 'PUT',
+                    headers: { 'Authorization': `Bearer ${CONFIG.GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (res.ok) {
+                    const data = await res.json();
+                    fileSha = data.content.sha;
+                    msg.style.color = "#4ade80";
+                    msg.innerHTML = `<i data-lucide="check-circle-2"></i> Database Updated Live!`;
+                } else {
+                    throw new Error("API Error");
+                }
+            } catch (e) {
+                msg.style.color = "#ff6b6b";
+                msg.innerHTML = `<i data-lucide="x-circle"></i> Failed to update.`;
+            }
+            lucide.createIcons();
+        });
+    </script>
+</body>
+</html>
