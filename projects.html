@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/u-term/apple-emoji-css@master/apple-emoji.css">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Wael — Projects</title>
     <link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
     <link rel="stylesheet" href="css/style.css" />
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body { padding: 100px 5vw; }
         .header, .grid, #loading { position: relative; z-index: 10; }
@@ -17,15 +17,17 @@
         .card-p { background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); border-radius: 24px; padding: 25px; backdrop-filter: blur(14px); box-shadow: 0 25px 70px rgba(0,0,0,.22); display: flex; flex-direction: column; }
         .card-p h2 { margin: 0 0 10px; font-size: 22px; }
         .card-p p { color: var(--muted); line-height: 1.5; margin: 0 0 20px; flex-grow: 1; }
-        .card-link { display: inline-block; padding: 12px 20px; border-radius: 12px; background: #fff; color: #111; font-weight: 800; text-decoration: none; text-align: center; transition: transform 0.2s ease; }
+        .card-link { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 20px; border-radius: 12px; background: #fff; color: #111; font-weight: 800; text-decoration: none; text-align: center; transition: transform 0.2s ease; }
         .card-link:hover { transform: translateY(-2px); }
-        #loading { text-align: center; color: var(--muted); font-size: 18px; }
+        #loading { display: flex; align-items: center; justify-content: center; gap: 8px; text-align: center; color: var(--muted); font-size: 18px; }
+        .navBtn { display: inline-flex; align-items: center; gap: 6px; }
+        .lucide { width: 1.2em; height: 1.2em; vertical-align: -0.125em; }
     </style>
 </head>
 <body>
     <div class="bg-left"></div>
     <div class="bg-right"></div>
-    <a class="navBtn" href="index">Home</a>
+    <a class="navBtn" href="index"><i data-lucide="home"></i> Home</a>
 
     <div class="header">
         <p style="text-transform: uppercase; letter-spacing: 2px; color: var(--muted); margin: 0 0 5px; font-size: 14px; font-weight: 700;">Portfolio</p>
@@ -33,12 +35,13 @@
         <p>Things I've built.</p>
     </div>
 
-    <div id="loading">Loading projects...</div>
+    <div id="loading"><i data-lucide="loader-2" class="lucide-spin"></i> Loading projects...</div>
     <div class="grid" id="projectGrid"></div>
 
     <script src="js/config.js"></script>
     <script src="js/achievements.js"></script>
     <script>
+        lucide.createIcons();
         window.addEventListener('DOMContentLoaded', async () => {
             const grid = document.getElementById('projectGrid');
             const loading = document.getElementById('loading');
@@ -61,12 +64,14 @@
                     card.innerHTML = `
                         <h2>${data.title}</h2>
                         <p>${data.description}</p>
-                        ${data.link ? `<a class="card-link" href="${data.link}" target="_blank" onclick="window.unlockAchievement('exp_proj')">View Project</a>` : ''}
+                        ${data.link ? `<a class="card-link" href="${data.link}" target="_blank" onclick="window.unlockAchievement('exp_proj')"><i data-lucide="external-link"></i> View Project</a>` : ''}
                     `;
                     grid.appendChild(card);
                 }
+                lucide.createIcons();
             } catch (e) {
-                loading.innerText = "No projects found yet. Log into the Admin Hub to add some!";
+                loading.innerHTML = `<i data-lucide="alert-circle"></i> No projects found yet. Log into the Admin Hub to add some!`;
+                lucide.createIcons();
             }
         });
     </script>
