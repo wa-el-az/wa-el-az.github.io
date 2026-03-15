@@ -51,8 +51,8 @@
             <a href="status-admin" class="dash-link"><i data-lucide="activity"></i> Status Manager</a>
         </div>
     </div>
-    <script src="js/config.js"></script>
-    <script src="js/achievements.js"></script>
+    <script src="../js/config.js"></script>
+    <script src="../js/achievements.js"></script>
     <script>
         lucide.createIcons();
         const loginCard = document.getElementById('loginCard'); 
@@ -83,7 +83,7 @@
         document.getElementById('logoutBtn').addEventListener('click', () => { 
             localStorage.removeItem('gh_token'); 
             localStorage.removeItem('active_user'); 
-            window.location.href = "redeem"; 
+            window.location.href = "../redeem"; 
         });
     </script>
 </body>
