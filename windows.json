@@ -1,6 +1,21 @@
 [
   {
     "version": "Office 2024",
+    "edition": "Pro Plus LTSC",
+    "key": "W6NF6-2VWGC-PD8DV-33M67-2R8CQ"
+  },
+  {
+    "version": "Office 2024",
+    "edition": "Pro Plus LTSC",
+    "key": "RCDQN-8DTGD-BBY8Y-48R8R-37DTD"
+  },
+  {
+    "version": "Office 2024",
+    "edition": "Pro Plus LTSC",
+    "key": "P7WRN-84VTJ-FPC3M-CRP3P-BTHGD"
+  },
+  {
+    "version": "Office 2024",
     "edition": "Standard LTSC",
     "key": "3NGBP-X7MTQ-DPWY2-FTY32-GRB2W"
   },
@@ -113,21 +128,6 @@
     "version": "Windows 7",
     "edition": "Ultimate (Generic)",
     "key": "RGQ3V-MCMTC-6HP8R-98CDK-VP3FM"
-  },
-  {
-    "version": "Office 2024",
-    "edition": "Pro Plus",
-    "key": "P7WRN-84VTJ-FPC3M-CRP3P-BTHGD"
-  },
-  {
-    "version": "Office 2024",
-    "edition": "Pro Plus",
-    "key": "RCDQN-8DTGD-BBY8Y-48R8R-37DTD"
-  },
-  {
-    "version": "Office 2024",
-    "edition": "Pro Plus",
-    "key": "W6NF6-2VWGC-PD8DV-33M67-2R8CQ"
   },
   {
     "version": "Office 2021",
