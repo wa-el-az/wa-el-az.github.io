@@ -2,7 +2,7 @@
 @font-face {
   font-family: 'SF Pro';
   src: url('https://github.com/sahibjotsaggu/San-Francisco-Pro-Fonts/raw/refs/heads/master/SF-Pro.ttf') format('truetype');
-  font-display: swap;
+  font-display: swap; 
 }
 
 /* 2. Force download Apple Emojis */
@@ -10,7 +10,7 @@
   font-family: 'Apple Color Emoji';
   src: local('Apple Color Emoji'), 
        url('https://github.com/GORAlexComp/AppleColorEmojiFont/releases/download/v1/AppleColorEmoji.ttf') format('truetype');
-  font-display: swap;
+  font-display: swap; 
 }
 
 /* 3. Space Grotesk for high-tech display headers */
@@ -63,9 +63,15 @@ body {
 }
 
 .bg-left, .bg-right { position: fixed; top: 0; bottom: 0; transition: background 0.5s ease; }
-.bg-left { left: 0; width: 58%; z-index: -2; background: var(--bg-left-grad); }
-.bg-right { right: 0; width: 52%; z-index: -1; background: var(--bg-right-grad); }
-.bg-right::before { content: ""; position: absolute; left: -140px; top: -10%; width: 280px; height: 120%; background: inherit; transform: skewX(-14deg); box-shadow: -20px 0 50px rgba(0,0,0,.35); transition: background 0.5s ease; }
+
+/* FIX: Left takes 100% to prevent any black gaps on any screen size */
+.bg-left { left: 0; width: 100%; z-index: -2; background: var(--bg-left-grad); }
+
+/* FIX: Right takes up 48% so the red diagonal isn't too long */
+.bg-right { right: 0; width: 48%; z-index: -1; background: var(--bg-right-grad); }
+
+/* FIX: Narrower diagonal line to make it look sharper */
+.bg-right::before { content: ""; position: absolute; left: -100px; top: -10%; width: 200px; height: 120%; background: inherit; transform: skewX(-14deg); box-shadow: -20px 0 50px rgba(0,0,0,.35); transition: background 0.5s ease; }
 
 .navBtn { position: absolute; top: 20px; right: 20px; padding: 12px 22px; z-index: 20; border-radius: 999px; background: var(--nav-bg); border: 1px solid var(--nav-border); backdrop-filter: blur(10px); color: var(--nav-text); font-weight: 700; text-decoration: none; transition: 0.2s; }
 .navBtn:hover { transform: translateY(-1px); filter: brightness(1.2); }
@@ -90,9 +96,11 @@ p.sub { color: var(--text-muted); margin: 0 0 25px; font-size: 15px; transition:
 
 @media (max-width: 860px) {
   .bg-right::before { display: none; }
-  .bg-left, .bg-right { position: fixed; height: 50vh; width: 100%; }
-  .bg-left { top: 0; left: 0; }
-  .bg-right { bottom: 0; top: auto; right: 0; }
+  
+  /* FIX: Mobile gap resolved by using 100% height for the green background, and layering the red 50% on top. No viewport height bugs! */
+  .bg-left, .bg-right { position: fixed; width: 100%; }
+  .bg-left { top: 0; height: 100%; }
+  .bg-right { bottom: 0; top: auto; height: 50%; }
 }
 
 /* =========================================
