@@ -64,13 +64,13 @@ body {
 
 .bg-left, .bg-right { position: fixed; top: 0; bottom: 0; transition: background 0.5s ease; }
 
-/* FIX: Left takes 100% to prevent any black gaps on any screen size */
+/* FIX 1: Left (Green) takes 100% of the screen so there is no black "gap" behind the Red layer */
 .bg-left { left: 0; width: 100%; z-index: -2; background: var(--bg-left-grad); }
 
-/* FIX: Right takes up 48% so the red diagonal isn't too long */
+/* FIX 2: Desktop Red background is slightly smaller (48%) to make the diagonal line sharper */
 .bg-right { right: 0; width: 48%; z-index: -1; background: var(--bg-right-grad); }
 
-/* FIX: Narrower diagonal line to make it look sharper */
+/* FIX 3: Narrower skewed element (-100px instead of -140px) to stop the red line from being too long */
 .bg-right::before { content: ""; position: absolute; left: -100px; top: -10%; width: 200px; height: 120%; background: inherit; transform: skewX(-14deg); box-shadow: -20px 0 50px rgba(0,0,0,.35); transition: background 0.5s ease; }
 
 .navBtn { position: absolute; top: 20px; right: 20px; padding: 12px 22px; z-index: 20; border-radius: 999px; background: var(--nav-bg); border: 1px solid var(--nav-border); backdrop-filter: blur(10px); color: var(--nav-text); font-weight: 700; text-decoration: none; transition: 0.2s; }
@@ -97,10 +97,10 @@ p.sub { color: var(--text-muted); margin: 0 0 25px; font-size: 15px; transition:
 @media (max-width: 860px) {
   .bg-right::before { display: none; }
   
-  /* FIX: Mobile gap resolved by using 100% height for the green background, and layering the red 50% on top. No viewport height bugs! */
+  /* FIX 4: Mobile Gap Fix. Green (left) stays 100% height, Red (right) sits on top at 50% height. */
   .bg-left, .bg-right { position: fixed; width: 100%; }
-  .bg-left { top: 0; height: 100%; }
-  .bg-right { bottom: 0; top: auto; height: 50%; }
+  .bg-left { top: 0; height: 100%; z-index: -2; }
+  .bg-right { bottom: 0; top: auto; height: 50%; z-index: -1; }
 }
 
 /* =========================================
