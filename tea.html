@@ -31,6 +31,12 @@
             width: 100%; 
             margin: 0 auto; 
         }
+
+        /* Tactile click animation */
+        .tea-btn:active {
+            transform: scale(0.85);
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.8));
+        }
         
         .floating-text { position: fixed; font-size: 24px; font-weight: bold; color: #fff; pointer-events: none; animation: floatUp 1s ease-out forwards; z-index: 50; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
         @keyframes floatUp { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-50px) scale(1.5); } }
@@ -166,7 +172,7 @@
 
         async function loadLeaderboard() {
             try {
-                const res = await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/leaderboard.json`);
+                const res = await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/json/leaderboard.json`);
                 if (res.ok) {
                     const data = await res.json();
                     fileSha = data.sha;
@@ -270,7 +276,7 @@
             if (fileSha) payload.sha = fileSha;
 
             try {
-                const push = await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/leaderboard.json`, {
+                const push = await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/json/leaderboard.json`, {
                     method: 'PUT', headers: { 'Authorization': `Bearer ${CONFIG.GITHUB_TOKEN}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
                 });
                 if (push.ok) {
