@@ -1,11 +1,10 @@
 /* 1. Inter Font for body text */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
-/* 2. Force download Apple Emojis */
+/* 2. Use Local System Emojis (No external downloads!) */
 @font-face {
   font-family: 'Apple Color Emoji';
-  src: local('Apple Color Emoji'), 
-       url('https://github.com/GORAlexComp/AppleColorEmojiFont/releases/download/v1/AppleColorEmoji.ttf') format('truetype');
+  src: local('Apple Color Emoji'), local('Segoe UI Emoji'), local('Segoe UI Symbol'), local('Noto Color Emoji');
   font-display: swap; 
 }
 
