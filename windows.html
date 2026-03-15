@@ -38,6 +38,7 @@
         
         #loading { display: flex; align-items: center; justify-content: center; gap: 8px; color: var(--muted); font-size: 18px; margin-top: 40px; }
         .navBtn { display: inline-flex; align-items: center; gap: 6px; z-index: 50; }
+        .lucide { width: 1.2em; height: 1.2em; vertical-align: -0.125em; }
     </style>
 </head>
 <body>
@@ -83,37 +84,42 @@
 
     <script src="js/config.js"></script>
     <script>
-        window.addEventListener('DOMContentLoaded', () => {
-            const backBtn = document.getElementById('dynamicBackBtn');
-            const referrer = document.referrer.toLowerCase();
-            if (referrer.includes('shortcuts')) {
-                backBtn.href = 'shortcuts'; backBtn.innerHTML = '<i data-lucide="zap"></i> Shortcuts';
-            } else if (referrer.includes('redeem')) {
-                backBtn.href = 'redeem'; backBtn.innerHTML = '<i data-lucide="ticket"></i> Redeem';
-            } else {
-                backBtn.href = 'index'; backBtn.innerHTML = '<i data-lucide="home"></i> Home';
-            }
-            lucide.createIcons();
-        });
+        // Set up the dynamic back button
+        const backBtn = document.getElementById('dynamicBackBtn');
+        const referrer = document.referrer.toLowerCase();
+        if (referrer.includes('shortcuts')) {
+            backBtn.href = 'shortcuts'; backBtn.innerHTML = '<i data-lucide="zap"></i> Shortcuts';
+        } else if (referrer.includes('redeem')) {
+            backBtn.href = 'redeem'; backBtn.innerHTML = '<i data-lucide="ticket"></i> Redeem';
+        } else {
+            backBtn.href = 'index'; backBtn.innerHTML = '<i data-lucide="home"></i> Home';
+        }
 
         let keysDatabase = [];
 
-        window.addEventListener('DOMContentLoaded', async () => {
+        // Initial load function
+        async function init() {
             try {
                 const response = await fetch('windows.json');
                 if (!response.ok) throw new Error("Database not found");
                 keysDatabase = await response.json();
+                
+                // Hide loader and trigger routing
                 document.getElementById('loading').style.display = 'none';
                 handleRouting(); 
             } catch (e) {
-                document.getElementById('loading').innerHTML = `<i data-lucide="alert-circle"></i> Error loading Windows keys.`;
-                lucide.createIcons();
+                console.error(e);
+                document.getElementById('loading').innerHTML = `<i data-lucide="alert-circle"></i> Error: Database file not found or invalid.`;
             }
-        });
+            lucide.createIcons();
+        }
 
         window.addEventListener('hashchange', handleRouting);
 
         function handleRouting() {
+            // Ensure DB is loaded before routing
+            if (keysDatabase.length === 0) return;
+
             const hash = window.location.hash.substring(1).toLowerCase();
             const homeView = document.getElementById('home-view');
             const keysView = document.getElementById('keys-view');
@@ -127,15 +133,21 @@
                 homeView.style.display = 'none';
                 keysView.style.display = 'block';
                 let filteredKeys = [];
+                
                 if (hash === 'office') {
                     filteredKeys = keysDatabase.filter(k => k.version.toLowerCase().includes('office'));
                     desc.innerText = "Displaying keys for Microsoft Office.";
+                } else if (hash === '11' || hash === '10') {
+                    // This handles the "Windows 10 & 11" entries correctly
+                    filteredKeys = keysDatabase.filter(k => k.version.includes(hash));
+                    desc.innerText = `Displaying keys for Windows ${hash}.`;
                 } else {
                     filteredKeys = keysDatabase.filter(k => k.version.includes(hash));
                     desc.innerText = `Displaying keys for Windows ${hash}.`;
                 }
                 renderKeys(filteredKeys);
             }
+            lucide.createIcons();
         }
 
         function renderKeys(dataArray) {
@@ -143,3 +155,41 @@
             grid.innerHTML = '';
             if (dataArray.length === 0) {
                 grid.innerHTML = '<p style="text-align:center; color:#aaa; grid-column: 1/-1;">No keys found for this category.</p>';
+                return;
+            }
+            dataArray.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'key-card';
+                card.innerHTML = `
+                    <div class="kc-header">
+                        <h3 class="kc-title">${item.edition}</h3>
+                        <span class="kc-version">${item.version}</span>
+                    </div>
+                    <div class="kc-key">${item.key}</div>
+                    <button class="copy-btn" id="copyBtn-${index}" onclick="copyKey('${item.key}', 'copyBtn-${index}')">
+                        <i data-lucide="copy"></i> Copy Key
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function copyKey(key, btnId) {
+            navigator.clipboard.writeText(key).then(() => {
+                const btn = document.getElementById(btnId);
+                btn.innerHTML = `<i data-lucide="check"></i> Copied!`;
+                btn.classList.add('copied');
+                lucide.createIcons();
+                setTimeout(() => {
+                    btn.innerHTML = `<i data-lucide="copy"></i> Copy Key`;
+                    btn.classList.remove('copied');
+                    lucide.createIcons();
+                }, 2000);
+            });
+        }
+
+        // Run the init
+        init();
+    </script>
+</body>
+</html>
