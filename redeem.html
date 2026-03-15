@@ -117,7 +117,7 @@
             }
 
             try {
-                const response = await fetch('codes.json');
+                const response = await fetch('json/codes.json');
                 const database = await response.json();
                 const codeData = database[upperCode];
 

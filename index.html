@@ -94,7 +94,7 @@
         window.addEventListener('DOMContentLoaded', async () => {
             lucide.createIcons();
             try { 
-                const res = await fetch('status.json'); 
+                const res = await fetch('json/status.json'); 
                 if (res.ok) { 
                     const data = await res.json(); 
                     document.getElementById('liveStatus').innerText = data.status || "Online"; 

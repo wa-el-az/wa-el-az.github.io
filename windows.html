@@ -97,7 +97,7 @@
 
         async function init() {
             try {
-                const response = await fetch('windows.json');
+                const response = await fetch('json/windows.json');
                 if (!response.ok) throw new Error("Database not found");
                 keysDatabase = await response.json();
                 document.getElementById('loading').style.display = 'none';

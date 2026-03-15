@@ -65,7 +65,7 @@
             const loading = document.getElementById('loading');
             
             try {
-                const response = await fetch('projects.json');
+                const response = await fetch('json/projects.json');
                 if (!response.ok) throw new Error("File not found");
                 
                 const projects = await response.json();
