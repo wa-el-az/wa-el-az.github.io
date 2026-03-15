@@ -110,7 +110,7 @@
                 return;
             }
             try {
-                const res = await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/codes.json`);
+                const res = await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/json/codes.json`);
                 if (res.ok) {
                     const data = await res.json();
                     fileSha = data.sha;
@@ -179,7 +179,7 @@
             if (fileSha) payload.sha = fileSha;
 
             try {
-                const res = await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/codes.json`, {
+                const res = await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/json/codes.json`, {
                     method: 'PUT',
                     headers: { 'Authorization': `Bearer ${CONFIG.GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)

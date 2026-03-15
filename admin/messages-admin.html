@@ -46,7 +46,7 @@
                 return;
             }
             try {
-                const res = await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/messages.json`);
+                const res = await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/json/messages.json`);
                 if (res.ok) {
                     const data = await res.json();
                     fileSha = data.sha;
@@ -124,7 +124,7 @@
                 sha: fileSha
             };
 
-            await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/messages.json`, {
+            await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/json/messages.json`, {
                 method: 'PUT',
                 headers: { 'Authorization': `Bearer ${CONFIG.GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)

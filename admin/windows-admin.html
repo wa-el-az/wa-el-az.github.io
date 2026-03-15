@@ -71,7 +71,7 @@
                 return;
             }
             try {
-                const res = await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/windows.json`);
+                const res = await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/json/windows.json`);
                 if (res.ok) {
                     const data = await res.json();
                     fileSha = data.sha;
@@ -148,7 +148,7 @@
             if (fileSha) payload.sha = fileSha;
 
             try {
-                const res = await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/windows.json`, {
+                const res = await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/json/windows.json`, {
                     method: 'PUT',
                     headers: { 'Authorization': `Bearer ${CONFIG.GITHUB_TOKEN}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
