@@ -2,7 +2,7 @@
 @font-face {
   font-family: 'SF Pro';
   src: url('https://github.com/sahibjotsaggu/San-Francisco-Pro-Fonts/raw/refs/heads/master/SF-Pro.ttf') format('truetype');
-  font-display: swap; 
+  font-display: swap; /* Fixes the delayed text loading bug */
 }
 
 /* 2. Force download Apple Emojis */
@@ -10,7 +10,7 @@
   font-family: 'Apple Color Emoji';
   src: local('Apple Color Emoji'), 
        url('https://github.com/GORAlexComp/AppleColorEmojiFont/releases/download/v1/AppleColorEmoji.ttf') format('truetype');
-  font-display: swap; 
+  font-display: swap; /* Fixes the delayed text loading bug */
 }
 
 /* 3. Space Grotesk for high-tech display headers */
@@ -44,69 +44,51 @@
 }
 
 /* =========================================
-   CORE STYLES
+   CORE STYLES (Wired to Variables)
    ========================================= */
 * { box-sizing: border-box; }
 
 body {
   margin: 0;
   min-height: 100vh;
+  /* Font stack prioritizes SF Pro, then Apple Color Emoji */
   font-family: "SF Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: var(--text-main);
   background: #0b0b0b;
-  animation: fadePageIn 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+  transition: color 0.3s ease, background 0.3s ease;
 }
 
-/* FIXED BACKGROUND SYSTEM 
-   We make Green the base so there is NEVER a black gap.
-*/
-.bg-left {
-  position: fixed;
-  inset: 0;
-  z-index: -2;
-  background: var(--bg-left-grad);
-}
-
-.bg-right {
-  position: fixed;
-  inset: 0 0 0 50%; /* Starts at exactly half screen */
-  z-index: -1;
-  background: var(--bg-right-grad);
-  /* This creates the sharp diagonal line without extra elements */
-  clip-path: polygon(15% 0, 100% 0, 100% 100%, 0% 100%);
-}
-
-/* No more ::before needed, removing it to prevent the "long line" bug */
-.bg-right::before { display: none; }
+.bg-left, .bg-right { position: fixed; top: 0; bottom: 0; transition: background 0.5s ease; }
+.bg-left { left: 0; width: 58%; z-index: -2; background: var(--bg-left-grad); }
+.bg-right { right: 0; width: 52%; z-index: -1; background: var(--bg-right-grad); }
+.bg-right::before { content: ""; position: absolute; left: -140px; top: -10%; width: 280px; height: 120%; background: inherit; transform: skewX(-14deg); box-shadow: -20px 0 50px rgba(0,0,0,.35); transition: background 0.5s ease; }
 
 .navBtn { position: absolute; top: 20px; right: 20px; padding: 12px 22px; z-index: 20; border-radius: 999px; background: var(--nav-bg); border: 1px solid var(--nav-border); backdrop-filter: blur(10px); color: var(--nav-text); font-weight: 700; text-decoration: none; transition: 0.2s; }
 .navBtn:hover { transform: translateY(-1px); filter: brightness(1.2); }
 
-.card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 28px; backdrop-filter: blur(14px); box-shadow: 0 25px 70px rgba(0,0,0,.35); padding: 35px 30px; transition: 0.3s; }
+.card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 28px; backdrop-filter: blur(14px); box-shadow: 0 25px 70px rgba(0,0,0,.35); padding: 35px 30px; transition: background 0.3s ease, border-color 0.3s ease; }
 
-input, select, textarea { width: 100%; padding: 14px; border-radius: 12px; margin-bottom: 15px; border: 1px solid var(--card-border); background: var(--input-bg); color: var(--text-main); outline: none; font-size: 16px; transition: 0.3s; }
+input, select, textarea { width: 100%; padding: 14px; border-radius: 12px; margin-bottom: 15px; border: 1px solid var(--card-border); background: var(--input-bg); color: var(--text-main); outline: none; font-family: inherit; font-size: 16px; transition: 0.3s ease; }
 
-.btn { padding: 14px 20px; border-radius: 12px; border: 0; background: var(--btn-bg); color: var(--btn-text); font-weight: 800; cursor: pointer; width: 100%; font-size: 16px; transition: 0.2s; }
+.btn { padding: 14px 20px; border-radius: 12px; border: 0; background: var(--btn-bg); color: var(--btn-text); font-weight: 800; cursor: pointer; width: 100%; font-size: 16px; transition: 0.2s; font-family: inherit; }
 .btn:hover { background: var(--btn-hover); transform: translateY(-2px); }
 
-h1, h2, h3 { font-family: 'Space Grotesk', sans-serif; letter-spacing: -0.5px; }
+.btn-danger { background: #ff4757; color: white; padding: 6px 12px; border-radius: 8px; border: 0; cursor: pointer; font-weight: bold; transition: 0.2s; font-family: inherit; }
+
+/* Apply High-Tech Font to all Titles */
+h1, h2, h3 { font-family: 'Space Grotesk', "SF Pro", sans-serif; letter-spacing: -0.5px; }
 h1 { margin: 0 0 5px; font-size: 32px; font-weight: 700; }
-p.sub { color: var(--text-muted); margin: 0 0 25px; font-size: 15px; }
 
-/* MOBILE VIEW 
-   Layering Red at bottom 50% on top of a 100% Green background.
-*/
+p.sub { color: var(--text-muted); margin: 0 0 25px; font-size: 15px; transition: color 0.3s ease; }
+
+.heroImg img, .frame img { position: relative; z-index: 99; pointer-events: auto !important; }
+.heroImg, .frame { pointer-events: none; }
+
 @media (max-width: 860px) {
-  .bg-left { inset: 0; } /* Stays full screen */
-  .bg-right {
-    inset: 50% 0 0 0; /* Bottom 50% */
-    clip-path: none; /* Straight line for mobile looks cleaner */
-  }
-}
-
-@keyframes fadePageIn {
-    0% { opacity: 0; transform: translateY(15px); }
-    100% { opacity: 1; transform: translateY(0); }
+  .bg-right::before { display: none; }
+  .bg-left, .bg-right { position: fixed; height: 50vh; width: 100%; }
+  .bg-left { top: 0; left: 0; }
+  .bg-right { bottom: 0; top: auto; right: 0; }
 }
