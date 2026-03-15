@@ -14,14 +14,15 @@
         .header h1 { margin: 0; font-size: clamp(36px, 5vw, 56px); display: flex; align-items: center; justify-content: center; gap: 12px; }
         .header p { color: var(--muted); font-size: 18px; margin-top: 10px; }
         
-        /* CATEGORY CARDS (Main Menu) */
         .category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
         .cat-card { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.15); border-radius: 24px; padding: 30px 20px; backdrop-filter: blur(14px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); transition: 0.3s; display: flex; flex-direction: column; align-items: center; cursor: pointer; text-decoration: none; color: #fff; }
         .cat-card:hover { transform: translateY(-8px); background: rgba(255,255,255,.1); border-color: rgba(255,255,255,0.4); }
+        
+        /* Updated to use local assets */
         .cat-card img { width: 80px; height: 80px; object-fit: contain; margin-bottom: 15px; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3)); }
+        
         .cat-card h2 { font-size: 22px; margin: 0; font-family: 'Space Grotesk', sans-serif; }
 
-        /* KEYS VIEW */
         .back-to-vault { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; color: #fff; font-weight: bold; cursor: pointer; transition: 0.2s; margin-bottom: 20px; text-decoration: none; }
         .back-to-vault:hover { background: rgba(255,255,255,0.2); }
 
@@ -33,7 +34,7 @@
         .kc-title { font-size: 20px; font-weight: bold; font-family: 'Space Grotesk', sans-serif; margin: 0; color: #fff; }
         .kc-version { font-size: 12px; background: rgba(52, 152, 219, 0.2); color: #3498db; padding: 4px 8px; border-radius: 6px; font-weight: bold; }
         
-        .kc-key { font-family: 'JetBrains Mono', monospace, Courier; font-size: 15px; color: #4ade80; background: rgba(0,0,0,0.5); padding: 12px; border-radius: 8px; border: 1px dashed rgba(74, 222, 128, 0.3); text-align: center; letter-spacing: 1px; flex-grow: 1; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; }
+        .kc-key { font-family: 'JetBrains Mono', monospace; font-size: 14px; color: #4ade80; background: rgba(0,0,0,0.5); padding: 12px; border-radius: 8px; border: 1px dashed rgba(74, 222, 128, 0.3); text-align: center; letter-spacing: 1px; flex-grow: 1; display: flex; align-items: center; justify-content: center; margin-bottom: 15px; word-break: break-all; }
         
         .copy-btn { background: #fff; color: #111; border: none; padding: 10px; border-radius: 8px; font-weight: bold; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; transition: 0.2s; }
         .copy-btn:hover { background: #e0e0e0; }
@@ -41,7 +42,6 @@
         
         #loading { display: flex; align-items: center; justify-content: center; gap: 8px; color: var(--muted); font-size: 18px; margin-top: 40px; }
         .navBtn { display: inline-flex; align-items: center; gap: 6px; z-index: 50; }
-        .lucide { width: 1.2em; height: 1.2em; vertical-align: -0.125em; }
     </style>
 </head>
 <body>
@@ -51,7 +51,7 @@
     <a class="navBtn" id="dynamicBackBtn" href="index"><i data-lucide="home"></i> Home</a>
 
     <div class="header">
-        <h1><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Windows_11_logo.svg/512px-Windows_11_logo.svg.png" alt="Windows Logo" style="width: 48px; height: 48px; object-fit: contain; margin-top: -4px;"> Windows Vault</h1>
+        <h1><img src="assets/win11.png" alt="Windows Logo" style="width: 48px; height: 48px; object-fit: contain;"> Windows Vault</h1>
         <p id="headerDesc">Select a system to view official activation keys.</p>
     </div>
 
@@ -60,23 +60,23 @@
         
         <div id="home-view" class="category-grid" style="display: none;">
             <a href="#11" class="cat-card">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Windows_11_logo.svg/512px-Windows_11_logo.svg.png" alt="Windows 11">
+                <img src="assets/win11.png" alt="Windows 11">
                 <h2>Windows 11</h2>
             </a>
             <a href="#10" class="cat-card">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Windows_logo_2012.svg/512px-Windows_logo_2012.svg.png" alt="Windows 10">
+                <img src="assets/win10.png" alt="Windows 10">
                 <h2>Windows 10</h2>
             </a>
             <a href="#8" class="cat-card">
-                <img src="https://images.icon-icons.com/2415/PNG/512/windows_original_logo_icon_146292.png" alt="Windows 8/8.1">
+                <img src="assets/win8.png" alt="Windows 8/8.1">
                 <h2>Windows 8 / 8.1</h2>
             </a>
             <a href="#7" class="cat-card">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Windows_logo_2006.svg/512px-Windows_logo_2006.svg.png" alt="Windows 7">
+                <img src="assets/win7.png" alt="Windows 7">
                 <h2>Windows 7</h2>
             </a>
             <a href="#office" class="cat-card">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Microsoft_365_%282022%29.svg/500px-Microsoft_365_%282022%29.svg.png" alt="Office">
+                <img src="assets/office.png" alt="Office">
                 <h2>Microsoft Office</h2>
             </a>
         </div>
@@ -89,11 +89,9 @@
 
     <script src="js/config.js"></script>
     <script>
-        // Dynamic Back Button Logic (Global)
         window.addEventListener('DOMContentLoaded', () => {
             const backBtn = document.getElementById('dynamicBackBtn');
             const referrer = document.referrer.toLowerCase();
-            
             if (referrer.includes('shortcuts')) {
                 backBtn.href = 'shortcuts'; backBtn.innerHTML = '<i data-lucide="zap"></i> Shortcuts';
             } else if (referrer.includes('redeem')) {
@@ -111,86 +109,4 @@
                 const response = await fetch('windows.json');
                 if (!response.ok) throw new Error("Database not found");
                 keysDatabase = await response.json();
-                
                 document.getElementById('loading').style.display = 'none';
-                handleRouting(); 
-            } catch (e) {
-                document.getElementById('loading').innerHTML = `<i data-lucide="alert-circle"></i> Error loading Windows keys.`;
-                lucide.createIcons();
-            }
-        });
-
-        // Hash Routing Engine (e.g. windows.html#11)
-        window.addEventListener('hashchange', handleRouting);
-
-        function handleRouting() {
-            const hash = window.location.hash.substring(1).toLowerCase(); // gets "11", "10", "office"
-            const homeView = document.getElementById('home-view');
-            const keysView = document.getElementById('keys-view');
-            const desc = document.getElementById('headerDesc');
-
-            if (!hash) {
-                homeView.style.display = 'grid';
-                keysView.style.display = 'none';
-                desc.innerText = "Select a system to view official activation keys.";
-            } else {
-                homeView.style.display = 'none';
-                keysView.style.display = 'block';
-                
-                let filteredKeys = [];
-                if (hash === 'office') {
-                    filteredKeys = keysDatabase.filter(k => k.version.toLowerCase().includes('office'));
-                    desc.innerText = "Displaying keys for Microsoft Office.";
-                } else {
-                    filteredKeys = keysDatabase.filter(k => k.version.includes(hash));
-                    desc.innerText = `Displaying keys for Windows ${hash}.`;
-                }
-                
-                renderKeys(filteredKeys);
-            }
-        }
-
-        function renderKeys(dataArray) {
-            const grid = document.getElementById('keysGrid');
-            grid.innerHTML = '';
-
-            if (dataArray.length === 0) {
-                grid.innerHTML = '<p style="text-align:center; color:#aaa; grid-column: 1/-1;">No keys found for this category.</p>';
-                return;
-            }
-
-            dataArray.forEach((item, index) => {
-                const card = document.createElement('div');
-                card.className = 'key-card';
-                card.innerHTML = `
-                    <div class="kc-header">
-                        <h3 class="kc-title">${item.edition}</h3>
-                        <span class="kc-version">${item.version}</span>
-                    </div>
-                    <div class="kc-key">${item.key}</div>
-                    <button class="copy-btn" id="copyBtn-${index}" onclick="copyKey('${item.key}', 'copyBtn-${index}')">
-                        <i data-lucide="copy"></i> Copy Key
-                    </button>
-                `;
-                grid.appendChild(card);
-            });
-            lucide.createIcons();
-        }
-
-        function copyKey(key, btnId) {
-            navigator.clipboard.writeText(key).then(() => {
-                const btn = document.getElementById(btnId);
-                btn.innerHTML = `<i data-lucide="check"></i> Copied!`;
-                btn.classList.add('copied');
-                lucide.createIcons();
-                
-                setTimeout(() => {
-                    btn.innerHTML = `<i data-lucide="copy"></i> Copy Key`;
-                    btn.classList.remove('copied');
-                    lucide.createIcons();
-                }, 2000);
-            });
-        }
-    </script>
-</body>
-</html>
