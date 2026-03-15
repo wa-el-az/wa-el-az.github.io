@@ -247,7 +247,7 @@
 
         async function fetchDB() {
             try {
-                const res = await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/leaderboard.json`);
+                const res = await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/json/leaderboard.json`);
                 if (res.ok) {
                     const data = await res.json(); fileSha = data.sha;
                     globalLB = JSON.parse(decodeURIComponent(escape(atob(data.content))));
@@ -555,7 +555,7 @@
             if (fileSha) payload.sha = fileSha;
 
             try {
-                const res = await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/leaderboard.json`, {
+                const res = await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/json/leaderboard.json`, {
                     method: 'PUT', headers: { 'Authorization': `Bearer ${CONFIG.GITHUB_TOKEN}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
                 });
                 if (res.ok) {
