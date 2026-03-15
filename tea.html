@@ -12,11 +12,13 @@
         body { padding: 60px 5vw; overflow-x: hidden; }
         .container { position: relative; z-index: 10; max-width: 900px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
         .card { text-align: center; }
-        .score-display { font-size: 48px; font-weight: 900; margin: 10px 0; text-shadow: 0 4px 20px rgba(0,0,0,0.5); }
-        .pc-info { font-size: 14px; color: #4ade80; font-weight: bold; margin-bottom: 20px; }
+        
+        .score-display { font-size: 56px; font-weight: 900; margin: 0; text-shadow: 0 4px 20px rgba(0,0,0,0.5); letter-spacing: -1px; }
+        .exact-score { font-size: 18px; color: var(--text-muted); font-weight: 700; margin-bottom: 10px; font-family: 'JetBrains Mono', monospace; }
+        .pc-info { font-size: 16px; color: #4ade80; font-weight: bold; margin-bottom: 25px; background: rgba(74, 222, 128, 0.1); display: inline-block; padding: 4px 12px; border-radius: 99px; }
         
         .tea-btn { 
-            font-size: 100px; 
+            font-size: 110px; 
             background: none; 
             border: none; 
             cursor: pointer; 
@@ -27,7 +29,7 @@
             display: flex; 
             align-items: center; 
             justify-content: center; 
-            min-height: 150px; 
+            min-height: 160px; 
             width: 100%; 
             margin: 0 auto; 
         }
@@ -40,16 +42,20 @@
         
         .floating-text { position: fixed; font-size: 24px; font-weight: bold; color: #fff; pointer-events: none; animation: floatUp 1s ease-out forwards; z-index: 50; text-shadow: 0 2px 10px rgba(0,0,0,0.5); }
         @keyframes floatUp { 0% { opacity: 1; transform: translateY(0) scale(1); } 100% { opacity: 0; transform: translateY(-50px) scale(1.5); } }
+        
         .input-row { display: flex; gap: 10px; margin-bottom: 15px; }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .warning { font-size: 12px; color: #ff6b6b; margin-top: 10px; margin-bottom: 10px; font-weight: bold; }
+        
         .leaderboard-list { margin-top: 20px; max-height: 250px; overflow-y: auto; text-align: left; background: rgba(0,0,0,.18); border-radius: 12px; padding: 10px; border: 1px solid rgba(255,255,255,.1); }
-        .rank-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid rgba(255,255,255,.05); font-weight: bold; }
+        .rank-item { display: flex; justify-content: space-between; padding: 10px; border-bottom: 1px solid rgba(255,255,255,.05); font-weight: bold; align-items: center; }
         .rank-item:last-child { border-bottom: none; }
         .rank-1 { color: #ffd700; font-size: 18px; text-shadow: 0 0 10px rgba(255,215,0,0.5); }
         .rank-2 { color: #c0c0c0; font-size: 17px; }
         .rank-3 { color: #cd7f32; font-size: 16px; }
         .rank-other { color: #fff; }
+        .lb-score { font-family: 'JetBrains Mono', monospace; font-size: 14px; background: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 6px; }
+        
         #apiMsg { margin-top: 10px; font-size: 14px; font-weight: bold; }
         #syncControls { display: none; }
         #loggedInAs { color: #4ade80; font-weight: bold; font-size: 18px; margin-bottom: 15px; display: none;}
@@ -69,10 +75,14 @@
         <div class="card">
             <h1>Moroccan Tea</h1>
             <p class="sub">Click to brew!</p>
+            
             <div class="score-display" id="scoreDisplay">0</div>
-            <div class="pc-info" id="pcDisplay">1 point per click</div>
+            <div class="exact-score" id="exactScoreDisplay">(0 clicks)</div>
+            <div class="pc-info" id="pcDisplay">+1 per click</div>
+            
             <button class="tea-btn" id="teaBtn">🍵</button>
         </div>
+        
         <div class="card">
             <h2 style="margin-top:0;">Leaderboard</h2>
             <div id="loginControls">
@@ -123,21 +133,53 @@
         let fileSha = null;
         let loggedInUser = null;
 
+        // The formatting engine for K, M, B, T
+        function formatNumber(num) {
+            if (num < 1000) return num.toString();
+            const suffixes = ["", "K", "M", "B", "T", "Qa"];
+            const suffixNum = Math.floor(Math.log10(num) / 3);
+            let shortValue = (num / Math.pow(1000, suffixNum)).toFixed(2);
+            // Remove trailing .00 for cleaner display
+            shortValue = shortValue.replace(/\.00$/, '');
+            return shortValue + suffixes[suffixNum];
+        }
+
         function updateGameUI() {
+            // Massive new tier system
             if (score < 10) { pointsPerClick = 1; currentEmojiHTML = "🍵"; floatEmoji = "🍵"; }
             else if (score < 100) { pointsPerClick = 2; currentEmojiHTML = "☕"; floatEmoji = "☕"; }
-            else if (score < 1000) { pointsPerClick = 4; currentEmojiHTML = "🧋"; floatEmoji = "🧋"; }
-            else if (score < 5000) { pointsPerClick = 10; currentEmojiHTML = "🧉"; floatEmoji = "🧉"; }
-            else if (score < 10000) { pointsPerClick = 100; currentEmojiHTML = "🫖"; floatEmoji = "🫖"; }
-            else if (score < 100000) { pointsPerClick = 1000; currentEmojiHTML = "👑"; floatEmoji = "👑"; }
-            else { 
-                pointsPerClick = 10000; 
+            else if (score < 1000) { pointsPerClick = 5; currentEmojiHTML = "🧋"; floatEmoji = "🧋"; }
+            else if (score < 5000) { pointsPerClick = 15; currentEmojiHTML = "🧉"; floatEmoji = "🧉"; }
+            else if (score < 25000) { pointsPerClick = 50; currentEmojiHTML = "🫖"; floatEmoji = "🫖"; }
+            else if (score < 100000) { pointsPerClick = 250; currentEmojiHTML = "🏺"; floatEmoji = "🏺"; }
+            else if (score < 500000) { pointsPerClick = 1000; currentEmojiHTML = "🐫"; floatEmoji = "🐫"; }
+            else if (score < 2500000) { pointsPerClick = 5000; currentEmojiHTML = "🕌"; floatEmoji = "🕌"; }
+            else if (score < 10000000) { pointsPerClick = 25000; currentEmojiHTML = "👑"; floatEmoji = "👑"; }
+            else if (score < 50000000) { pointsPerClick = 100000; currentEmojiHTML = "💎"; floatEmoji = "💎"; }
+            else if (score < 250000000) { pointsPerClick = 500000; currentEmojiHTML = "🇲🇦"; floatEmoji = "🇲🇦"; }
+            else if (score < 1000000000) { 
+                pointsPerClick = 2500000; 
                 currentEmojiHTML = `<img src="https://png.pngtree.com/png-vector/20250207/ourmid/pngtree-refreshing-moroccan-mint-tea-in-an-engraved-glass-on-a-decorative-png-image_15409953.png" style="width: 140px; height: 140px; object-fit: contain; pointer-events: none; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.6));" alt="Legendary Mint Tea">`;
                 floatEmoji = "✨"; 
+            } else { 
+                // 1 Billion+ God Tier
+                pointsPerClick = 15000000; 
+                currentEmojiHTML = `<img src="https://png.pngtree.com/png-vector/20250207/ourmid/pngtree-refreshing-moroccan-mint-tea-in-an-engraved-glass-on-a-decorative-png-image_15409953.png" style="width: 150px; height: 150px; object-fit: contain; pointer-events: none; filter: drop-shadow(0 0 35px #ffd700) drop-shadow(0 15px 25px rgba(0,0,0,0.8));" alt="Golden Mint Tea">`;
+                floatEmoji = "🌟"; 
             }
 
-            document.getElementById('scoreDisplay').innerText = score.toLocaleString();
-            document.getElementById('pcDisplay').innerText = `+${pointsPerClick.toLocaleString()} per click`;
+            // Display formatted big number (e.g. 1.5M)
+            document.getElementById('scoreDisplay').innerText = formatNumber(score);
+            
+            // Keep exact number with commas below it so you never lose track!
+            if (score >= 1000) {
+                document.getElementById('exactScoreDisplay').innerText = `(${score.toLocaleString()} clicks)`;
+                document.getElementById('exactScoreDisplay').style.display = 'block';
+            } else {
+                document.getElementById('exactScoreDisplay').style.display = 'none';
+            }
+
+            document.getElementById('pcDisplay').innerText = `+${formatNumber(pointsPerClick)} per click`;
             document.getElementById('teaBtn').innerHTML = currentEmojiHTML;
             
             localStorage.setItem('tea_local_score', score);
@@ -162,7 +204,7 @@
 
             const floater = document.createElement('div');
             floater.className = 'floating-text';
-            floater.innerHTML = `+${pointsPerClick.toLocaleString()} ${floatEmoji}`;
+            floater.innerHTML = `+${formatNumber(pointsPerClick)} ${floatEmoji}`;
             const offsetX = (Math.random() - 0.5) * 40;
             floater.style.left = `${e.clientX + offsetX}px`;
             floater.style.top = `${e.clientY - 20}px`;
@@ -200,7 +242,12 @@
             sortedArr.forEach((user, index) => {
                 const rankClass = index === 0 ? 'rank-1' : (index === 1 ? 'rank-2' : (index === 2 ? 'rank-3' : 'rank-other'));
                 const prefix = index === 0 ? '🥇' : (index === 1 ? '🥈' : (index === 2 ? '🥉' : `${index + 1}.`));
-                listDiv.innerHTML += `<div class="rank-item ${rankClass}"><span>${prefix} ${user[0]}</span><span>${user[1].score.toLocaleString()}</span></div>`;
+                // Leaderboard now shows K/M abbreviations but keeps the exact number as a hover title!
+                listDiv.innerHTML += `
+                    <div class="rank-item ${rankClass}" title="Exact Score: ${user[1].score.toLocaleString()}">
+                        <span>${prefix} ${user[0]}</span>
+                        <span class="lb-score">${formatNumber(user[1].score)}</span>
+                    </div>`;
             });
         }
 
