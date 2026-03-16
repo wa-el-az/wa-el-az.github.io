@@ -167,14 +167,9 @@
         });
 
         // --- Hardware Detection Logic ---
-        
-        // 1. CPU
         document.getElementById('cpu-cores').innerText = navigator.hardwareConcurrency ? navigator.hardwareConcurrency + " Cores" : "Unknown";
-        
-        // 2. RAM (Browser usually caps this at 8GB for privacy)
         document.getElementById('ram-limit').innerText = navigator.deviceMemory ? ">= " + navigator.deviceMemory + " GB" : "Unknown";
         
-        // 3. GPU (Using WebGL API to read exact hardware)
         const canvas = document.getElementById('glcanvas');
         const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
         if (gl) {
@@ -185,13 +180,12 @@
             document.getElementById('gpu-name').innerText = "WebGL Not Supported";
         }
 
-        // 4. Network
         function updateNetwork() {
             if (navigator.connection) {
                 document.getElementById('net-speed').innerText = navigator.connection.downlink + " Mbps";
                 document.getElementById('net-type').innerText = navigator.connection.effectiveType.toUpperCase();
             } else {
-                document.getElementById('net-speed').innerText = "Not Supported by Browser";
+                document.getElementById('net-speed').innerText = "Not Supported";
                 document.getElementById('net-type').innerText = "-";
             }
         }
@@ -199,11 +193,11 @@
         if(navigator.connection) navigator.connection.addEventListener('change', updateNetwork);
 
         // --- STRESS TEST LOGIC ---
-
         let stressState = { cpu: false, ram: false, gpu: false, net: false };
         let workers = [];
         let junkMemory = [];
         let gpuInterval;
+        let netControllers = [];
 
         function toggleStress(component) {
             const card = document.getElementById(`card-${component}`);
@@ -226,27 +220,19 @@
 
         function startStress(comp) {
             if (comp === 'cpu') {
-                // Spin up web workers to calculate useless math, maxing out CPU cores
                 let cores = navigator.hardwareConcurrency || 4;
                 for (let i = 0; i < cores; i++) {
-                    const blob = new Blob([`
-                        while(true) { Math.sqrt(Math.random() * 999999); }
-                    `], {type: 'application/javascript'});
-                    const worker = new Worker(URL.createObjectURL(blob));
-                    workers.push(worker);
+                    const blob = new Blob([`while(true) { Math.sqrt(Math.random() * 999999); }`], {type: 'application/javascript'});
+                    workers.push(new Worker(URL.createObjectURL(blob)));
                 }
             } 
             else if (comp === 'ram') {
-                // Push huge arrays into memory rapidly
                 document.getElementById('ram-usage').innerText = "Spiking...";
                 window.ramInterval = setInterval(() => {
-                    if(junkMemory.length < 50) { // Limit to prevent total tab crash
-                        junkMemory.push(new Array(1000000).fill('WAEL_OS_MEMORY_STRESS_STRING'));
-                    }
+                    if(junkMemory.length < 50) junkMemory.push(new Array(1000000).fill('WAEL_OS_MEMORY_STRESS'));
                 }, 100);
             }
             else if (comp === 'gpu') {
-                // Rapidly create and destroy DOM elements with expensive CSS filters to max GPU rasterization
                 gpuInterval = setInterval(() => {
                     const div = document.createElement('div');
                     div.style.position = 'absolute';
@@ -260,22 +246,28 @@
                 }, 10);
             }
             else if (comp === 'net') {
-                // Fetch random data constantly to max out download bandwidth
+                // Real Network Stress: Aggressively pull 50MB files from Cloudflare's Speed Test API
                 window.netInterval = setInterval(() => {
-                    fetch('https://api.github.com/events?bust=' + Math.random(), {cache: 'no-store'})
-                        .then(r => r.text()).catch(e => {});
-                }, 100);
+                    const controller = new AbortController();
+                    netControllers.push(controller);
+                    
+                    fetch('https://speed.cloudflare.com/__down?bytes=50000000', {
+                        cache: 'no-store',
+                        signal: controller.signal
+                    }).catch(e => {});
+
+                    // Keep the array clean by removing old controllers
+                    if(netControllers.length > 15) netControllers.shift();
+                }, 600); // Trigger a new 50MB download request every 600ms
             }
         }
 
         function stopStress(comp) {
             if (comp === 'cpu') {
-                workers.forEach(w => w.terminate());
-                workers = [];
+                workers.forEach(w => w.terminate()); workers = [];
             }
             else if (comp === 'ram') {
-                clearInterval(window.ramInterval);
-                junkMemory = []; // Release memory to Garbage Collector
+                clearInterval(window.ramInterval); junkMemory = []; 
                 document.getElementById('ram-usage').innerText = "~";
             }
             else if (comp === 'gpu') {
@@ -283,6 +275,8 @@
             }
             else if (comp === 'net') {
                 clearInterval(window.netInterval);
+                netControllers.forEach(c => c.abort()); // Instantly cancel all pending downloads
+                netControllers = [];
             }
         }
     </script>
