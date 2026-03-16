@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>WaelOS | Hardware Monitor</title>
+    <link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { padding: 100px 5vw 40px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        
+        .hardware-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .hw-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 25px;
+            backdrop-filter: blur(12px);
+            cursor: pointer;
+            transition: 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hw-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* The Stress Test Active State */
+        .hw-card.stressing {
+            border-color: #ff4757;
+            background: rgba(255, 71, 87, 0.1);
+            box-shadow: 0 0 30px rgba(255, 71, 87, 0.3);
+            animation: shake 0.5s infinite alternate;
+        }
+
+        @keyframes shake {
+            0% { transform: translate(1px, 1px) rotate(0deg); }
+            100% { transform: translate(-1px, -2px) rotate(-1deg); }
+        }
+
+        .hw-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 15px;
+        }
+
+        .hw-header i { color: var(--terminal-green); font-size: 24px; }
+        .hw-card.stressing .hw-header i { color: #ff4757; }
+
+        .hw-title { font-family: 'Space Grotesk', sans-serif; font-size: 20px; font-weight: 700; margin: 0; }
+        
+        .hw-detail { font-size: 14px; color: rgba(255,255,255,0.7); margin: 5px 0; display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; }
+        .hw-detail strong { color: #fff; }
+
+        .stress-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #ff4757;
+            color: #fff;
+            font-size: 11px;
+            font-weight: 800;
+            padding: 4px 8px;
+            border-radius: 6px;
+            opacity: 0;
+            transition: 0.3s;
+        }
+
+        .hw-card.stressing .stress-badge { opacity: 1; }
+
+        .info-text { text-align: center; color: rgba(255,255,255,0.6); max-width: 600px; margin-bottom: 40px; font-size: 14px; line-height: 1.6;}
+    </style>
+</head>
+<body>
+    <div class="bg-left"></div><div class="bg-right"></div>
+    
+    <a class="navBtn" href="index"><i data-lucide="home"></i> Home</a>
+
+    <h1 style="text-align: center;">System Monitor</h1>
+    <p class="info-text">Click on any component to initiate a browser-level stress test. Warning: This will intentionally consume heavy system resources. Click again to abort.</p>
+
+    <div class="hardware-grid">
+        <div class="hw-card" id="card-cpu" onclick="toggleStress('cpu')">
+            <div class="stress-badge">STRESSING</div>
+            <div class="hw-header">
+                <i data-lucide="cpu"></i>
+                <h2 class="hw-title">Processor (CPU)</h2>
+            </div>
+            <div class="hw-detail"><span>Logical Cores:</span> <strong id="cpu-cores">Detecting...</strong></div>
+            <div class="hw-detail"><span>Architecture:</span> <strong id="cpu-arch">x86_64 / ARM</strong></div>
+            <div class="hw-detail"><span>Status:</span> <strong id="cpu-status" style="color: var(--terminal-green);">Idle</strong></div>
+        </div>
+
+        <div class="hw-card" id="card-ram" onclick="toggleStress('ram')">
+            <div class="stress-badge">STRESSING</div>
+            <div class="hw-header">
+                <i data-lucide="memory-stick"></i>
+                <h2 class="hw-title">Memory (RAM)</h2>
+            </div>
+            <div class="hw-detail"><span>Device Limit:</span> <strong id="ram-limit">Detecting...</strong></div>
+            <div class="hw-detail"><span>Browser Usage:</span> <strong id="ram-usage">~</strong></div>
+            <div class="hw-detail"><span>Status:</span> <strong id="ram-status" style="color: var(--terminal-green);">Optimal</strong></div>
+        </div>
+
+        <div class="hw-card" id="card-gpu" onclick="toggleStress('gpu')">
+            <div class="stress-badge">STRESSING</div>
+            <div class="hw-header">
+                <i data-lucide="monitor-play"></i>
+                <h2 class="hw-title">Graphics (GPU)</h2>
+            </div>
+            <div class="hw-detail" style="flex-direction: column; gap: 5px;">
+                <span>Renderer:</span> 
+                <strong id="gpu-name" style="font-size: 12px; text-align: left;">Detecting WebGL...</strong>
+            </div>
+            <div class="hw-detail" style="margin-top: 10px;"><span>Status:</span> <strong id="gpu-status" style="color: var(--terminal-green);">Idle</strong></div>
+            
+            <canvas id="glcanvas" width="1" height="1" style="display:none;"></canvas>
+        </div>
+
+        <div class="hw-card" id="card-net" onclick="toggleStress('net')">
+            <div class="stress-badge">STRESSING</div>
+            <div class="hw-header">
+                <i data-lucide="wifi"></i>
+                <h2 class="hw-title">Network</h2>
+            </div>
+            <div class="hw-detail"><span>Downlink:</span> <strong id="net-speed">Detecting...</strong></div>
+            <div class="hw-detail"><span>Connection:</span> <strong id="net-type">Detecting...</strong></div>
+            <div class="hw-detail"><span>Status:</span> <strong id="net-status" style="color: var(--terminal-green);">Connected</strong></div>
+        </div>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        // --- Hardware Detection Logic ---
+        
+        // 1. CPU
+        document.getElementById('cpu-cores').innerText = navigator.hardwareConcurrency ? navigator.hardwareConcurrency + " Cores" : "Unknown";
+        
+        // 2. RAM (Browser usually caps this at 8GB for privacy)
+        document.getElementById('ram-limit').innerText = navigator.deviceMemory ? ">= " + navigator.deviceMemory + " GB" : "Unknown";
+        
+        // 3. GPU (Using WebGL API to read exact hardware)
+        const canvas = document.getElementById('glcanvas');
+        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+        if (gl) {
+            const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+            const renderer = debugInfo ? gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) : "Generic WebGL";
+            document.getElementById('gpu-name').innerText = renderer;
+        } else {
+            document.getElementById('gpu-name').innerText = "WebGL Not Supported";
+        }
+
+        // 4. Network
+        function updateNetwork() {
+            if (navigator.connection) {
+                document.getElementById('net-speed').innerText = navigator.connection.downlink + " Mbps";
+                document.getElementById('net-type').innerText = navigator.connection.effectiveType.toUpperCase();
+            } else {
+                document.getElementById('net-speed').innerText = "Not Supported by Browser";
+                document.getElementById('net-type').innerText = "-";
+            }
+        }
+        updateNetwork();
+        if(navigator.connection) navigator.connection.addEventListener('change', updateNetwork);
+
+        // --- STRESS TEST LOGIC ---
+
+        let stressState = { cpu: false, ram: false, gpu: false, net: false };
+        let workers = [];
+        let junkMemory = [];
+        let gpuInterval;
+
+        function toggleStress(component) {
+            const card = document.getElementById(`card-${component}`);
+            const statusText = document.getElementById(`${component}-status`);
+            
+            stressState[component] = !stressState[component];
+            
+            if (stressState[component]) {
+                card.classList.add('stressing');
+                statusText.innerText = "100% LOAD";
+                statusText.style.color = "#ff4757";
+                startStress(component);
+            } else {
+                card.classList.remove('stressing');
+                statusText.innerText = component === "net" ? "Connected" : (component === "ram" ? "Optimal" : "Idle");
+                statusText.style.color = "var(--terminal-green)";
+                stopStress(component);
+            }
+        }
+
+        function startStress(comp) {
+            if (comp === 'cpu') {
+                // Spin up web workers to calculate useless math, maxing out CPU cores
+                let cores = navigator.hardwareConcurrency || 4;
+                for (let i = 0; i < cores; i++) {
+                    const blob = new Blob([`
+                        while(true) { Math.sqrt(Math.random() * 999999); }
+                    `], {type: 'application/javascript'});
+                    const worker = new Worker(URL.createObjectURL(blob));
+                    workers.push(worker);
+                }
+            } 
+            else if (comp === 'ram') {
+                // Push huge arrays into memory rapidly
+                document.getElementById('ram-usage').innerText = "Spiking...";
+                window.ramInterval = setInterval(() => {
+                    if(junkMemory.length < 50) { // Limit to prevent total tab crash
+                        junkMemory.push(new Array(1000000).fill('WAEL_OS_MEMORY_STRESS_STRING'));
+                    }
+                }, 100);
+            }
+            else if (comp === 'gpu') {
+                // Rapidly create and destroy DOM elements with expensive CSS filters to max GPU rasterization
+                gpuInterval = setInterval(() => {
+                    const div = document.createElement('div');
+                    div.style.position = 'absolute';
+                    div.style.width = '100vw'; div.style.height = '100vh';
+                    div.style.background = 'white';
+                    div.style.backdropFilter = 'blur(50px) contrast(200%)';
+                    div.style.opacity = '0.01';
+                    div.style.pointerEvents = 'none';
+                    document.body.appendChild(div);
+                    setTimeout(() => div.remove(), 50);
+                }, 10);
+            }
+            else if (comp === 'net') {
+                // Fetch random data constantly to max out download bandwidth
+                window.netInterval = setInterval(() => {
+                    fetch('https://api.github.com/events?bust=' + Math.random(), {cache: 'no-store'})
+                        .then(r => r.text()).catch(e => {});
+                }, 100);
+            }
+        }
+
+        function stopStress(comp) {
+            if (comp === 'cpu') {
+                workers.forEach(w => w.terminate());
+                workers = [];
+            }
+            else if (comp === 'ram') {
+                clearInterval(window.ramInterval);
+                junkMemory = []; // Release memory to Garbage Collector
+                document.getElementById('ram-usage').innerText = "~";
+            }
+            else if (comp === 'gpu') {
+                clearInterval(gpuInterval);
+            }
+            else if (comp === 'net') {
+                clearInterval(window.netInterval);
+            }
+        }
+    </script>
+</body>
+</html>
