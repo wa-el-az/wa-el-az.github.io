@@ -70,14 +70,12 @@ body {
     backdrop-filter: blur(14px); 
     box-shadow: 0 25px 70px rgba(0,0,0,0.35); 
     padding: 35px 30px; 
-    /* Combined transition for hover and interaction */
     transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.4s ease, border-color 0.3s ease; 
     /* The core floating animation applied to the whole card */
     animation: floatLoop 4s ease-in-out infinite;
 }
 
 .card:hover {
-    /* Hover effect works with the floating animation */
     transform: translateY(-8px);
     border-color: rgba(255, 255, 255, 0.3);
     box-shadow: 0 40px 90px rgba(0, 0, 0, 0.5), 0 0 25px rgba(255, 255, 255, 0.05);
@@ -106,7 +104,6 @@ h1 { margin: 0 0 5px; font-size: 32px; font-weight: 700; }
 
 p.sub { color: var(--text-muted); margin: 0 0 25px; font-size: 15px; transition: color 0.3s ease; }
 
-/* Keep hero images responsive but no separate float animation */
 .heroImg img, .frame img { position: relative; z-index: 99; pointer-events: auto !important; max-width: 100%; height: auto; }
 .heroImg, .frame { pointer-events: none; }
 
@@ -115,7 +112,6 @@ p.sub { color: var(--text-muted); margin: 0 0 25px; font-size: 15px; transition:
   .bg-left, .bg-right { position: fixed; height: 50vh; width: 100%; }
   .bg-left { top: 0; left: 0; }
   .bg-right { bottom: 0; top: auto; right: 0; }
-  /* Disable float animation on mobile for better performance if needed, or keep it */
   .card { animation: floatLoop 5s ease-in-out infinite; }
 }
 
@@ -129,7 +125,6 @@ p.sub { color: var(--text-muted); margin: 0 0 25px; font-size: 15px; transition:
     100% { opacity: 1; transform: translateY(0); }
 }
 
-/* Apply entry animation to main layout wrappers */
 .wrapper, .container, .desktop, .terminal-wrap, .left {
     animation: fadePageIn 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 }
@@ -139,6 +134,20 @@ p.sub { color: var(--text-muted); margin: 0 0 25px; font-size: 15px; transition:
     0% { transform: translateY(0px); }
     50% { transform: translateY(-12px); }
     100% { transform: translateY(0px); }
+}
+
+/* 3. Shortcuts Specific: Glassy Icons */
+/* Targets icons ONLY on the shortcuts page structure */
+.shortcuts-grid i, 
+.shortcuts-container i, 
+.card i[data-lucide] {
+    color: rgba(255, 255, 255, 0.82); /* Glassy transparent white */
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.card:hover i[data-lucide] {
+    color: rgba(255, 255, 255, 1); /* Solid white on hover */
+    transform: scale(1.1);
 }
 
 /* Subtle icon pulse for buttons */
