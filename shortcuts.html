@@ -1,48 +1,140 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8"/>
-    <meta content="width=device-width, initial-scale=1" name="viewport"/>
-    <title>Wael — Shortcuts</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wael | Shortcuts</title>
     <link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
     <link rel="stylesheet" href="css/style.css" />
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        body { padding: 80px 5vw; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .wrapper { position: relative; z-index: 10; text-align: center; width: 100%; max-width: 800px; }
-        h1 { font-size: clamp(36px, 6vw, 56px); margin-bottom: 10px; }
-        p.intro { color: var(--muted); margin-bottom: 40px; font-size: 18px; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
-        .card-sc { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 160px; background: rgba(255, 255, 255, .08); border: 1px solid rgba(255, 255, 255, .15); border-radius: 24px; backdrop-filter: blur(14px); text-decoration: none; color: #fff; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
-        .card-sc:hover { transform: translateY(-8px); background: rgba(255, 255, 255, .15); border-color: rgba(255,255,255,0.4); }
-        .card-sc span.icon { margin-bottom: 10px; display: flex; align-items: center; justify-content: center; }
-        .card-sc span.icon svg { width: 40px; height: 40px; }
-        .card-sc span.label { font-size: 20px; font-weight: bold; }
-        .lucide { width: 1.2em; height: 1.2em; vertical-align: -0.125em; }
+        body { padding: 100px 5vw 40px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        
+        .shortcuts-container {
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .shortcuts-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .shortcuts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 25px;
+            width: 100%;
+        }
+
+        /* Ensuring the cards act as proper flex containers for alignment */
+        .shortcuts-grid .card {
+            text-align: center;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px 20px;
+        }
+
+        /* Sizing the Lucide icons */
+        .shortcuts-grid i {
+            width: 36px;
+            height: 36px;
+            margin-bottom: 15px;
+        }
+
+        /* Sizing for the Windows Vault image if you are using the image approach instead of layout-grid */
+        .shortcuts-grid img.custom-icon {
+            width: 36px;
+            height: 36px;
+            margin-bottom: 15px;
+            opacity: 0.82;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .card:hover img.custom-icon {
+            opacity: 1;
+            transform: scale(1.1);
+        }
     </style>
 </head>
 <body>
     <div class="bg-left"></div><div class="bg-right"></div>
-    <div class="wrapper">
-        <h1>Site Directory</h1>
-        <p class="intro">Quick shortcuts to every part of my website.</p>
-        <div class="grid">
-            <a href="index" class="card-sc"><span class="icon"><i data-lucide="home"></i></span><span class="label">Home</span></a>
-            <a href="projects" class="card-sc"><span class="icon"><i data-lucide="folder"></i></span><span class="label">My Projects</span></a>
-            <a href="message" class="card-sc"><span class="icon"><i data-lucide="message-square"></i></span><span class="label">Contact Me</span></a>
-            <a href="redeem" class="card-sc"><span class="icon"><i data-lucide="ticket"></i></span><span class="label">Redeem Code</span></a>
-            <a href="tea" class="card-sc"><span class="icon"><i data-lucide="coffee"></i></span><span class="label">Tea Clicker</span></a>
-            <a href="admin/hub" class="card-sc"><span class="icon"><i data-lucide="settings"></i></span><span class="label">Admin Hub</span></a>
-            <a href="tic-tac-toe" class="card-sc"><span class="icon"><i data-lucide="gamepad-2"></i></span><span class="label">Tic-tac-toe</span></a>
-            <a href="achievements" class="card-sc"><span class="icon"><i data-lucide="trophy"></i></span><span class="label">Trophy Room</span></a>
-            <a href="mypc" class="card-sc"><span class="icon"><i data-lucide="monitor"></i></span><span class="label">My PC</span></a>
+    
+    <a class="navBtn" href="index"><i data-lucide="home"></i> Home</a>
+
+    <div class="shortcuts-container">
+        <div class="shortcuts-header">
+            <h1>System Shortcuts</h1>
+            <p class="sub">Quick access to WaelOS modules and applications.</p>
+        </div>
+
+        <div class="shortcuts-grid">
+            <a href="projects" class="card">
+                <i data-lucide="folder"></i>
+                <h3>Projects</h3>
+                <p class="sub" style="margin:0; font-size:13px;">View portfolio</p>
+            </a>
+
+            <a href="mypc" class="card">
+                <i data-lucide="terminal-square"></i>
+                <h3>My PC</h3>
+                <p class="sub" style="margin:0; font-size:13px;">Terminal access</p>
+            </a>
             
-            <a href="windows" class="card-sc">
-                <span class="icon"><img src="https://img.icons8.com/ios11/512/FFFFFF/windows-11.png" alt="Windows Logo" style="width: 40px; height: 40px; object-fit: contain;"></span>
-                <span class="label">Windows Vault</span>
+            <a href="hardware" class="card">
+                <i data-lucide="monitor"></i>
+                <h3>System Monitor</h3>
+                <p class="sub" style="margin:0; font-size:13px;">Live hardware stats</p>
+            </a>
+
+            <a href="windows" class="card">
+                <img src="assets/win11.png" alt="Windows" class="custom-icon" />
+                <h3>Windows Vault</h3>
+                <p class="sub" style="margin:0; font-size:13px;">OS Archive</p>
+            </a>
+
+            <a href="tea" class="card">
+                <i data-lucide="coffee"></i>
+                <h3>Tea Clicker</h3>
+                <p class="sub" style="margin:0; font-size:13px;">Moroccan tea</p>
+            </a>
+
+            <a href="tic-tac-toe" class="card">
+                <i data-lucide="gamepad-2"></i>
+                <h3>Tic-Tac-Toe</h3>
+                <p class="sub" style="margin:0; font-size:13px;">Classic game</p>
+            </a>
+
+            <a href="achievements" class="card">
+                <i data-lucide="trophy"></i>
+                <h3>Achievements</h3>
+                <p class="sub" style="margin:0; font-size:13px;">Unlocked trophies</p>
+            </a>
+
+            <a href="redeem" class="card">
+                <i data-lucide="ticket"></i>
+                <h3>Redeem</h3>
+                <p class="sub" style="margin:0; font-size:13px;">Enter codes</p>
+            </a>
+            
+            <a href="message" class="card">
+                <i data-lucide="message-square"></i>
+                <h3>Message</h3>
+                <p class="sub" style="margin:0; font-size:13px;">Send a comm</p>
+            </a>
+            
+            <a href="admin/hub" class="card">
+                <i data-lucide="settings"></i>
+                <h3>Admin Hub</h3>
+                <p class="sub" style="margin:0; font-size:13px;">System control</p>
             </a>
         </div>
     </div>
+
     <script>
         lucide.createIcons();
     </script>
