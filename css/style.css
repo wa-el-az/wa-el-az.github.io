@@ -39,9 +39,20 @@
 }
 
 /* =========================================
-   CORE STYLES
+   CORE STYLES & OS DETAILS
    ========================================= */
 * { box-sizing: border-box; }
+
+/* Custom Text Selection */
+::selection {
+    background-color: var(--terminal-green);
+    color: #0b0b0b;
+}
+
+::-moz-selection {
+    background-color: var(--terminal-green);
+    color: #0b0b0b;
+}
 
 /* Enable smooth scrolling across the OS */
 html {
@@ -127,7 +138,6 @@ p.sub { color: var(--text-muted); margin: 0 0 25px; font-size: 15px; transition:
   .bg-left, .bg-right { position: fixed; height: 50vh; width: 100%; }
   .bg-left { top: 0; left: 0; }
   .bg-right { bottom: 0; top: auto; right: 0; }
-  /* Removed floatLoop from card here as well for mobile performance */
 }
 
 /* =========================================
