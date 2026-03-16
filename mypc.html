@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>WaelOS — My PC Terminal</title>
+    <title>Wael — My PC Terminal</title>
     <link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
     <link rel="stylesheet" href="css/style.css" />
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -315,10 +315,39 @@
             return rawHash;
         }
 
+        // --- UPGRADED TERMINAL TYPING EFFECT ---
         function logMsg(msg) {
             const log = document.getElementById('systemLog');
-            log.innerHTML += `<div>${msg}</div>`; log.scrollTop = log.scrollHeight;
+            const newDiv = document.createElement('div');
+            log.appendChild(newDiv);
+            
+            let i = 0;
+            let currentHTML = "";
+            let isTag = false;
+            
+            function type() {
+                if (i < msg.length) {
+                    let char = msg.charAt(i);
+                    currentHTML += char;
+                    newDiv.innerHTML = currentHTML;
+                    
+                    // Track if we are inside an HTML tag so we can print it instantly without breaking the formatting
+                    if (char === '<') isTag = true;
+                    if (char === '>') isTag = false;
+                    
+                    log.scrollTop = log.scrollHeight;
+                    i++;
+                    
+                    if (isTag) {
+                        type(); // Type tags instantly
+                    } else {
+                        setTimeout(type, 10); // 10ms typing speed for characters
+                    }
+                }
+            }
+            type();
         }
+        // ---------------------------------------
 
         function triggerHack() {
             let rand = Math.random(); let a, b;
