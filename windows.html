@@ -39,6 +39,45 @@
         #loading { display: flex; align-items: center; justify-content: center; gap: 8px; color: var(--muted); font-size: 18px; margin-top: 40px; }
         .navBtn { display: inline-flex; align-items: center; gap: 6px; z-index: 50; }
     </style>
+<style>
+/* Morocco flag replacement */
+.ma-flag{
+  width: 1em;
+  height: 1em;
+  object-fit: contain;
+  display: inline-block;
+  vertical-align: -0.14em;
+  transition: transform 160ms ease, filter 160ms ease;
+  transform-origin: center;
+}
+
+.ma-flag:hover{
+  transform: translateY(-1px) scale(1.14);
+  filter: drop-shadow(0 2px 8px rgba(255,255,255,0.35));
+}
+
+.custom-emoji-inline.ma-flag{
+  margin: 0 0.08em;
+}
+
+.tea-flag{
+  width: 140px;
+  height: 140px;
+  vertical-align: middle;
+  filter: drop-shadow(0 15px 25px rgba(0,0,0,0.6));
+}
+
+.tea-flag:hover{
+  transform: scale(1.04);
+  filter: drop-shadow(0 18px 28px rgba(0,0,0,0.65));
+}
+
+.achieve-flag{
+  width: 36px;
+  height: 36px;
+  vertical-align: middle;
+}
+</style>
 </head>
 <body>
     <div class="bg-left"></div><div class="bg-right"></div>

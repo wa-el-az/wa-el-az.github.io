@@ -100,6 +100,45 @@
             .title { min-height: 3.3em; } 
         }
     </style>
+<style>
+/* Morocco flag replacement */
+.ma-flag{
+  width: 1em;
+  height: 1em;
+  object-fit: contain;
+  display: inline-block;
+  vertical-align: -0.14em;
+  transition: transform 160ms ease, filter 160ms ease;
+  transform-origin: center;
+}
+
+.ma-flag:hover{
+  transform: translateY(-1px) scale(1.14);
+  filter: drop-shadow(0 2px 8px rgba(255,255,255,0.35));
+}
+
+.custom-emoji-inline.ma-flag{
+  margin: 0 0.08em;
+}
+
+.tea-flag{
+  width: 140px;
+  height: 140px;
+  vertical-align: middle;
+  filter: drop-shadow(0 15px 25px rgba(0,0,0,0.6));
+}
+
+.tea-flag:hover{
+  transform: scale(1.04);
+  filter: drop-shadow(0 18px 28px rgba(0,0,0,0.65));
+}
+
+.achieve-flag{
+  width: 36px;
+  height: 36px;
+  vertical-align: middle;
+}
+</style>
 </head>
 <body>
     <div id="boot-overlay">
@@ -127,7 +166,7 @@
         </div>
         <section class="description-section">
             <div class="desc-text">
-                A proud Moroccan 🇲🇦 student who likes tea.
+                A proud Moroccan <img src="/assets/morocco_flag_emoji_ios.png" alt="Morocco flag" class="ma-flag"> student who likes tea.
                 <span>Wael Amrani Zerrifi.</span>
                 <a href="shortcuts" class="shortcut-btn"><i data-lucide="zap"></i> Shortcuts</a>
             </div>
