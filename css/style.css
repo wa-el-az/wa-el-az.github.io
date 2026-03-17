@@ -162,9 +162,9 @@ p.sub { color: var(--text-muted); margin: 0 0 25px; font-size: 15px; transition:
 }
 /* Restrict Context Menu Icon Overrides */
 #context-menu .context-item svg {
-    width: 16px !important;
-    height: 16px !important;
-    min-width: 16px !important;
+    width: 17px !important;
+    height: 17px !important;
+    min-width: 17px !important;
     margin-right: 4px;
 }
 
