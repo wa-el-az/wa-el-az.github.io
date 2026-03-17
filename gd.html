@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="css/style.css" />
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* Import the official Geometry Dash font (Pusab) */
+        /* Import the official Geometry Dash font */
         @font-face {
             font-family: 'Pusab';
             src: url('https://gdbrowser.com/assets/pusab.woff2') format('woff2');
@@ -41,36 +41,41 @@
         }
 
         .icon-display {
-            background: rgba(0, 0, 0, 0.2);
-            border: 2px dashed rgba(255, 255, 255, 0.2);
-            border-radius: 16px;
-            height: 180px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 2px dashed rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            height: 200px;
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 25px;
             position: relative;
-            overflow: hidden;
+            backdrop-filter: blur(10px);
         }
 
         #gdIcon {
-            max-width: 120px;
-            max-height: 120px;
-            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));
+            max-width: 140px;
+            max-height: 140px;
+            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.6));
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            display: none; /* Hidden until loaded */
+            display: none; /* Initially hidden */
         }
 
-        #gdIcon:hover {
-            transform: scale(1.15) rotate(5deg);
+        #gdIcon.loaded {
+            display: block;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
         }
 
         .loading-ring {
-            display: none;
-            width: 40px;
-            height: 40px;
-            border: 4px solid rgba(255,255,255,0.1);
-            border-top-color: var(--terminal-green);
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255,255,255,0.1);
+            border-top-color: #4ade80;
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -79,18 +84,17 @@
 
         .search-box {
             display: flex;
-            gap: 10px;
+            gap: 12px;
         }
 
         .search-box input {
             margin-bottom: 0;
             font-family: 'Inter', sans-serif;
-            font-weight: bold;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.05);
         }
 
-        /* Nav Btn specific alignment for this page */
         .navBtn { display: inline-flex; align-items: center; gap: 6px; }
-        .lucide { width: 1.2em; height: 1.2em; vertical-align: -0.125em; }
     </style>
 </head>
 <body>
@@ -102,24 +106,24 @@
         <h1 class="gd-title">Geometry Dash</h1>
         
         <div class="card">
-            <div class="icon-display">
-                <div class="loading-ring" id="loader"></div>
+            <div class="icon-display" id="displayArea">
+                <div class="loading-ring" id="loader" style="display:none;"></div>
                 <img id="gdIcon" src="" alt="GD Icon" />
             </div>
 
-            <p class="sub" style="text-align: center; margin-top: -10px; margin-bottom: 20px;">
-                Enter a GD Username to extract their main icon.
+            <p class="sub" style="text-align: center; margin-bottom: 20px;">
+                Enter a GD Username to view their main icon.
             </p>
 
             <div class="search-box">
-                <input type="text" id="usernameInput" placeholder="e.g. RobTop" autocomplete="off" spellcheck="false" />
-                <button class="btn" id="searchBtn" style="width: auto; padding: 14px 24px;">
+                <input type="text" id="usernameInput" placeholder="e.g. RobTop" autocomplete="off" />
+                <button class="btn" id="searchBtn" style="width: auto; padding: 0 25px;">
                     <i data-lucide="search"></i>
                 </button>
             </div>
             
-            <p id="errorMsg" style="color: #ff4757; font-size: 13px; text-align: center; margin-top: 15px; display: none; font-weight: bold;">
-                User not found!
+            <p id="errorMsg" style="color: #ff4757; font-size: 14px; text-align: center; margin-top: 15px; display: none; font-weight: bold;">
+                Player not found or API is down.
             </p>
         </div>
     </div>
@@ -128,69 +132,55 @@
     <script>
         lucide.createIcons();
 
-        // Dynamic Back Button Logic
+        // Handle Back Button Logic
         const backBtn = document.getElementById('dynamicBackBtn');
-        const referrer = document.referrer.toLowerCase();
-        
-        if (referrer.includes('shortcuts')) {
+        if (document.referrer.toLowerCase().includes('shortcuts')) {
             backBtn.href = 'shortcuts';
             backBtn.innerHTML = '<i data-lucide="zap"></i> Shortcuts';
-        } else {
-            backBtn.href = 'index';
-            backBtn.innerHTML = '<i data-lucide="home"></i> Home';
+            lucide.createIcons();
         }
-        lucide.createIcons();
 
-        // Icon Fetching Logic
         const input = document.getElementById('usernameInput');
         const btn = document.getElementById('searchBtn');
         const iconImg = document.getElementById('gdIcon');
         const loader = document.getElementById('loader');
         const errorMsg = document.getElementById('errorMsg');
 
-        function fetchIcon() {
-            const username = input.value.trim();
-            if (!username) return;
+        async function fetchIcon() {
+            const user = input.value.trim();
+            if (!user) return;
 
-            // Update UI to loading state
-            iconImg.style.display = 'none';
+            // Reset UI
             errorMsg.style.display = 'none';
+            iconImg.classList.remove('loaded');
+            iconImg.style.display = 'none';
             loader.style.display = 'block';
-            
-            // Build the GDBrowser Image API URL
-            // Using a timestamp cache-breaker to ensure we don't get stuck with a broken cached image
-            const targetUrl = `https://gdbrowser.com/icon/${encodeURIComponent(username)}?form=cube&timestamp=${new Date().getTime()}`;
 
-            // Create a temporary image object to test if it loads successfully before displaying it
-            const tempImg = new Image();
-            
-            tempImg.onload = () => {
+            // We use GDBrowser's icon API
+            // Form "cube" is the default player icon
+            const iconUrl = `https://gdbrowser.com/icon/${encodeURIComponent(user)}?form=cube`;
+
+            // Pre-load the image to handle errors and loading state
+            const imgTester = new Image();
+            imgTester.src = iconUrl;
+
+            imgTester.onload = () => {
                 loader.style.display = 'none';
-                iconImg.src = targetUrl;
+                iconImg.src = iconUrl;
                 iconImg.style.display = 'block';
-                
-                // Pop animation
-                iconImg.style.transform = 'scale(0.5)';
-                setTimeout(() => iconImg.style.transform = 'scale(1)', 50);
+                iconImg.classList.add('loaded');
             };
 
-            tempImg.onerror = () => {
+            imgTester.onerror = () => {
                 loader.style.display = 'none';
                 errorMsg.style.display = 'block';
             };
-
-            tempImg.src = targetUrl;
         }
 
-        // Trigger on button click
         btn.addEventListener('click', fetchIcon);
+        input.addEventListener('keypress', (e) => { if (e.key === 'Enter') fetchIcon(); });
 
-        // Trigger on 'Enter' key press
-        input.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') fetchIcon();
-        });
-
-        // Load a default icon on startup just to show how it works
+        // Load RobTop by default
         input.value = "RobTop";
         fetchIcon();
     </script>
