@@ -11,10 +11,10 @@
         .wrap { position: relative; }
         .hero-container { position: sticky; top: 0; min-height: 100vh; width: 100%; overflow: hidden; }
         .left, .right { position: absolute; top: 0; bottom: 0; }
-        .left { left: 0; width: 58%; background: linear-gradient(135deg, #052e21 0%, #063826 60%, #052b1f 100%); padding: 110px 7vw; display: flex; align-items: center; z-index: 1; }
-        .right { right: 0; width: 52%; background: linear-gradient(135deg, #4a0707 0%, #5b0b0b 60%, #360606 100%); z-index: 2; }
+        .left { left: 0; width: 58%; background: var(--bg-left-grad); padding: 110px 7vw; display: flex; align-items: center; z-index: 1; }
+        .right { right: 0; width: 52%; background: var(--bg-right-grad); z-index: 2; }
         .right::before { content: ""; position: absolute; left: -140px; top: -10%; width: 280px; height: 120%; background: inherit; transform: skewX(-14deg); box-shadow: -20px 0 50px rgba(0,0,0,.35); }
-        .redeem { position: absolute; top: 20px; right: 20px; z-index: 30; padding: 12px 22px; border-radius: 999px; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); backdrop-filter: blur(10px); color: #fff; font-weight: 700; text-decoration: none; transition: 0.2s ease; display: flex; align-items: center; gap: 6px; }
+        .redeem { position: absolute; top: 20px; right: 20px; z-index: 30; padding: 12px 22px; border-radius: 999px; background: var(--nav-bg); border: 1px solid var(--nav-border); backdrop-filter: blur(10px); color: var(--nav-text); font-weight: 700; text-decoration: none; transition: 0.2s ease; display: flex; align-items: center; gap: 6px; }
         .redeem:hover { background: rgba(255,255,255,.2); }
         .content { max-width: 560px; animation: fadeUp 0.8s ease both; position: relative; z-index: 10; }
         .hello { font-size: 26px; margin: 0 0 16px; color: var(--text-muted); }
@@ -23,12 +23,12 @@
         
         @keyframes blink { 50% { opacity: 0; } }
         
-        .cta { display: inline-flex; margin-top: 24px; padding: 16px 28px; border-radius: 999px; background: #fff; color: #111; font-weight: 800; text-decoration: none; min-width: 230px; align-items: center; justify-content: center; gap: 8px; transition: 0.2s ease; }
+        .cta { display: inline-flex; margin-top: 24px; padding: 16px 28px; border-radius: 999px; background: var(--btn-bg); color: var(--btn-text); font-weight: 800; text-decoration: none; min-width: 230px; align-items: center; justify-content: center; gap: 8px; transition: 0.2s ease; }
         .cta:hover { transform: translateY(-2px); }
         .heroImg { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; }
-        .heroImg .frame { width: 420px; height: 420px; max-width: 80%; max-height: 80%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.15); border-radius: 28px; backdrop-filter: blur(14px); box-shadow: 0 25px 70px rgba(0,0,0,.45); animation: fadeIn 0.9s ease 0.2s both, float 6s ease-in-out infinite; position: relative; }
+        .heroImg .frame { width: 420px; height: 420px; max-width: 80%; max-height: 80%; display: flex; align-items: center; justify-content: center; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 28px; backdrop-filter: blur(14px); box-shadow: 0 25px 70px rgba(0,0,0,.45); animation: fadeIn 0.9s ease 0.2s both, floatLoop 6s ease-in-out infinite; position: relative; }
         .status-badge { position: absolute; top: -15px; left: -20px; background: rgba(0,0,0,.7); border: 1px solid rgba(255,255,255,.2); padding: 10px 18px; border-radius: 99px; backdrop-filter: blur(12px); color: #fff; font-size: 14px; font-weight: 700; box-shadow: 0 10px 30px rgba(0,0,0,.4); display: flex; align-items: center; gap: 8px; z-index: 20; }
-        .status-badge::before { content: ""; display: inline-block; width: 10px; height: 10px; background: #4ade80; border-radius: 50%; box-shadow: 0 0 10px #4ade80; }
+        .status-badge::before { content: ""; display: inline-block; width: 100%; height: 10px; background: #4ade80; border-radius: 50%; box-shadow: 0 0 10px #4ade80; }
         .heroImg img { max-width: 75%; max-height: 75%; object-fit: contain; display: block; filter: drop-shadow(0 30px 60px rgba(0,0,0,.55)); }
         .description-section { min-height: 60vh; display: flex; align-items: center; justify-content: center; padding: 80px 5vw; background: #2b0404; text-align: center; position: relative; z-index: 5; }
         .desc-text { font-size: clamp(32px, 5vw, 56px); font-weight: 800; line-height: 1.3; color: var(--text-main); max-width: 900px; letter-spacing: -0.5px; }
@@ -43,22 +43,8 @@
 
         @keyframes fadeUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-14px); } 100% { transform: translateY(0px); } }
 
-        @media (max-width: 860px) { 
-            .hero-container { position: relative; display: flex; flex-direction: column; } 
-            .left, .right { position: relative; width: 100%; z-index: 1; } 
-            .right { height: 50vh; } 
-            .right::before { display: none; } 
-            .left { text-align: center; justify-content: center; padding: 120px 7vw 60px; } 
-            .content { margin: 0 auto; } 
-            .heroImg { position: relative; height: 50vh; } 
-            .redeem { top: 15px; right: 15px; } 
-            .status-badge { top: 10px; left: 50%; transform: translateX(-50%); font-size: 12px; } 
-            .title { min-height: 3.3em; } 
-        }
-
-        /* --- 1. Boot Sequence Overlay Styles --- */
+        /* --- Boot Sequence Overlay Styles --- */
         #boot-overlay {
             position: fixed;
             inset: 0;
@@ -82,58 +68,23 @@
             100% { transform: scale(0.8) rotate(360deg); opacity: 0.5; }
         }
 
-        /* --- 2. Custom Context Menu Styles --- */
-        #context-menu {
-            position: fixed;
-            z-index: 100000;
-            width: 220px;
-            background: rgba(15, 15, 15, 0.85);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 12px;
-            backdrop-filter: blur(20px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
-            padding: 8px;
-            display: none; /* Hidden by default */
-            flex-direction: column;
-            gap: 4px;
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
-            transform-origin: top left;
-            animation: menuPop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        @media (max-width: 860px) { 
+            .hero-container { position: relative; display: flex; flex-direction: column; } 
+            .left, .right { position: relative; width: 100%; z-index: 1; } 
+            .right { height: 50vh; } 
+            .right::before { display: none; } 
+            .left { text-align: center; justify-content: center; padding: 120px 7vw 60px; } 
+            .content { margin: 0 auto; } 
+            .heroImg { position: relative; height: 50vh; } 
+            .redeem { top: 15px; right: 15px; } 
+            .status-badge { top: 10px; left: 50%; transform: translateX(-50%); font-size: 12px; } 
+            .title { min-height: 3.3em; } 
         }
-
-        @keyframes menuPop {
-            0% { opacity: 0; transform: scale(0.95); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-
-        .context-item {
-            padding: 10px 12px;
-            border-radius: 6px;
-            color: var(--text-main);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        .context-item i { width: 16px; height: 16px; color: var(--text-muted); }
-        .context-item:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
-        .context-item:hover i { color: #fff; }
-        .context-divider { height: 1px; background: rgba(255,255,255,0.1); margin: 4px 0; }
     </style>
 </head>
 <body>
     <div id="boot-overlay">
-        <img src="assets/icon.svg" id="boot-logo" alt="Booting OS..." />
-    </div>
-
-    <div id="context-menu">
-        <div class="context-item" onclick="location.reload()"><i data-lucide="refresh-cw"></i> Refresh System</div>
-        <div class="context-divider"></div>
-        <div class="context-item" onclick="toggleFullScreen()"><i data-lucide="maximize"></i> Toggle Fullscreen</div>
-        <div class="context-item" onclick="window.open('https://github.com/wa-el-az/WaelOS', '_blank')"><i data-lucide="code"></i> View Source Code</div>
+        <img src="assets/icon.svg" id="boot-logo" alt="Booting..." />
     </div>
 
     <main class="wrap">
@@ -166,68 +117,23 @@
             <p class="footer-text"><strong>Credits:</strong><br>By Wael Amrani Zerrifi<br><span style="display: inline-flex; align-items: center; gap: 4px;"><i data-lucide="copyright" style="width: 14px; height: 14px;"></i> Copyrights 2026</span></p>
         </footer>
     </main>
+
     <script>
-        // --- 1. BOOT SEQUENCE LOGIC ---
+        // --- Boot Sequence Logic ---
         window.addEventListener('DOMContentLoaded', () => {
             const bootOverlay = document.getElementById('boot-overlay');
-            
-            // Check if it's the first time loading in this specific tab session
             if (!sessionStorage.getItem('waelos_booted')) {
-                // Keep the spinning logo up for 1.5 seconds to build anticipation
                 setTimeout(() => {
                     bootOverlay.style.opacity = '0';
                     bootOverlay.style.visibility = 'hidden';
                     sessionStorage.setItem('waelos_booted', 'true');
                 }, 1500);
             } else {
-                // If they've already booted, hide it instantly
                 bootOverlay.style.display = 'none';
             }
         });
 
-        // --- 2. CUSTOM CONTEXT MENU LOGIC ---
-        const contextMenu = document.getElementById('context-menu');
-        
-        // Intercept right-click
-        document.addEventListener('contextmenu', (e) => {
-            e.preventDefault(); // Stop default browser menu
-            
-            // Calculate position to prevent menu from going off-screen
-            let x = e.clientX;
-            let y = e.clientY;
-            const menuWidth = 220;
-            const menuHeight = 140; 
-            
-            if (x + menuWidth > window.innerWidth) x = window.innerWidth - menuWidth - 10;
-            if (y + menuHeight > window.innerHeight) y = window.innerHeight - menuHeight - 10;
-
-            contextMenu.style.left = `${x}px`;
-            contextMenu.style.top = `${y}px`;
-            contextMenu.style.display = 'flex';
-        });
-
-        // Hide menu on normal click
-        document.addEventListener('click', (e) => {
-            if (e.target.offsetParent != contextMenu) {
-                contextMenu.style.display = 'none';
-            }
-        });
-
-        // Fullscreen Toggle Function
-        function toggleFullScreen() {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => {
-                    console.log(`Error attempting to enable fullscreen: ${err.message}`);
-                });
-            } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                }
-            }
-            contextMenu.style.display = 'none';
-        }
-
-        // --- EXISTING LOGIC ---
+        // --- Existing Logic ---
         window.addEventListener('DOMContentLoaded', async () => {
             lucide.createIcons();
             try { 
@@ -274,5 +180,6 @@
         }
         setTimeout(typeEffect, 2500);
     </script>
+    <script src="js/context-menu.js"></script>
 </body>
 </html>
