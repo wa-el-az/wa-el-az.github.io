@@ -46,12 +46,19 @@
             margin-bottom: 30px;
         }
 
+        /* MODIFIED: Header turned into a responsive image container */
         .user-name {
-            font-size: clamp(28px, 6vw, 42px);
-            color: #fff;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.5);
             margin: 0;
-            letter-spacing: 2px;
+            display: flex; /* Make h1 a flex container to center child */
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+            height: clamp(50px, 10vw, 80px); /* Responsive container height range */
+        }
+
+        .user-name img {
+            max-height: 100%; /* Responsive image height */
+            width: auto; /* Maintain aspect ratio */
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5)); /* Apply shadow effect to image */
         }
 
         /* Glassy Stats Row */
@@ -78,7 +85,7 @@
 
         .stat-item img { height: 20px; width: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
 
-        /* FIXED: Icon Set Container Centering & Proportions */
+        /* Icon Set Container Centering & Proportions */
         .icon-set {
             background: rgba(0, 0, 0, 0.15);
             border-radius: 20px;
@@ -113,7 +120,7 @@
             justify-content: center;
         }
 
-        /* The New Copy Button */
+        /* The Copy Username Button */
         .gd-glass-btn {
             display: inline-flex;
             align-items: center;
@@ -151,7 +158,9 @@
 
     <div class="gd-profile-box">
         <div class="user-header">
-            <h1 class="user-name">WaelMA</h1>
+            <h1 class="user-name">
+                <img src="assets/font1 - WaelMA.png" alt="WaelMA">
+            </h1>
         </div>
 
         <div class="stats-row">
