@@ -3,12 +3,11 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Wael | GD Icon Kit</title>
+    <title>Wael | GD Profile</title>
     <link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
     <link rel="stylesheet" href="css/style.css" />
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* Using your local font path */
         @font-face {
             font-family: 'Pusab';
             src: url('assets/fonts/pusab.woff2') format('woff2');
@@ -17,169 +16,161 @@
             font-display: swap;
         }
 
-        body { padding: 80px 5vw 40px; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        
-        .kit-container {
-            width: 100%;
-            max-width: 700px;
-            animation: fadePageIn 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-        }
-
-        .gd-title {
+        body { 
+            padding: 40px 5vw; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://gdbrowser.com/assets/backgrounds/1.png');
+            background-size: cover;
+            background-position: center;
             font-family: 'Pusab', sans-serif;
-            text-align: center;
-            color: #fff;
-            font-size: clamp(24px, 5vw, 32px);
-            text-shadow: 3px 3px 0px #000;
-            margin-bottom: 20px;
         }
 
-        .preview-window {
-            background: rgba(0, 0, 0, 0.3);
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            border-radius: 24px;
-            height: 250px;
+        /* GD Style Brown Box */
+        .gd-profile-box {
+            background: #be6f3f;
+            border: 6px solid #5a311b;
+            border-radius: 15px;
+            width: 95%;
+            max-width: 900px;
+            padding: 30px;
+            position: relative;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            text-align: center;
+            animation: fadePageIn 0.5s ease-out forwards;
+        }
+
+        .user-header {
             display: flex;
             align-items: center;
             justify-content: center;
+            gap: 15px;
             margin-bottom: 20px;
-            position: relative;
-            backdrop-filter: blur(10px);
-            box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
         }
 
-        #iconResult {
-            max-width: 160px;
-            max-height: 160px;
-            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
-            transition: opacity 0.3s, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            opacity: 0;
+        .user-name {
+            font-size: clamp(24px, 6vw, 48px);
+            color: #fff;
+            text-shadow: 4px 4px 0px #000;
+            margin: 0;
         }
 
-        /* Form Tabs using Lucide Icons for reliability */
-        .form-tabs {
+        /* Collectibles Row */
+        .stats-row {
             display: flex;
             justify-content: center;
             flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
             gap: 8px;
+            font-size: 18px;
+            color: #fff;
+            text-shadow: 2px 2px 0px #000;
+        }
+
+        .stat-item img { height: 24px; width: auto; }
+
+        /* Icon Set Container */
+        .icon-set {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+            gap: 15px;
+            border: 4px solid rgba(0,0,0,0.2);
             margin-bottom: 20px;
         }
 
-        .tab-btn {
-            width: 50px;
-            height: 50px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
+        .icon-set img {
+            width: 100%;
+            height: auto;
+            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.4));
+            transition: transform 0.2s;
             cursor: pointer;
+        }
+
+        .icon-set img:hover { transform: scale(1.15); }
+
+        /* UI Buttons */
+        .gd-btn-container {
             display: flex;
-            align-items: center;
             justify-content: center;
-            transition: 0.2s;
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        .tab-btn.active { 
-            background: rgba(74, 222, 128, 0.2); 
-            border-color: var(--terminal-green); 
-            color: var(--terminal-green);
-        }
-
-        .config-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
             gap: 15px;
-        }
-
-        .input-group { display: flex; flex-direction: column; gap: 5px; }
-        .input-group label { font-size: 12px; font-weight: bold; color: var(--terminal-green); text-transform: uppercase; margin-left: 5px; }
-        
-        .color-inputs { display: flex; gap: 10px; margin-top: 15px; }
-        .color-box { flex: 1; height: 50px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); cursor: pointer; position: relative; overflow: hidden; }
-        .color-box input { position: absolute; top: -10px; left: -10px; width: 100px; height: 100px; cursor: pointer; border: none; }
-
-        .loader {
-            position: absolute;
-            width: 40px;
-            height: 40px;
-            border: 4px solid rgba(255,255,255,0.1);
-            border-top-color: var(--terminal-green);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            display: none;
-        }
-
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-        .navBtn { display: inline-flex; align-items: center; gap: 6px; }
-        .rounded-toggle {
             margin-top: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .gd-blue-btn {
+            background: #0080ff;
+            border: 4px solid #004080;
+            padding: 10px 20px;
+            border-radius: 10px;
             color: white;
-            padding: 8px 15px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 12px;
-            font-weight: bold;
+            text-decoration: none;
+            font-size: 14px;
+            text-shadow: 2px 2px 0px #000;
             transition: 0.2s;
         }
-        .rounded-toggle.active { background: var(--terminal-green); color: #111; }
+
+        .gd-blue-btn:hover { background: #0099ff; transform: translateY(-3px); }
+
+        .navBtn { position: fixed; top: 20px; left: 20px; font-family: 'Inter', sans-serif; display: inline-flex; align-items: center; gap: 6px; z-index: 100; }
+        
+        /* Corner Pieces from GD UI */
+        .corner { position: absolute; width: 60px; height: 60px; pointer-events: none; }
+        .top-left { top: -10px; left: -10px; transform: rotate(0deg); }
+        .top-right { top: -10px; right: -10px; transform: rotate(90deg); }
+        .bottom-left { bottom: -10px; left: -10px; transform: rotate(-90deg); }
+        .bottom-right { bottom: -10px; right: -10px; transform: rotate(180deg); }
     </style>
 </head>
 <body>
     <div class="bg-left"></div><div class="bg-right"></div>
     
-    <a class="navBtn" id="dynamicBackBtn" href="index" style="z-index: 50;"><i data-lucide="home"></i> Home</a>
+    <a class="navBtn" id="dynamicBackBtn" href="index"><i data-lucide="home"></i> Home</a>
 
-    <div class="kit-container">
-        <h1 class="gd-title">Icon Kit</h1>
+    <div class="gd-profile-box">
+        <img src="https://gdbrowser.com/assets/corner.png" class="corner top-left">
+        <img src="https://gdbrowser.com/assets/corner.png" class="corner top-right">
+        <img src="https://gdbrowser.com/assets/corner.png" class="corner bottom-left">
+        <img src="https://gdbrowser.com/assets/corner.png" class="corner bottom-right">
 
-        <div class="preview-window">
-            <div class="loader" id="loadingCircle"></div>
-            <img id="iconResult" src="" alt="Icon Preview" />
+        <div class="user-header">
+            <h1 class="user-name">WaelMA</h1>
         </div>
 
-        <div class="card">
-            <div class="form-tabs">
-                <button class="tab-btn active" data-form="cube" title="Cube"><i data-lucide="box"></i></button>
-                <button class="tab-btn" data-form="ship" title="Ship"><i data-lucide="plane"></i></button>
-                <button class="tab-btn" data-form="ball" title="Ball"><i data-lucide="circle"></i></button>
-                <button class="tab-btn" data-form="ufo" title="UFO"><i data-lucide="orbit"></i></button>
-                <button class="tab-btn" data-form="wave" title="Wave"><i data-lucide="activity"></i></button>
-                <button class="tab-btn" data-form="robot" title="Robot"><i data-lucide="bot"></i></button>
-                <button class="tab-btn" data-form="spider" title="Spider"><i data-lucide="bug"></i></button>
-                <button class="tab-btn" data-form="swing" title="Swing"><i data-lucide="move"></i></button>
-                <button class="tab-btn" data-form="jetpack" title="Jetpack"><i data-lucide="zap"></i></button>
-            </div>
+        <div class="stats-row">
+            <div class="stat-item"><img src="https://gdbrowser.com/assets/star.png"> 1,738</div>
+            <div class="stat-item"><img src="https://gdbrowser.com/assets/moon.png"> 281</div>
+            <div class="stat-item"><img src="https://gdbrowser.com/assets/diamond.png"> 3,780</div>
+            <div class="stat-item"><img src="https://gdbrowser.com/assets/coin.png"> 118</div>
+            <div class="stat-item"><img src="https://gdbrowser.com/assets/silvercoin.png"> 118</div>
+            <div class="stat-item"><img src="https://gdbrowser.com/assets/demon.png"> 126</div>
+        </div>
 
-            <div class="config-grid">
-                <div class="input-group">
-                    <label>Username</label>
-                    <input type="text" id="username" placeholder="Leave empty for ID" autocomplete="off" />
-                </div>
-                <div class="input-group">
-                    <label>Icon ID</label>
-                    <input type="number" id="iconId" value="1" min="1" max="500" />
-                    <button class="rounded-toggle" id="toggleRounded">Use Rounded Cube</button>
-                </div>
-            </div>
+        <div class="icon-set">
+            <img src="assets/cube_274.png" title="Cube 274">
+            <img src="assets/ship_48.png" title="Ship 48">
+            <img src="assets/ball_91.png" title="Ball 91">
+            <img src="assets/ufo_79.png" title="UFO 79">
+            <img src="assets/wave_46.png" title="Wave 46">
+            <img src="assets/robot_35.png" title="Robot 35">
+            <img src="assets/spider_49.png" title="Spider 49">
+            <img src="assets/swing_17.png" title="Swing 17">
+            <img src="assets/jetpack_3.png" title="Jetpack 3">
+        </div>
 
-            <div class="color-inputs">
-                <div class="input-group" style="flex:1">
-                    <label>Primary</label>
-                    <div class="color-box" id="box1"><input type="color" id="col1" value="#afafaf"></div>
-                </div>
-                <div class="input-group" style="flex:1">
-                    <label>Secondary</label>
-                    <div class="color-box" id="box2"><input type="color" id="col2" value="#ffffff"></div>
-                </div>
-                <div class="input-group" style="flex:1">
-                    <label>Glow</label>
-                    <div class="color-box" id="boxG"><input type="color" id="colG" value="#ffffff"></div>
-                </div>
-            </div>
-
-            <button class="btn" id="downloadBtn" style="margin-top: 25px;"><i data-lucide="download"></i> Save Icon</button>
+        <div class="gd-btn-container">
+            <a href="https://gdbrowser.com/u/WaelMA" target="_blank" class="gd-blue-btn">View on GDBrowser</a>
+            <a href="shortcuts" class="gd-blue-btn" style="background:#4ade80; border-color:#2d8c50;">More Shortcuts</a>
         </div>
     </div>
 
@@ -187,95 +178,13 @@
     <script>
         lucide.createIcons();
 
-        // 1. DYNAMIC BACK BUTTON
+        // Handle Dynamic Back Button
         const backBtn = document.getElementById('dynamicBackBtn');
         if (document.referrer.toLowerCase().includes('shortcuts')) {
             backBtn.href = 'shortcuts';
             backBtn.innerHTML = '<i data-lucide="zap"></i> Shortcuts';
             lucide.createIcons();
         }
-
-        // 2. STATE & UI
-        let currentForm = "cube";
-        const iconImg = document.getElementById('iconResult');
-        const loader = document.getElementById('loadingCircle');
-
-        function updateIcon() {
-            loader.style.display = "block";
-            iconImg.style.opacity = "0";
-
-            const user = document.getElementById('username').value.trim();
-            const id = document.getElementById('iconId').value;
-            const c1 = document.getElementById('col1').value.replace('#', '');
-            const c2 = document.getElementById('col2').value.replace('#', '');
-            const cG = document.getElementById('colG').value.replace('#', '');
-            
-            // Sync background colors of boxes
-            document.getElementById('box1').style.background = document.getElementById('col1').value;
-            document.getElementById('box2').style.background = document.getElementById('col2').value;
-            document.getElementById('boxG').style.background = document.getElementById('colG').value;
-
-            // API URL Building
-            let baseUrl = `https://gdbrowser.com/icon/${user || 'Player'}?form=${currentForm}`;
-            let params = `&col1=${c1}&col2=${c2}&glow=${cG}&id=${id}&time=${new Date().getTime()}`;
-            
-            iconImg.src = baseUrl + params;
-            
-            iconImg.onload = () => {
-                loader.style.display = "none";
-                iconImg.style.opacity = "1";
-                iconImg.style.transform = "scale(1.1)";
-                setTimeout(() => iconImg.style.transform = "scale(1)", 200);
-            };
-            
-            iconImg.onerror = () => {
-                loader.style.display = "none";
-                // Fallback to RobTop if error
-                if (user !== "RobTop") {
-                    document.getElementById('username').value = "RobTop";
-                    updateIcon();
-                }
-            };
-        }
-
-        // 3. EVENTS
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-                this.classList.add('active');
-                currentForm = this.dataset.form;
-                updateIcon();
-            });
-        });
-
-        document.getElementById('toggleRounded').addEventListener('click', function() {
-            const idInput = document.getElementById('iconId');
-            if (idInput.value == "3") {
-                idInput.value = "1";
-                this.classList.remove('active');
-            } else {
-                idInput.value = "3"; // ID 3 is the Rounded Cube
-                this.classList.add('active');
-            }
-            updateIcon();
-        });
-
-        ['username', 'iconId', 'col1', 'col2', 'colG'].forEach(id => {
-            document.getElementById(id).addEventListener('change', updateIcon);
-            if (id === 'username') {
-                document.getElementById(id).addEventListener('keyup', (e) => { if(e.key === "Enter") updateIcon() });
-            }
-        });
-
-        document.getElementById('downloadBtn').addEventListener('click', () => {
-            const link = document.createElement('a');
-            link.href = iconImg.src;
-            link.download = `WaelOS_GD_${currentForm}.png`;
-            link.click();
-        });
-
-        // Init
-        updateIcon();
     </script>
 </body>
 </html>
