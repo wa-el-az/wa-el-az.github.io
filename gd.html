@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="css/style.css" />
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
+        /* Using your local font path */
         @font-face {
             font-family: 'Pusab';
             src: url('assets/fonts/pusab.woff2') format('woff2');
@@ -33,7 +34,6 @@
             margin-bottom: 20px;
         }
 
-        /* The Viewport */
         .preview-window {
             background: rgba(0, 0, 0, 0.3);
             border: 2px solid rgba(255, 255, 255, 0.1);
@@ -53,9 +53,10 @@
             max-height: 160px;
             filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
             transition: opacity 0.3s, transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            opacity: 0;
         }
 
-        /* Form Tabs */
+        /* Form Tabs using Lucide Icons for reliability */
         .form-tabs {
             display: flex;
             justify-content: center;
@@ -71,15 +72,19 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
             cursor: pointer;
-            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: 0.2s;
+            color: rgba(255, 255, 255, 0.5);
         }
 
-        .tab-btn img { width: 100%; height: 100%; object-fit: contain; opacity: 0.5; transition: 0.2s; }
-        .tab-btn.active { background: rgba(74, 222, 128, 0.2); border-color: var(--terminal-green); }
-        .tab-btn.active img { opacity: 1; transform: scale(1.1); }
+        .tab-btn.active { 
+            background: rgba(74, 222, 128, 0.2); 
+            border-color: var(--terminal-green); 
+            color: var(--terminal-green);
+        }
 
-        /* Configuration Grid */
         .config-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -106,6 +111,19 @@
 
         @keyframes spin { 100% { transform: rotate(360deg); } }
         .navBtn { display: inline-flex; align-items: center; gap: 6px; }
+        .rounded-toggle {
+            margin-top: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        .rounded-toggle.active { background: var(--terminal-green); color: #111; }
     </style>
 </head>
 <body>
@@ -114,7 +132,7 @@
     <a class="navBtn" id="dynamicBackBtn" href="index" style="z-index: 50;"><i data-lucide="home"></i> Home</a>
 
     <div class="kit-container">
-        <h1 class="gd-title">Online Icon Kit</h1>
+        <h1 class="gd-title">Icon Kit</h1>
 
         <div class="preview-window">
             <div class="loader" id="loadingCircle"></div>
@@ -123,44 +141,45 @@
 
         <div class="card">
             <div class="form-tabs">
-                <button class="tab-btn active" data-form="cube" title="Cube"><img src="https://gdbrowser.com/assets/iconkitbuttons/icon_on.png"></button>
-                <button class="tab-btn" data-form="ship" title="Ship"><img src="https://gdbrowser.com/assets/iconkitbuttons/ship_off.png"></button>
-                <button class="tab-btn" data-form="ball" title="Ball"><img src="https://gdbrowser.com/assets/iconkitbuttons/ball_off.png"></button>
-                <button class="tab-btn" data-form="ufo" title="UFO"><img src="https://gdbrowser.com/assets/iconkitbuttons/ufo_off.png"></button>
-                <button class="tab-btn" data-form="wave" title="Wave"><img src="https://gdbrowser.com/assets/iconkitbuttons/wave_off.png"></button>
-                <button class="tab-btn" data-form="robot" title="Robot"><img src="https://gdbrowser.com/assets/iconkitbuttons/robot_off.png"></button>
-                <button class="tab-btn" data-form="spider" title="Spider"><img src="https://gdbrowser.com/assets/iconkitbuttons/spider_off.png"></button>
-                <button class="tab-btn" data-form="swing" title="Swing"><img src="https://gdbrowser.com/assets/iconkitbuttons/swing_off.png"></button>
-                <button class="tab-btn" data-form="jetpack" title="Jetpack"><img src="https://gdbrowser.com/assets/iconkitbuttons/jetpack_off.png"></button>
+                <button class="tab-btn active" data-form="cube" title="Cube"><i data-lucide="box"></i></button>
+                <button class="tab-btn" data-form="ship" title="Ship"><i data-lucide="plane"></i></button>
+                <button class="tab-btn" data-form="ball" title="Ball"><i data-lucide="circle"></i></button>
+                <button class="tab-btn" data-form="ufo" title="UFO"><i data-lucide="orbit"></i></button>
+                <button class="tab-btn" data-form="wave" title="Wave"><i data-lucide="activity"></i></button>
+                <button class="tab-btn" data-form="robot" title="Robot"><i data-lucide="bot"></i></button>
+                <button class="tab-btn" data-form="spider" title="Spider"><i data-lucide="bug"></i></button>
+                <button class="tab-btn" data-form="swing" title="Swing"><i data-lucide="move"></i></button>
+                <button class="tab-btn" data-form="jetpack" title="Jetpack"><i data-lucide="zap"></i></button>
             </div>
 
             <div class="config-grid">
                 <div class="input-group">
-                    <label>Player Name</label>
-                    <input type="text" id="username" placeholder="e.g. RobTop" autocomplete="off" />
+                    <label>Username</label>
+                    <input type="text" id="username" placeholder="Leave empty for ID" autocomplete="off" />
                 </div>
                 <div class="input-group">
                     <label>Icon ID</label>
-                    <input type="number" id="iconId" value="1" min="1" max="200" />
+                    <input type="number" id="iconId" value="1" min="1" max="500" />
+                    <button class="rounded-toggle" id="toggleRounded">Use Rounded Cube</button>
                 </div>
             </div>
 
             <div class="color-inputs">
                 <div class="input-group" style="flex:1">
                     <label>Primary</label>
-                    <div class="color-box"><input type="color" id="col1" value="#afafaf"></div>
+                    <div class="color-box" id="box1"><input type="color" id="col1" value="#afafaf"></div>
                 </div>
                 <div class="input-group" style="flex:1">
                     <label>Secondary</label>
-                    <div class="color-box"><input type="color" id="col2" value="#ffffff"></div>
+                    <div class="color-box" id="box2"><input type="color" id="col2" value="#ffffff"></div>
                 </div>
                 <div class="input-group" style="flex:1">
                     <label>Glow</label>
-                    <div class="color-box"><input type="color" id="colG" value="#ffffff"></div>
+                    <div class="color-box" id="boxG"><input type="color" id="colG" value="#ffffff"></div>
                 </div>
             </div>
 
-            <button class="btn" id="downloadBtn" style="margin-top: 20px;"><i data-lucide="download"></i> Download PNG</button>
+            <button class="btn" id="downloadBtn" style="margin-top: 25px;"><i data-lucide="download"></i> Save Icon</button>
         </div>
     </div>
 
@@ -176,34 +195,50 @@
             lucide.createIcons();
         }
 
-        // 2. STATE MANAGEMENT
+        // 2. STATE & UI
         let currentForm = "cube";
         const iconImg = document.getElementById('iconResult');
         const loader = document.getElementById('loadingCircle');
 
         function updateIcon() {
             loader.style.display = "block";
-            iconImg.style.opacity = "0.3";
+            iconImg.style.opacity = "0";
 
             const user = document.getElementById('username').value.trim();
             const id = document.getElementById('iconId').value;
             const c1 = document.getElementById('col1').value.replace('#', '');
             const c2 = document.getElementById('col2').value.replace('#', '');
             const cG = document.getElementById('colG').value.replace('#', '');
+            
+            // Sync background colors of boxes
+            document.getElementById('box1').style.background = document.getElementById('col1').value;
+            document.getElementById('box2').style.background = document.getElementById('col2').value;
+            document.getElementById('boxG').style.background = document.getElementById('colG').value;
 
-            // Construct API URL
-            // If username is provided, it prioritizes that user's actual icon for that form
-            let url = `https://gdbrowser.com/icon/${user || 'Player'}?form=${currentForm}&col1=${c1}&col2=${c2}&glow=${cG}&id=${id}`;
-
-            iconImg.src = url;
+            // API URL Building
+            let baseUrl = `https://gdbrowser.com/icon/${user || 'Player'}?form=${currentForm}`;
+            let params = `&col1=${c1}&col2=${c2}&glow=${cG}&id=${id}&time=${new Date().getTime()}`;
+            
+            iconImg.src = baseUrl + params;
             
             iconImg.onload = () => {
                 loader.style.display = "none";
                 iconImg.style.opacity = "1";
+                iconImg.style.transform = "scale(1.1)";
+                setTimeout(() => iconImg.style.transform = "scale(1)", 200);
+            };
+            
+            iconImg.onerror = () => {
+                loader.style.display = "none";
+                // Fallback to RobTop if error
+                if (user !== "RobTop") {
+                    document.getElementById('username').value = "RobTop";
+                    updateIcon();
+                }
             };
         }
 
-        // 3. EVENT LISTENERS
+        // 3. EVENTS
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -211,6 +246,18 @@
                 currentForm = this.dataset.form;
                 updateIcon();
             });
+        });
+
+        document.getElementById('toggleRounded').addEventListener('click', function() {
+            const idInput = document.getElementById('iconId');
+            if (idInput.value == "3") {
+                idInput.value = "1";
+                this.classList.remove('active');
+            } else {
+                idInput.value = "3"; // ID 3 is the Rounded Cube
+                this.classList.add('active');
+            }
+            updateIcon();
         });
 
         ['username', 'iconId', 'col1', 'col2', 'colG'].forEach(id => {
@@ -223,11 +270,11 @@
         document.getElementById('downloadBtn').addEventListener('click', () => {
             const link = document.createElement('a');
             link.href = iconImg.src;
-            link.download = `${currentForm}_icon.png`;
+            link.download = `WaelOS_GD_${currentForm}.png`;
             link.click();
         });
 
-        // Initialize
+        // Init
         updateIcon();
     </script>
 </body>
