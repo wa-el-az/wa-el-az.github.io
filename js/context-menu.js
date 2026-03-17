@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const MOROCCO_EMOJI = '<img src="/assets/morocco_flag_emoji_ios.png" alt="Morocco flag" class="ma-flag">';
+    const MOROCCO_EMOJI = '🇲🇦';
     const MOROCCO_SHORTCODE = ':ma:';
     const MOROCCO_IMAGE_SRC = '/assets/morocco_flag_emoji_ios.png';
     const SKIP_TAGS = new Set(['SCRIPT', 'STYLE', 'TEXTAREA', 'CODE', 'PRE', 'NOSCRIPT']);
@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const img = document.createElement('img');
         img.src = MOROCCO_IMAGE_SRC;
         img.alt = originalText || 'Morocco flag';
-        img.className = 'custom-emoji-inline ma-flag';
+        img.className = 'custom-emoji-inline';
         img.loading = 'lazy';
         img.decoding = 'async';
         return img;
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        const parts = text.split(/(<img src="/assets/morocco_flag_emoji_ios.png" alt="Morocco flag" class="ma-flag">|:ma:)/g);
+        const parts = text.split(/(🇲🇦|:ma:)/g);
         if (parts.length <= 1) return;
 
         const fragment = document.createDocumentFragment();

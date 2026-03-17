@@ -14,7 +14,7 @@ const ACHIEVEMENTS = {
     hack_denied: { title: "Access Denied", desc: "You failed the Admin Hub login.", icon: "<i data-lucide='lock'></i>" },
     hack_brute: { title: "Brute Force", desc: "You tried 3 invalid codes in a row.", icon: "<i data-lucide='bomb'></i>" },
     hack_captain: { title: "I Am The Captain Now", desc: "You tried to use the ADMIN bypass code.", icon: "<i data-lucide='skull'></i>" },
-    egg_patriot: { title: "Patriot", desc: "You clicked the Moroccan flag 7 times.", icon: "<img src="/assets/morocco_flag_emoji_ios.png" alt="Morocco flag" class="ma-flag">" },
+    egg_patriot: { title: "Patriot", desc: "You clicked the Moroccan flag 7 times.", icon: "🇲🇦" },
     egg_owl: { title: "Night Owl", desc: "You are browsing Wael OS between 1 AM and 4 AM.", icon: "<i data-lucide='moon'></i>" }
 };
 
