@@ -17,9 +17,9 @@
         .redeem { position: absolute; top: 20px; right: 20px; z-index: 30; padding: 12px 22px; border-radius: 999px; background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.25); backdrop-filter: blur(10px); color: #fff; font-weight: 700; text-decoration: none; transition: 0.2s ease; display: flex; align-items: center; gap: 6px; }
         .redeem:hover { background: rgba(255,255,255,.2); }
         .content { max-width: 560px; animation: fadeUp 0.8s ease both; position: relative; z-index: 10; }
-        .hello { font-size: 26px; margin: 0 0 16px; color: var(--muted); }
+        .hello { font-size: 26px; margin: 0 0 16px; color: var(--text-muted); }
         .title { margin: 0; font-size: clamp(40px, 5vw, 72px); line-height: 1.1; min-height: 2.4em; }
-        .cursor { display: inline-block; width: 4px; height: 0.9em; background-color: var(--text); margin-left: 6px; vertical-align: middle; animation: blink 1s step-end infinite; }
+        .cursor { display: inline-block; width: 4px; height: 0.9em; background-color: var(--text-main); margin-left: 6px; vertical-align: middle; animation: blink 1s step-end infinite; }
         
         @keyframes blink { 50% { opacity: 0; } }
         
@@ -31,8 +31,8 @@
         .status-badge::before { content: ""; display: inline-block; width: 10px; height: 10px; background: #4ade80; border-radius: 50%; box-shadow: 0 0 10px #4ade80; }
         .heroImg img { max-width: 75%; max-height: 75%; object-fit: contain; display: block; filter: drop-shadow(0 30px 60px rgba(0,0,0,.55)); }
         .description-section { min-height: 60vh; display: flex; align-items: center; justify-content: center; padding: 80px 5vw; background: #2b0404; text-align: center; position: relative; z-index: 5; }
-        .desc-text { font-size: clamp(32px, 5vw, 56px); font-weight: 800; line-height: 1.3; color: var(--text); max-width: 900px; letter-spacing: -0.5px; }
-        .desc-text span { display: block; color: var(--muted); font-size: clamp(20px, 3vw, 32px); margin-top: 15px; font-weight: 500; }
+        .desc-text { font-size: clamp(32px, 5vw, 56px); font-weight: 800; line-height: 1.3; color: var(--text-main); max-width: 900px; letter-spacing: -0.5px; }
+        .desc-text span { display: block; color: var(--text-muted); font-size: clamp(20px, 3vw, 32px); margin-top: 15px; font-weight: 500; }
         .shortcut-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; margin-top: 30px; padding: 12px 24px; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.3); color: #fff; border-radius: 99px; text-decoration: none; font-size: 18px; font-weight: bold; transition: 0.2s; backdrop-filter: blur(5px); }
         .shortcut-btn:hover { background: rgba(255,255,255,.2); transform: translateY(-2px); }
         .footer-section { background: #110101; padding: 60px 20px; text-align: center; border-top: 1px solid rgba(255,255,255,.05); position: relative; z-index: 5; }
@@ -57,9 +57,85 @@
             .status-badge { top: 10px; left: 50%; transform: translateX(-50%); font-size: 12px; } 
             .title { min-height: 3.3em; } 
         }
+
+        /* --- 1. Boot Sequence Overlay Styles --- */
+        #boot-overlay {
+            position: fixed;
+            inset: 0;
+            background: #0b0b0b;
+            z-index: 99999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.8s cubic-bezier(0.25, 1, 0.5, 1), visibility 0.8s;
+        }
+
+        #boot-logo {
+            width: 80px;
+            height: 80px;
+            animation: spinPulse 2s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+        }
+
+        @keyframes spinPulse {
+            0% { transform: scale(0.8) rotate(0deg); opacity: 0.5; }
+            50% { transform: scale(1.1) rotate(180deg); opacity: 1; }
+            100% { transform: scale(0.8) rotate(360deg); opacity: 0.5; }
+        }
+
+        /* --- 2. Custom Context Menu Styles --- */
+        #context-menu {
+            position: fixed;
+            z-index: 100000;
+            width: 220px;
+            background: rgba(15, 15, 15, 0.85);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            padding: 8px;
+            display: none; /* Hidden by default */
+            flex-direction: column;
+            gap: 4px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            transform-origin: top left;
+            animation: menuPop 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes menuPop {
+            0% { opacity: 0; transform: scale(0.95); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .context-item {
+            padding: 10px 12px;
+            border-radius: 6px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .context-item i { width: 16px; height: 16px; color: var(--text-muted); }
+        .context-item:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
+        .context-item:hover i { color: #fff; }
+        .context-divider { height: 1px; background: rgba(255,255,255,0.1); margin: 4px 0; }
     </style>
 </head>
 <body>
+    <div id="boot-overlay">
+        <img src="assets/icon.svg" id="boot-logo" alt="Booting OS..." />
+    </div>
+
+    <div id="context-menu">
+        <div class="context-item" onclick="location.reload()"><i data-lucide="refresh-cw"></i> Refresh System</div>
+        <div class="context-divider"></div>
+        <div class="context-item" onclick="toggleFullScreen()"><i data-lucide="maximize"></i> Toggle Fullscreen</div>
+        <div class="context-item" onclick="window.open('https://github.com/wa-el-az/WaelOS', '_blank')"><i data-lucide="code"></i> View Source Code</div>
+    </div>
+
     <main class="wrap">
         <div id="hero" class="hero-container">
             <a class="redeem" href="redeem"><i data-lucide="gift"></i> Redeem</a>
@@ -91,6 +167,67 @@
         </footer>
     </main>
     <script>
+        // --- 1. BOOT SEQUENCE LOGIC ---
+        window.addEventListener('DOMContentLoaded', () => {
+            const bootOverlay = document.getElementById('boot-overlay');
+            
+            // Check if it's the first time loading in this specific tab session
+            if (!sessionStorage.getItem('waelos_booted')) {
+                // Keep the spinning logo up for 1.5 seconds to build anticipation
+                setTimeout(() => {
+                    bootOverlay.style.opacity = '0';
+                    bootOverlay.style.visibility = 'hidden';
+                    sessionStorage.setItem('waelos_booted', 'true');
+                }, 1500);
+            } else {
+                // If they've already booted, hide it instantly
+                bootOverlay.style.display = 'none';
+            }
+        });
+
+        // --- 2. CUSTOM CONTEXT MENU LOGIC ---
+        const contextMenu = document.getElementById('context-menu');
+        
+        // Intercept right-click
+        document.addEventListener('contextmenu', (e) => {
+            e.preventDefault(); // Stop default browser menu
+            
+            // Calculate position to prevent menu from going off-screen
+            let x = e.clientX;
+            let y = e.clientY;
+            const menuWidth = 220;
+            const menuHeight = 140; 
+            
+            if (x + menuWidth > window.innerWidth) x = window.innerWidth - menuWidth - 10;
+            if (y + menuHeight > window.innerHeight) y = window.innerHeight - menuHeight - 10;
+
+            contextMenu.style.left = `${x}px`;
+            contextMenu.style.top = `${y}px`;
+            contextMenu.style.display = 'flex';
+        });
+
+        // Hide menu on normal click
+        document.addEventListener('click', (e) => {
+            if (e.target.offsetParent != contextMenu) {
+                contextMenu.style.display = 'none';
+            }
+        });
+
+        // Fullscreen Toggle Function
+        function toggleFullScreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log(`Error attempting to enable fullscreen: ${err.message}`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+            contextMenu.style.display = 'none';
+        }
+
+        // --- EXISTING LOGIC ---
         window.addEventListener('DOMContentLoaded', async () => {
             lucide.createIcons();
             try { 
