@@ -8,12 +8,13 @@
     <link rel="stylesheet" href="css/style.css" />
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
-        /* Import the official Geometry Dash font */
+        /* Using the local font path from your repository tree */
         @font-face {
             font-family: 'Pusab';
             src: url('assets/fonts/pusab.woff2') format('woff2');
             font-weight: normal;
             font-style: normal;
+            font-display: swap;
         }
 
         body { 
@@ -58,7 +59,7 @@
             max-height: 140px;
             filter: drop-shadow(0 10px 20px rgba(0,0,0,0.6));
             transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            display: none; /* Initially hidden */
+            display: none; 
         }
 
         #gdIcon.loaded {
@@ -150,28 +151,25 @@
             const user = input.value.trim();
             if (!user) return;
 
-            // Reset UI
+            // Update UI to loading state
             errorMsg.style.display = 'none';
             iconImg.classList.remove('loaded');
             iconImg.style.display = 'none';
             loader.style.display = 'block';
 
-            // We use GDBrowser's icon API
-            // Form "cube" is the default player icon
-            const iconUrl = `https://gdbrowser.com/icon/${encodeURIComponent(user)}?form=cube`;
+            // Constructing URL for the GDBrowser Icon API
+            const iconUrl = `https://gdbrowser.com/icon/${encodeURIComponent(user)}?form=cube&timestamp=${new Date().getTime()}`;
 
-            // Pre-load the image to handle errors and loading state
-            const imgTester = new Image();
-            imgTester.src = iconUrl;
+            // Load directly into the image element to bypass potential CORS issues with fetch/XHR
+            iconImg.src = iconUrl;
 
-            imgTester.onload = () => {
+            iconImg.onload = () => {
                 loader.style.display = 'none';
-                iconImg.src = iconUrl;
                 iconImg.style.display = 'block';
                 iconImg.classList.add('loaded');
             };
 
-            imgTester.onerror = () => {
+            iconImg.onerror = () => {
                 loader.style.display = 'none';
                 errorMsg.style.display = 'block';
             };
@@ -180,7 +178,7 @@
         btn.addEventListener('click', fetchIcon);
         input.addEventListener('keypress', (e) => { if (e.key === 'Enter') fetchIcon(); });
 
-        // Load RobTop by default
+        // Load RobTop as the default profile
         input.value = "RobTop";
         fetchIcon();
     </script>
