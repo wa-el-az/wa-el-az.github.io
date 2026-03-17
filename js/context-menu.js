@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const img = document.createElement('img');
         img.src = MOROCCO_IMAGE_SRC;
         img.alt = originalText || 'Morocco flag';
-        img.className = 'custom-emoji-inline';
+        img.className = 'custom-emoji-inline ma-flag';
         img.loading = 'lazy';
         img.decoding = 'async';
         return img;

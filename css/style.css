@@ -181,3 +181,41 @@ p.sub { color: var(--text-muted); margin: 0 0 25px; font-size: 15px; transition:
     vertical-align: -0.12em;
     object-fit: contain;
 }
+
+/* Morocco flag image */
+.ma-flag{
+  width: 1em;
+  height: 1em;
+  object-fit: contain;
+  display: inline-block;
+  vertical-align: -0.14em;
+  transition: transform 0.15s ease, filter 0.15s ease;
+  transform-origin: center;
+}
+
+.ma-flag:hover{
+  transform: scale(1.15);
+  filter: drop-shadow(0 2px 6px rgba(255,255,255,0.4));
+}
+
+.custom-emoji-inline.ma-flag{
+  margin: 0 0.08em;
+}
+
+.tea-flag{
+  width: 140px;
+  height: 140px;
+  vertical-align: middle;
+  filter: drop-shadow(0 15px 25px rgba(0,0,0,0.6));
+}
+
+.tea-flag:hover{
+  transform: scale(1.04);
+  filter: drop-shadow(0 18px 28px rgba(0,0,0,0.65));
+}
+
+.achieve-flag{
+  width: 36px;
+  height: 36px;
+  vertical-align: middle;
+}

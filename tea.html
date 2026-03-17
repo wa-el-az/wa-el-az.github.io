@@ -156,7 +156,11 @@
             else if (score < 2500000) { pointsPerClick = 5000; currentEmojiHTML = "🕌"; floatEmoji = "🕌"; }
             else if (score < 10000000) { pointsPerClick = 25000; currentEmojiHTML = "👑"; floatEmoji = "👑"; }
             else if (score < 50000000) { pointsPerClick = 100000; currentEmojiHTML = "💎"; floatEmoji = "💎"; }
-            else if (score < 250000000) { pointsPerClick = 500000; currentEmojiHTML = "🇲🇦"; floatEmoji = "🇲🇦"; }
+            else if (score < 250000000) {
+                pointsPerClick = 500000;
+                currentEmojiHTML = `<img src="/assets/morocco_flag_emoji_ios.png" alt="Morocco flag" class="ma-flag tea-flag">`;
+                floatEmoji = "✨";
+            }
             else if (score < 1000000000) { 
                 pointsPerClick = 2500000; 
                 currentEmojiHTML = `<img src="https://png.pngtree.com/png-vector/20250207/ourmid/pngtree-refreshing-moroccan-mint-tea-in-an-engraved-glass-on-a-decorative-png-image_15409953.png" style="width: 140px; height: 140px; object-fit: contain; pointer-events: none; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.6));" alt="Legendary Mint Tea">`;
