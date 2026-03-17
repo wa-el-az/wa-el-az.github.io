@@ -3,20 +3,20 @@
     "score": 136700000,
     "pass": "Kiloalpha_5@",
     "mypc": {
-      "data": 6.179843798649946e+28,
+      "data": 6.819463613327051e+30,
       "cache": 0,
-      "energy": 1435,
+      "energy": 1300,
       "btc": 989969.5000000023,
       "qTokens": 1434650289969128200,
       "lastLogin": "",
       "cpuIdx": 68,
-      "gpuIdx": 0,
-      "npuIdx": 0,
-      "ramGb": 8,
+      "gpuIdx": 13,
+      "npuIdx": 3,
+      "ramGb": 224,
       "ddrGen": 2,
       "storageIdx": 0,
       "coolerIdx": 0,
-      "netIdx": 8,
+      "netIdx": 9,
       "busIdx": 19,
       "softIdx": 4,
       "ocMode": false,
@@ -25,7 +25,7 @@
       "zeroDay": true,
       "subZero": true,
       "firewallCharges": 99,
-      "lastTime": 1773785683532
+      "lastTime": 1773785693505
     }
   }
 }
