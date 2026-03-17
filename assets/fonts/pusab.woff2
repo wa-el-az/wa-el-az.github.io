@@ -1,0 +1,47 @@
+<head>
+	<title>Nothing to see here...</title>
+	<meta charset="utf-8">
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-135255146-3"></script>
+	<script>window.dataLayer = window.dataLayer || []; function gtag() { dataLayer.push(arguments); } gtag('js', new Date()); gtag('config', 'UA-135255146-3');</script>
+	<link rel="icon" href="/assets/folder.png">
+	<meta name="robots" content="noindex">
+	<style>
+		body {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			background-image: linear-gradient(#2b2b2b, #171717) !important;
+			margin-left: 12px;
+		}
+
+		a:link { color: rgb(0, 200, 255) }
+		a:visited { color: rgb(130, 140, 255) }
+
+		h1 {
+			margin-bottom: 0px;
+			margin-top: 45px;
+		}
+
+		p {
+			margin-top: 5px;
+			font-size: 18px;
+		}
+
+		h1, p  {
+			text-align: center;
+			color: white;
+			font-family: aller, helvetica, arial;
+			font-weight: normal;
+		}
+	</style>
+</head>
+
+<body>
+
+<h1>Asset browsing has been <b>disabled</b>...</h1>
+<br>
+<p>If you need to rip sprites from Geometry Dash, use the <a target=_blank href="https://gdcolon.com/gdsplitter/">GD Spritesheet Splitter</a> tool.</p>
+
+</body>
+
+</script>
