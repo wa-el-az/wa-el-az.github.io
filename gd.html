@@ -25,7 +25,7 @@
             min-height: 100vh;
         }
 
-        /* The Glassy Profile Box matching WaelOS */
+        /* Glassmorphism Profile Box */
         .gd-profile-box {
             background: rgba(255, 255, 255, 0.08);
             backdrop-filter: blur(16px);
@@ -78,7 +78,7 @@
 
         .stat-item img { height: 20px; width: auto; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
 
-        /* Icon Set Container */
+        /* FIXED: Icon Set Container Centering & Proportions */
         .icon-set {
             background: rgba(0, 0, 0, 0.15);
             border-radius: 20px;
@@ -88,11 +88,16 @@
             gap: 15px;
             border: 1px solid rgba(255,255,255,0.05);
             margin-bottom: 35px;
+            align-items: center; /* Vertically centers the icons */
+            justify-items: center; /* Horizontally centers the icons */
         }
 
         .icon-set img {
-            width: 100%;
+            max-width: 100%;
+            max-height: 50px; /* Forces all icons to a balanced maximum height */
+            width: auto;
             height: auto;
+            object-fit: contain;
             filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));
             transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             cursor: pointer;
@@ -106,11 +111,9 @@
         .gd-btn-container {
             display: flex;
             justify-content: center;
-            gap: 20px;
-            flex-wrap: wrap;
         }
 
-        /* FIX: Width set to fit-content to stop stretching */
+        /* The New Copy Button */
         .gd-glass-btn {
             display: inline-flex;
             align-items: center;
@@ -123,11 +126,12 @@
             color: #fff;
             font-family: 'Inter', sans-serif;
             font-weight: bold;
-            text-decoration: none;
             font-size: 16px;
+            cursor: pointer;
             transition: 0.3s cubic-bezier(0.25, 1, 0.5, 1);
             backdrop-filter: blur(10px);
             gap: 8px;
+            outline: none;
         }
 
         .gd-glass-btn:hover { 
@@ -135,18 +139,6 @@
             transform: translateY(-3px); 
             border-color: rgba(255,255,255,0.4);
             box-shadow: 0 10px 20px rgba(0,0,0,0.2);
-        }
-
-        /* Green accent for the shortcuts button */
-        .gd-glass-btn.green {
-            background: rgba(74, 222, 128, 0.15);
-            border-color: rgba(74, 222, 128, 0.4);
-            color: #4ade80;
-        }
-        
-        .gd-glass-btn.green:hover {
-            background: rgba(74, 222, 128, 0.25);
-            color: #fff;
         }
 
         .navBtn { display: inline-flex; align-items: center; gap: 6px; z-index: 50; }
@@ -184,12 +176,9 @@
         </div>
 
         <div class="gd-btn-container">
-            <a href="https://gdbrowser.com/u/WaelMA" target="_blank" class="gd-glass-btn">
-                <i data-lucide="external-link"></i> View on GDBrowser
-            </a>
-            <a href="shortcuts" class="gd-glass-btn green">
-                <i data-lucide="zap"></i> More Shortcuts
-            </a>
+            <button id="copyUsername" class="gd-glass-btn">
+                <i data-lucide="copy"></i> Copy Username
+            </button>
         </div>
     </div>
 
@@ -197,13 +186,36 @@
     <script>
         lucide.createIcons();
 
-        // Handle Dynamic Back Button
+        // Dynamic Back Button
         const backBtn = document.getElementById('dynamicBackBtn');
         if (document.referrer.toLowerCase().includes('shortcuts')) {
             backBtn.href = 'shortcuts';
             backBtn.innerHTML = '<i data-lucide="zap"></i> Shortcuts';
             lucide.createIcons();
         }
+
+        // Copy Username Logic
+        document.getElementById('copyUsername').addEventListener('click', function() {
+            navigator.clipboard.writeText('WaelMA').then(() => {
+                const originalHtml = this.innerHTML;
+                
+                // Show success state
+                this.innerHTML = '<i data-lucide="check"></i> Copied!';
+                this.style.background = 'rgba(74, 222, 128, 0.2)';
+                this.style.borderColor = '#4ade80';
+                this.style.color = '#4ade80';
+                lucide.createIcons();
+                
+                // Revert after 2 seconds
+                setTimeout(() => {
+                    this.innerHTML = originalHtml;
+                    this.style.background = '';
+                    this.style.borderColor = '';
+                    this.style.color = '';
+                    lucide.createIcons();
+                }, 2000);
+            });
+        });
     </script>
 </body>
 </html>
