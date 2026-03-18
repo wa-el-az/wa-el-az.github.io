@@ -140,11 +140,11 @@
     <script>
         window.addEventListener('DOMContentLoaded', () => {
             const bootOverlay = document.getElementById('boot-overlay');
-            if (!sessionStorage.getItem('waelos_booted')) {
+            if (!localStorage.getItem('waelos_booted')) {
                 setTimeout(() => {
                     bootOverlay.style.opacity = '0';
                     bootOverlay.style.visibility = 'hidden';
-                    sessionStorage.setItem('waelos_booted', 'true');
+                    localStorage.setItem('waelos_booted', 'true');
                 }, 1500);
             } else {
                 bootOverlay.style.display = 'none';
