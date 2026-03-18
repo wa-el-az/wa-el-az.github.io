@@ -1,11 +1,11 @@
-# Wael OS 🚀
+# Wael
 
-Welcome to **Wael OS**, a custom, interactive personal operating system experience built for the web. 
+Welcome to **Wael**, a custom, interactive personal website. 
 
 ## ✨ Features
 * **My PC Terminal:** An interactive, persistent browser-based terminal game.
 * **Tea Clicker:** An integrated incremental game where your score carries over to unlock global terminal features.
-* **Modern UI:** A futuristic glassmorphism interface featuring signature Moroccan red and green gradients and universal Apple typography.
+* **Modern UI:** A futuristic glassmorphism interface featuring signature Moroccan red and green gradients and universal Apple color emoji.
 * **Admin Hub:** A secure backend for managing projects, status, and messages.
 * **Mini-Games:** Includes custom-built Tic-Tac-Toe AI.
 
