@@ -142,3 +142,40 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
+// --- Global Dynamic Back Button Injector ---
+window.addEventListener('DOMContentLoaded', () => {
+    // 1. Don't add the button if we are on the main page or 404
+    const path = window.location.pathname;
+    if (path.endsWith('index.html') || path === '/' || path.endsWith('404.html')) {
+        return;
+    }
+
+    // 2. Prevent adding it twice if a page already has it hardcoded (like tea.html)
+    if (document.getElementById('dynamicBackBtn')) return;
+
+    // 3. Create the button element
+    const backBtn = document.createElement('a');
+    backBtn.className = 'navBtn';
+    backBtn.id = 'dynamicBackBtn';
+
+    // 4. Figure out where the user came from
+    const referrer = document.referrer.toLowerCase();
+    if (referrer.includes('shortcuts')) {
+        backBtn.href = 'shortcuts';
+        backBtn.innerHTML = '<i data-lucide="zap"></i> Shortcuts';
+    } else if (referrer.includes('redeem')) {
+        backBtn.href = 'redeem';
+        backBtn.innerHTML = '<i data-lucide="ticket"></i> Redeem';
+    } else {
+        backBtn.href = 'index';
+        backBtn.innerHTML = '<i data-lucide="home"></i> Home';
+    }
+
+    // 5. Add it to the page
+    document.body.appendChild(backBtn);
+
+    // 6. Tell Lucide to draw the icon we just injected
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+});
