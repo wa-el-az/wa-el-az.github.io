@@ -81,6 +81,13 @@
             animation: spinPulse 2s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
         }
 
+        /* The spinning animation block you were missing! */
+        @keyframes spinPulse {
+            0% { transform: scale(0.8) rotate(0deg); opacity: 0.5; }
+            50% { transform: scale(1.1) rotate(180deg); opacity: 1; }
+            100% { transform: scale(0.8) rotate(360deg); opacity: 0.5; }
+        }
+
         @media (max-width: 860px) { 
             .hero-container { position: relative; display: flex; flex-direction: column; } 
             .left, .right { position: relative; width: 100%; z-index: 1; } 
