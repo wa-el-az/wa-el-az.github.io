@@ -93,3 +93,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+// ==========================================
+    // 3. SMOOTH PAGE TRANSITIONS (FADE OUT)
+    // ==========================================
+    document.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', function(e) {
+            const href = this.getAttribute('href');
+            const target = this.getAttribute('target');
+            
+            // Ignore empty links, new tabs, external links, and page anchors
+            if (!href || href.startsWith('http') || href.startsWith('#') || href.startsWith('mailto:') || target === '_blank') {
+                return;
+            }
+            
+            e.preventDefault(); // Stop immediate navigation
+            
+            // Trigger the fade out animation on the whole body
+            document.body.classList.add('fade-out-active');
+            
+            // Wait 300ms (matching our CSS animation), then go to the next page
+            setTimeout(() => {
+                window.location.href = href;
+            }, 300); 
+        });
+    });
