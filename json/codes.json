@@ -29,6 +29,6 @@
   },
   "NETFLIX": {
     "type": "redirect",
-    "url": "https://wael.work.gd/admin/Netflix/netflix"
+    "url": "https://wael.work.gd/secret/netflix"
   }
 }
