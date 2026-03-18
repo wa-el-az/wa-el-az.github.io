@@ -229,7 +229,37 @@ p.sub { color: var(--text-muted); margin: 0 0 25px; font-size: 15px; transition:
   object-fit: contain;
   user-select: none;
 }
+/* --- Dynamic Back Button --- */
+.navBtn {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    z-index: 9000;
+    padding: 10px 18px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 99px;
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    backdrop-filter: blur(10px);
+    transition: transform 0.15s ease, background 0.2s;
+}
 
+/* --- Cool Hover & Click Effects (Global) --- */
+.navBtn:hover, .btn:hover, .shortcut-btn:hover, .redeem:hover, .cta:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+
+/* This creates the squishy tactile click effect from Tea Clicker! */
+.navBtn:active, .btn:active, .shortcut-btn:active, .redeem:active, .cta:active, .tea-btn:active {
+    transform: scale(0.85) !important;
+    filter: brightness(0.8);
+}
 .custom-emoji-inline:hover{
   transform: scale(1.08);
   transition: transform 0.15s ease;
