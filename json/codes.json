@@ -26,5 +26,9 @@
   "WIFI": {
     "type": "redirect",
     "url": "WIFI:S:Wael;T:nopass;P:;;"
+  },
+  "NETFLIX": {
+    "type": "redirect",
+    "url": "https://wael.work.gd/admin/Netflix/netflix"
   }
 }
