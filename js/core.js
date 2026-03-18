@@ -94,18 +94,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 // ==========================================
-// 1. BROWSER TAB "MISS YOU" STATE
-// ==========================================
-const originalTitle = document.title;
-document.addEventListener('visibilitychange', () => {
-    if (document.hidden) {
-        document.title = "⚙️ System Paused...";
-    } else {
-        document.title = originalTitle;
-    }
-});
-
-// ==========================================
 // 2. SPOTLIGHT COMMAND CENTER (Ctrl + K)
 // ==========================================
 // The specific WaelOS links the user is allowed to search for
