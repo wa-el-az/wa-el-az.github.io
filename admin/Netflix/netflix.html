@@ -6,8 +6,15 @@
     <title>WaelOS — Netflix DB</title>
     <link rel="icon" type="image/svg+xml" href="../../assets/icon.svg" />
     <link rel="stylesheet" href="../../css/style.css" />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
+        /* 1. Theme Override for this specific app */
+        body {
+            --terminal-green: #e50914; /* Swaps the WaelOS green to Netflix Red */
+            --card-bg: rgba(15, 15, 15, 0.5);
+        }
+
         .container { 
             max-width: 1300px; 
             margin: 80px auto 50px; 
@@ -16,26 +23,32 @@
             z-index: 10; 
         }
         
-        .db-header { margin-bottom: 30px; }
+        .db-header { 
+            margin-bottom: 30px; 
+            text-align: center;
+        }
+        
         .db-header h1 {
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 12px;
             color: #e50914; 
+            font-size: 42px;
+            text-shadow: 0 0 20px rgba(229, 9, 20, 0.4);
         }
 
-        /* --- Filter Toolbar --- */
+        /* --- Unified Glass Filter Bar --- */
         .filter-bar {
             display: flex;
-            gap: 15px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
-        .filter-bar input {
-            flex: 1;
-            min-width: 250px;
-            margin-bottom: 0; 
-            padding-left: 40px;
+            gap: 10px;
+            margin-bottom: 40px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 8px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
         .filter-group {
             flex: 1;
@@ -45,58 +58,138 @@
         }
         .filter-group i {
             position: absolute;
-            left: 14px;
+            left: 16px;
             color: var(--text-muted);
             width: 18px;
             height: 18px;
+            transition: color 0.3s;
+        }
+        .filter-group input {
+            width: 100%;
+            margin: 0;
+            padding: 14px 14px 14px 44px;
+            background: transparent;
+            border: 1px solid transparent;
+            border-radius: 10px;
+            color: #fff;
+        }
+        .filter-group input:focus {
+            background: rgba(229, 9, 20, 0.05);
+            border-color: rgba(229, 9, 20, 0.3);
+        }
+        .filter-group input:focus + i, .filter-group input:focus ~ i {
+            color: #e50914;
+        }
+        
+        /* Filter dividers */
+        .filter-group:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            height: 60%;
+            width: 1px;
+            background: rgba(255, 255, 255, 0.1);
         }
 
+        @media (max-width: 768px) {
+            .filter-bar { flex-direction: column; padding: 15px; }
+            .filter-group:not(:last-child)::after { display: none; }
+        }
+
+        /* --- Card Grid Design --- */
         .grid { 
             display: grid; 
-            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); 
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr)); 
             gap: 25px; 
         }
         
         .account-card { 
             padding: 24px; 
-            font-size: 14px; 
             display: flex;
             flex-direction: column;
-            gap: 6px;
+            gap: 12px;
+            border-top: 3px solid #e50914; /* Netflix accent top */
+            background: linear-gradient(180deg, rgba(229, 9, 20, 0.03) 0%, rgba(15,15,15,0.6) 100%);
+            transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), box-shadow 0.3s ease, border-color 0.3s;
+        }
+
+        .account-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(229, 9, 20, 0.4);
+            box-shadow: 0 15px 35px rgba(229, 9, 20, 0.15), 0 0 20px rgba(0,0,0,0.5);
         }
         
-        .account-card h3 { 
-            margin: 0 0 15px 0; 
-            color: var(--terminal-green); 
-            font-size: 16px; 
-            display: flex; 
-            align-items: center; 
-            gap: 8px;
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 5px;
             word-break: break-all;
         }
         
+        .card-header h3 { 
+            margin: 0; 
+            color: #fff; 
+            font-size: 17px; 
+            font-weight: 700;
+        }
+
+        .card-header i { color: #e50914; }
+        
+        .password-box {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 10px 14px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-family: 'JetBrains Mono', monospace;
+            color: #e50914;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+        .password-box span { color: var(--text-muted); font-family: 'Inter', sans-serif; font-size: 12px; }
+
         .detail-row { 
             display: flex; 
             justify-content: space-between; 
-            padding-bottom: 6px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05); 
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.08); 
+            font-size: 14px;
         }
+        .detail-row:last-of-type { border-bottom: none; }
         
-        .detail-label { color: var(--text-muted); font-weight: 600; }
-        .detail-value { color: #fff; text-align: right; max-width: 65%; font-weight: 500; }
+        .detail-label { color: var(--text-muted); font-weight: 500; }
+        .detail-value { color: #fff; text-align: right; font-weight: 600; }
+
+        /* Modern UI Badges */
+        .badge {
+            padding: 4px 10px;
+            border-radius: 99px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .badge-red { background: rgba(229, 9, 20, 0.15); color: #ff4757; border: 1px solid rgba(229, 9, 20, 0.3); }
+        .badge-green { background: rgba(74, 222, 128, 0.15); color: #4ade80; border: 1px solid rgba(74, 222, 128, 0.3); }
+        .badge-gray { background: rgba(255, 255, 255, 0.1); color: #ccc; border: 1px solid rgba(255, 255, 255, 0.2); }
+        .mono-text { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: #a1a1aa; }
         
         .cookie-box { 
-            background: rgba(0, 0, 0, 0.4); 
+            background: #000; 
             padding: 12px; 
             border-radius: 8px; 
             font-family: 'JetBrains Mono', monospace; 
             font-size: 11px; 
-            max-height: 80px; 
+            max-height: 70px; 
             overflow-y: auto; 
-            margin-top: 10px; 
-            color: rgba(255,255,255,0.6); 
+            color: rgba(255,255,255,0.4); 
             border: 1px solid rgba(255, 255, 255, 0.1); 
             word-break: break-all;
+            box-shadow: inset 0 5px 15px rgba(0,0,0,0.5);
         }
         
         #loading { 
@@ -114,11 +207,11 @@
             display: none;
             grid-column: 1 / -1;
             text-align: center;
-            padding: 40px;
+            padding: 60px 40px;
             color: var(--text-muted);
             font-size: 16px;
-            background: var(--card-bg);
-            border: 1px dashed var(--card-border);
+            background: rgba(0,0,0,0.2);
+            border: 1px dashed rgba(255,255,255,0.1);
             border-radius: 16px;
         }
 
@@ -133,31 +226,31 @@
     
     <div class="container">
         <div class="db-header">
-            <h1><i data-lucide="database"></i> DB Viewer</h1>
-            <p class="sub">Parsing accounts from 666x NETFLIX.txt</p>
+            <h1><i data-lucide="monitor-play"></i> DB Viewer</h1>
+            <p class="sub">Secure Parsing Engine — 666x NETFLIX.txt</p>
         </div>
 
         <div class="filter-bar" id="filterBar" style="display: none;">
             <div class="filter-group">
-                <i data-lucide="mail"></i>
-                <input type="text" id="filterEmail" placeholder="Filter by Email..." autocomplete="off">
+                <i data-lucide="search"></i>
+                <input type="text" id="filterEmail" placeholder="Search Email..." autocomplete="off">
             </div>
             <div class="filter-group">
                 <i data-lucide="globe"></i>
-                <input type="text" id="filterCountry" placeholder="Filter by Country (e.g. BR, DE)..." autocomplete="off">
+                <input type="text" id="filterCountry" placeholder="Country Code (e.g. BR)..." autocomplete="off">
             </div>
             <div class="filter-group">
-                <i data-lucide="monitor-play"></i>
-                <input type="text" id="filterPlan" placeholder="Filter by Plan (e.g. Premium)..." autocomplete="off">
+                <i data-lucide="layers"></i>
+                <input type="text" id="filterPlan" placeholder="Subscription Plan..." autocomplete="off">
             </div>
         </div>
         
-        <div id="loading">Reading data stream... <i data-lucide="loader-2" class="spin"></i></div>
+        <div id="loading">Decrypting data stream... <i data-lucide="loader-2" class="spin"></i></div>
         
         <div class="grid" id="accountsGrid">
             <div id="noResults">
-                <i data-lucide="search-x" style="width: 40px; height: 40px; margin-bottom: 10px; opacity: 0.5;"></i><br>
-                No accounts match your filters.
+                <i data-lucide="ghost" style="width: 48px; height: 48px; margin-bottom: 15px; opacity: 0.3;"></i><br>
+                No accounts match your current filters.
             </div>
         </div>
     </div>
@@ -170,7 +263,7 @@
             
             try {
                 const response = await fetch('666x NETFLIX.txt');
-                if (!response.ok) throw new Error('File not found in this folder');
+                if (!response.ok) throw new Error('Database file not found');
                 const text = await response.text();
                 
                 const lines = text.split('\n').filter(line => line.trim().includes('|'));
@@ -195,9 +288,16 @@
                 renderAccounts(allAccounts);
                 
             } catch (error) {
-                document.getElementById('loading').innerHTML = `<span style="color:#ff4757;">Error: ${error.message}</span>`;
+                document.getElementById('loading').innerHTML = `<span style="color:#ff4757;">System Error: ${error.message}</span>`;
             }
         });
+
+        function getBadge(value, type) {
+            if (!value || value === 'N/A' || value === 'false') return `<span class="badge badge-gray">${value || 'N/A'}</span>`;
+            if (value === 'true') return `<span class="badge badge-red">Yes</span>`;
+            if (type === 'plan' && value.toLowerCase().includes('premium')) return `<span class="badge badge-red">${value}</span>`;
+            return `<span class="badge badge-green">${value}</span>`;
+        }
 
         function renderAccounts(accountsToRender) {
             const grid = document.getElementById('accountsGrid');
@@ -220,31 +320,39 @@
                 const card = document.createElement('div');
                 card.className = 'card account-card';
                 
-                let html = `<h3><i data-lucide="user"></i> ${acc.email}</h3>`;
-                html += `<div class="detail-row"><span class="detail-label">Password</span><span class="detail-value" style="color:#ff4757;">${acc.password}</span></div>`;
+                let html = `
+                    <div class="card-header">
+                        <i data-lucide="user"></i>
+                        <h3>${acc.email}</h3>
+                    </div>
+                    <div class="password-box">
+                        <span>PASS</span> ${acc.password}
+                    </div>
+                `;
                 
-                const fields = [
-                    { key: 'Country', label: 'Country' },
-                    { key: 'memberPlan', label: 'Plan' },
-                    { key: 'memberSince', label: 'Member Since' },
-                    { key: 'isUserOnHold', label: 'On Hold' },
-                    { key: 'videoQuality', label: 'Video Quality' },
-                    { key: 'phonenumber', label: 'Phone' },
-                    { key: 'maxStreams', label: 'Max Streams' },
-                    { key: 'paymentType', label: 'Payment' },
-                    { key: 'HasSlot', label: 'Has Slot' },
-                    { key: 'last4digits', label: 'CC Last 4' },
-                    { key: 'Total_CC', label: 'Total CC' }
-                ];
+                const c = acc.data;
                 
-                fields.forEach(f => {
-                    if (acc.data[f.key]) {
-                        html += `<div class="detail-row"><span class="detail-label">${f.label}</span><span class="detail-value">${acc.data[f.key]}</span></div>`;
-                    }
-                });
+                // Top Row Data (Badges)
+                html += `<div class="detail-row" style="margin-top: 5px;">
+                            <span class="detail-label">Country / Plan</span>
+                            <div style="display:flex; gap:6px;">
+                                ${c['Country'] ? `<span class="badge badge-gray">${c['Country']}</span>` : ''}
+                                ${c['memberPlan'] ? getBadge(c['memberPlan'], 'plan') : ''}
+                            </div>
+                         </div>`;
                 
-                if (acc.data['cookies']) {
-                    html += `<div class="cookie-box">${acc.data['cookies']}</div>`;
+                // Optional Details
+                if (c['videoQuality']) html += `<div class="detail-row"><span class="detail-label">Quality</span><span class="detail-value">${c['videoQuality']}</span></div>`;
+                if (c['maxStreams']) html += `<div class="detail-row"><span class="detail-label">Max Streams</span><span class="detail-value">${c['maxStreams']} Screens</span></div>`;
+                if (c['isUserOnHold']) html += `<div class="detail-row"><span class="detail-label">On Hold</span><span class="detail-value">${c['isUserOnHold'] === 'true' ? '<span class="badge badge-red">YES</span>' : '<span class="badge badge-green">NO</span>'}</span></div>`;
+                if (c['phonenumber'] && c['phonenumber'] !== 'N/A') html += `<div class="detail-row"><span class="detail-label">Phone</span><span class="detail-value mono-text">${c['phonenumber']}</span></div>`;
+                if (c['paymentType']) html += `<div class="detail-row"><span class="detail-label">Payment</span><span class="detail-value">${c['paymentType']}</span></div>`;
+                if (c['last4digits'] && c['last4digits'] !== 'N/A') html += `<div class="detail-row"><span class="detail-label">CC Ending In</span><span class="detail-value mono-text">${c['last4digits']}</span></div>`;
+                
+                // Cookies
+                if (c['cookies']) {
+                    html += `<div class="detail-label" style="margin-top:10px; font-size: 11px; text-transform:uppercase;"><i data-lucide="cookie" style="width:12px; height:12px; margin-right:4px;"></i> Session Tokens</div>`;
+                    html += `<div class="cookie-box">${c['cookies']}</div>`;
                 }
                 
                 card.innerHTML = html;
@@ -255,6 +363,7 @@
             lucide.createIcons();
         }
 
+        // Filtering
         function applyFilters() {
             const emailQuery = document.getElementById('filterEmail').value.toLowerCase();
             const countryQuery = document.getElementById('filterCountry').value.toLowerCase();
