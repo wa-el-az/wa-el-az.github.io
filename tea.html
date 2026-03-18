@@ -60,16 +60,13 @@
         #syncControls { display: none; }
         #loggedInAs { color: #4ade80; font-weight: bold; font-size: 18px; margin-bottom: 15px; display: none;}
         
-        .navBtn { display: inline-flex; align-items: center; gap: 6px; z-index: 50; }
-        .lucide { width: 1.2em; height: 1.2em; vertical-align: -0.125em; }
-        
         @media (max-width: 860px) { .container { grid-template-columns: 1fr; margin-top: 40px; } }
     </style>
 </head>
 <body>
     <div class="bg-left"></div><div class="bg-right"></div>
     
-    <a class="navBtn" id="dynamicBackBtn" href="index"><i data-lucide="home"></i> Home</a>
+    <a class="navBtn" id="dynamicBackBtn" href="index" style="right: auto !important; left: 20px !important;"><i data-lucide="home"></i> Home</a>>
     
     <div class="container">
         <div class="card">
@@ -133,19 +130,16 @@
         let fileSha = null;
         let loggedInUser = null;
 
-        // The formatting engine for K, M, B, T
         function formatNumber(num) {
             if (num < 1000) return num.toString();
             const suffixes = ["", "K", "M", "B", "T", "Qa"];
             const suffixNum = Math.floor(Math.log10(num) / 3);
             let shortValue = (num / Math.pow(1000, suffixNum)).toFixed(2);
-            // Remove trailing .00 for cleaner display
             shortValue = shortValue.replace(/\.00$/, '');
             return shortValue + suffixes[suffixNum];
         }
 
         function updateGameUI() {
-            // Massive new tier system
             if (score < 10) { pointsPerClick = 1; currentEmojiHTML = "🍵"; floatEmoji = "🍵"; }
             else if (score < 100) { pointsPerClick = 2; currentEmojiHTML = "☕"; floatEmoji = "☕"; }
             else if (score < 1000) { pointsPerClick = 5; currentEmojiHTML = "🧋"; floatEmoji = "🧋"; }
@@ -166,16 +160,13 @@
                 currentEmojiHTML = `<img src="https://png.pngtree.com/png-vector/20250207/ourmid/pngtree-refreshing-moroccan-mint-tea-in-an-engraved-glass-on-a-decorative-png-image_15409953.png" style="width: 140px; height: 140px; object-fit: contain; pointer-events: none; filter: drop-shadow(0 15px 25px rgba(0,0,0,0.6));" alt="Legendary Mint Tea">`;
                 floatEmoji = "✨"; 
             } else { 
-                // 1 Billion+ God Tier
                 pointsPerClick = 15000000; 
                 currentEmojiHTML = `<img src="https://png.pngtree.com/png-vector/20250207/ourmid/pngtree-refreshing-moroccan-mint-tea-in-an-engraved-glass-on-a-decorative-png-image_15409953.png" style="width: 150px; height: 150px; object-fit: contain; pointer-events: none; filter: drop-shadow(0 0 35px #ffd700) drop-shadow(0 15px 25px rgba(0,0,0,0.8));" alt="Golden Mint Tea">`;
                 floatEmoji = "🌟"; 
             }
 
-            // Display formatted big number (e.g. 1.5M)
             document.getElementById('scoreDisplay').innerText = formatNumber(score);
             
-            // Keep exact number with commas below it so you never lose track!
             if (score >= 1000) {
                 document.getElementById('exactScoreDisplay').innerText = `(${score.toLocaleString()} clicks)`;
                 document.getElementById('exactScoreDisplay').style.display = 'block';
@@ -246,7 +237,6 @@
             sortedArr.forEach((user, index) => {
                 const rankClass = index === 0 ? 'rank-1' : (index === 1 ? 'rank-2' : (index === 2 ? 'rank-3' : 'rank-other'));
                 const prefix = index === 0 ? '🥇' : (index === 1 ? '🥈' : (index === 2 ? '🥉' : `${index + 1}.`));
-                // Leaderboard now shows K/M abbreviations but keeps the exact number as a hover title!
                 listDiv.innerHTML += `
                     <div class="rank-item ${rankClass}" title="Exact Score: ${user[1].score.toLocaleString()}">
                         <span>${prefix} ${user[0]}</span>
