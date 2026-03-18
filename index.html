@@ -127,6 +127,20 @@
             .redeem { top: 15px; right: 15px; } 
             .status-badge { top: 10px; left: 50%; transform: translateX(-50%); font-size: 12px; } 
         }
+        @media (min-width: 861px) {
+            .one-line-text {
+                white-space: nowrap;
+                display: inline-block;
+            }
+        }
+
+        /* On mobile, we let it wrap naturally so it doesn't go off-screen */
+        @media (max-width: 860px) {
+            .one-line-text {
+                white-space: normal;
+                display: block;
+            }
+        }
     </style>
     
     <script>
