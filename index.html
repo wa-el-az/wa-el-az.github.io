@@ -116,6 +116,78 @@
             100% { transform: scale(0.8) rotate(360deg); opacity: 0.5; }
         }
 
+        /* --- System Specs Card --- */
+        .desc-content-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+            width: 100%;
+        }
+
+        .system-specs-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 30px;
+            width: 100%;
+            max-width: 480px;
+            text-align: left;
+            backdrop-filter: blur(15px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        .system-specs-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .specs-title {
+            color: #fff;
+            font-size: 20px;
+            margin: 0 0 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 15px;
+            font-weight: 700;
+        }
+
+        .specs-title i { color: #4ade80; }
+
+        .specs-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .specs-list li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--text-muted);
+            font-size: 16px;
+        }
+
+        .specs-list li i {
+            color: #fff;
+            opacity: 0.6;
+            width: 18px;
+            height: 18px;
+        }
+
+        .specs-list li strong {
+            color: #fff;
+            font-weight: 500;
+            min-width: 90px;
+        }
+
         @media (max-width: 860px) { 
             .hero-container { position: relative; display: flex; flex-direction: column; } 
             .left, .right { position: relative; width: 100%; z-index: 1; } 
@@ -181,10 +253,23 @@
             </section>
         </div>
         <section class="description-section">
-            <div class="desc-text">
-                A proud <br>
-                Moroccan <img src="/assets/morocco_flag_emoji_ios.png" alt="Morocco flag" class="ma-flag"> who likes tea.
-                <span>Wael Amrani Zerrifi.</span>
+            <div class="desc-content-wrapper">
+                <div class="desc-text">
+                    A proud <br>
+                    Moroccan <img src="/assets/morocco_flag_emoji_ios.png" alt="Morocco flag" class="ma-flag"> who likes tea.
+                    <span>Wael Amrani Zerrifi.</span>
+                </div>
+
+                <div class="system-specs-card">
+                    <h3 class="specs-title"><i data-lucide="info"></i> Info</h3>
+                    <ul class="specs-list">
+                        <li><i data-lucide="shield-check"></i> <strong>Admin:</strong> Wael Amrani Zerrifi</li>
+                        <li><i data-lucide="cake"></i> <strong>Birthday:</strong> 3rd March</li>
+                        <li><i data-lucide="map-pin"></i> <strong>Country:</strong> Morocco</li>
+                        <li><i data-lucide="terminal"></i> <strong>OS Build:</strong> 2.1 (200326)</li>
+                    </ul>
+                </div>
+
                 <a href="shortcuts" class="shortcut-btn"><i data-lucide="zap"></i> Shortcuts</a>
             </div>
         </section>
