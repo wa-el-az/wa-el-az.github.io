@@ -26,7 +26,6 @@
             animation: fadePageIn 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
 
-        /* Spinning Record Effect */
         .record-container {
             width: 200px;
             height: 200px;
@@ -86,7 +85,6 @@
             text-overflow: ellipsis;
         }
 
-        /* Custom Audio Progress Bar with Dynamic White Fill */
         .progress-wrapper {
             display: flex;
             align-items: center;
@@ -100,7 +98,6 @@
         input[type="range"] {
             flex: 1;
             -webkit-appearance: none;
-            /* The CSS variable --progress controls the white fill line */
             background: linear-gradient(to right, #fff var(--progress, 0%), rgba(255,255,255,0.1) var(--progress, 0%));
             height: 6px;
             border-radius: 99px;
@@ -122,7 +119,6 @@
 
         input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
 
-        /* Controls */
         .controls {
             display: flex;
             align-items: center;
@@ -160,7 +156,6 @@
         }
         .play-btn svg { width: 28px; height: 28px; fill: currentColor; }
 
-        /* Nudge the Play icon slightly right so it looks perfectly centered */
         .play-icon-centered {
             transform: translateX(2px);
         }
@@ -204,7 +199,6 @@
         let trackIndex = 0;
         let isPlaying = false;
 
-        // Elements
         const audio = document.getElementById('audio-player');
         const playBtn = document.getElementById('play-btn');
         const prevBtn = document.getElementById('prev-btn');
@@ -216,15 +210,12 @@
         const currTimeDisp = document.getElementById('curr-time');
         const totalTimeDisp = document.getElementById('total-time');
 
-        // Fetch Music Directory dynamically via GitHub API
         async function loadPlaylist() {
             try {
-                // Ensure CONFIG is loaded before making the call
                 if (typeof CONFIG === 'undefined' || !CONFIG.REPO_PATH) {
                     throw new Error("Configuration not loaded.");
                 }
 
-                // Ask GitHub what files are inside your /music folder
                 const response = await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/music`, {
                     headers: { 'Authorization': `Bearer ${CONFIG.GITHUB_TOKEN}` }
                 });
@@ -233,22 +224,21 @@
 
                 const files = await response.json();
                 
-                // Filter out everything except mp3 and m4a, and build the playlist
                 playlist = files
                     .filter(file => file.name.toLowerCase().endsWith('.mp3') || file.name.toLowerCase().endsWith('.m4a'))
                     .map(file => {
-                        // Decode URI in case of spaces and remove extensions
                         let cleanName = decodeURIComponent(file.name);
                         cleanName = cleanName.replace(/\.[^/.]+$/, "").replace(/_/g, " ");
                         
-                        // FIX: Use jsDelivr CDN to bypass GitHub Raw CORS limitations
-                        const cdnUrl = `https://cdn.jsdelivr.net/gh/${CONFIG.REPO_PATH}@main/${file.path}`;
+                        // FIX 1: Safely URL Encode the path so spaces and symbols (&) don't break the URL
+                        const encodedPath = file.path.split('/').map(encodeURIComponent).join('/');
+                        const cdnUrl = `https://cdn.jsdelivr.net/gh/${CONFIG.REPO_PATH}@main/${encodedPath}`;
                         
                         return {
                             title: cleanName, 
                             artist: "WaelOS Media",
-                            src: cdnUrl, // Clean CDN URL that allows jsmediatags to read data
-                            cover: "assets/morocco.png" // Default cover
+                            src: cdnUrl, 
+                            cover: "assets/morocco.png"
                         };
                     });
 
@@ -260,72 +250,68 @@
 
             } catch(e) {
                 console.warn(e.message);
-                playlist = [
-                    {
-                        title: "No Music Found",
-                        artist: "Push .mp3 files to GitHub",
-                        src: "",
-                        cover: "assets/icon.svg"
-                    }
-                ];
+                playlist = [{ title: "No Music Found", artist: "Push .mp3 to GitHub", src: "", cover: "assets/icon.svg" }];
                 loadTrack(0);
                 title.style.color = "#ff6b6b"; 
             }
         }
 
-        // Initialize Player
         function loadTrack(index) {
             if (playlist.length === 0) return;
             const track = playlist[index];
             audio.src = track.src;
             
-            // 1. Immediately set fallback data to prevent "Scanning System..." getting stuck
             title.innerText = track.title;
             artist.innerText = track.artist;
             cover.src = track.cover;
             cover.style.filter = 'none';
             cover.style.background = 'transparent';
 
-            // 2. Extract genuine ID3 Metadata (Title, Artist, Cover Art)
+            // FIX 2: Fetch the file as a Blob first to bypass jsmediatags XHR CORS restrictions!
             if (window.jsmediatags && track.src) {
-                jsmediatags.read(track.src, {
-                    onSuccess: function(tag) {
-                        // Prevent overwriting if user skipped to next song before this finished loading
+                fetch(track.src)
+                    .then(response => {
+                        if (!response.ok) throw new Error("Network error fetching audio blob");
+                        return response.blob();
+                    })
+                    .then(blob => {
+                        // Ensure user hasn't skipped to next song while fetching
                         if (trackIndex !== index) return;
-
-                        const tags = tag.tags;
                         
-                        // Update UI if tags exist inside the file
-                        if (tags.title) title.innerText = tags.title;
-                        if (tags.artist) artist.innerText = tags.artist;
+                        jsmediatags.read(blob, {
+                            onSuccess: function(tag) {
+                                if (trackIndex !== index) return;
+                                
+                                const tags = tag.tags;
+                                if (tags.title) title.innerText = tags.title;
+                                if (tags.artist) artist.innerText = tags.artist;
 
-                        // Parse the raw byte array into an image properly for all browsers
-                        if (tags.picture) {
-                            try {
-                                const data = tags.picture.data;
-                                let base64String = "";
-                                for (let i = 0; i < data.length; i++) {
-                                    base64String += String.fromCharCode(data[i]);
+                                if (tags.picture) {
+                                    try {
+                                        const data = tags.picture.data;
+                                        let base64String = "";
+                                        for (let i = 0; i < data.length; i++) {
+                                            base64String += String.fromCharCode(data[i]);
+                                        }
+                                        cover.src = "data:" + tags.picture.format + ";base64," + window.btoa(base64String);
+                                    } catch (e) {
+                                        console.warn("Failed to parse cover art", e);
+                                    }
                                 }
-                                cover.src = "data:" + tags.picture.format + ";base64," + window.btoa(base64String);
-                            } catch (e) {
-                                console.warn("Failed to parse cover art", e);
+                            },
+                            onError: function(error) {
+                                console.log("No metadata found in file.", error);
                             }
-                        }
-                    },
-                    onError: function(error) {
-                        console.log("No metadata found in file or blocked. Using fallback name.");
-                    }
-                });
+                        });
+                    })
+                    .catch(err => console.log("Blob fetch blocked or failed:", err));
             }
         }
 
         function playTrack() {
             if (!audio.src || audio.src.endsWith(window.location.pathname)) return;
             
-            // FIX: Safely handle the audio Promise to prevent AbortError crashes
             const playPromise = audio.play();
-            
             if (playPromise !== undefined) {
                 playPromise.then(_ => {
                     isPlaying = true;
@@ -347,7 +333,6 @@
             lucide.createIcons();
         }
 
-        // Event Listeners
         playBtn.addEventListener('click', () => isPlaying ? pauseTrack() : playTrack());
         
         prevBtn.addEventListener('click', () => {
@@ -364,15 +349,12 @@
             if (isPlaying) playTrack();
         });
 
-        // Auto-play next track
         audio.addEventListener('ended', () => nextBtn.click());
 
-        // Progress Bar Logic (Updates time and the white fill line)
         audio.addEventListener('timeupdate', () => {
             if (audio.duration) {
                 const progressPercent = (audio.currentTime / audio.duration) * 100;
                 progressBar.value = progressPercent;
-                // Update the CSS variable to fill the line white
                 progressBar.style.setProperty('--progress', progressPercent + '%');
                 
                 let currentMins = Math.floor(audio.currentTime / 60);
@@ -389,7 +371,6 @@
             totalTimeDisp.innerText = `${durationMins}:${durationSecs}`;
         });
 
-        // Handle dragging the progress bar
         progressBar.addEventListener('input', () => {
             if (audio.duration) {
                 audio.currentTime = (progressBar.value / 100) * audio.duration;
@@ -397,14 +378,12 @@
             }
         });
 
-        // Dynamic Back Button setup
         const backBtn = document.getElementById('dynamicBackBtn');
         if (document.referrer.toLowerCase().includes('shortcuts')) {
             backBtn.href = 'shortcuts';
             backBtn.innerHTML = '<i data-lucide="zap"></i> Shortcuts';
         }
         
-        // Initial execution
         loadPlaylist().then(() => lucide.createIcons());
     </script>
     <script src="js/context-menu.js"></script>
