@@ -179,8 +179,8 @@
         </div>
         
         <div class="track-info">
-            <h2 id="track-title">Loading...</h2>
-            <p id="track-artist">Please wait</p>
+            <h2 id="track-title">Scanning System...</h2>
+            <p id="track-artist">Checking for files</p>
         </div>
 
         <div class="progress-wrapper">
@@ -241,10 +241,13 @@
                         let cleanName = decodeURIComponent(file.name);
                         cleanName = cleanName.replace(/\.[^/.]+$/, "").replace(/_/g, " ");
                         
+                        // FIX: Use jsDelivr CDN to bypass GitHub Raw CORS limitations
+                        const cdnUrl = `https://cdn.jsdelivr.net/gh/${CONFIG.REPO_PATH}@main/${file.path}`;
+                        
                         return {
                             title: cleanName, 
                             artist: "WaelOS Media",
-                            src: file.download_url || file.path, // Use download_url for safer audio fetching
+                            src: cdnUrl, // Clean CDN URL that allows jsmediatags to read data
                             cover: "assets/morocco.png" // Default cover
                         };
                     });
@@ -311,7 +314,7 @@
                         }
                     },
                     onError: function(error) {
-                        console.log("No metadata found in file or blocked by CORS. Using fallback name.");
+                        console.log("No metadata found in file or blocked. Using fallback name.");
                     }
                 });
             }
@@ -319,11 +322,21 @@
 
         function playTrack() {
             if (!audio.src || audio.src.endsWith(window.location.pathname)) return;
-            audio.play();
-            isPlaying = true;
-            playBtn.innerHTML = '<i data-lucide="pause"></i>';
-            cover.classList.add('playing');
-            lucide.createIcons();
+            
+            // FIX: Safely handle the audio Promise to prevent AbortError crashes
+            const playPromise = audio.play();
+            
+            if (playPromise !== undefined) {
+                playPromise.then(_ => {
+                    isPlaying = true;
+                    playBtn.innerHTML = '<i data-lucide="pause"></i>';
+                    cover.classList.add('playing');
+                    lucide.createIcons();
+                }).catch(error => {
+                    console.warn("Autoplay prevented or interrupted:", error);
+                    isPlaying = false;
+                });
+            }
         }
 
         function pauseTrack() {
