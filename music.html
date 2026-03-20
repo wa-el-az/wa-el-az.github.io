@@ -9,11 +9,37 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsmediatags/3.9.5/jsmediatags.min.js"></script>
     <style>
-        body { padding: 80px 5vw; display: flex; align-items: center; justify-content: center; min-height: 100vh; overflow: hidden; }
-        
+        body { 
+            padding: 80px 5vw; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            min-height: 100vh; 
+            overflow: hidden; 
+        }
+
+        /* --- New Layout System --- */
+        .music-layout {
+            display: flex;
+            align-items: stretch;
+            justify-content: center;
+            gap: 30px;
+            width: 100%;
+            max-width: 850px;
+            z-index: 10;
+            animation: fadePageIn 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 80px 5vw 20px; overflow-y: auto; align-items: flex-start; }
+            .music-layout { flex-direction: column; align-items: center; }
+        }
+
+        /* --- Player Card --- */
         .player-card {
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.15);
+            border-left: 4px solid #fff;
             border-radius: 32px;
             padding: 40px;
             width: 100%;
@@ -22,60 +48,160 @@
             box-shadow: 0 30px 60px rgba(0,0,0,0.4);
             text-align: center;
             position: relative;
-            z-index: 10;
-            animation: fadePageIn 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
 
-        .record-container {
-            width: 200px;
-            height: 200px;
-            margin: 0 auto 30px;
-            border-radius: 50%;
-            position: relative;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.4);
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 10px 30px rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .record-container::after {
-            content: '';
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 30px; height: 30px;
-            background: #0b0b0b;
-            border-radius: 50%;
-            border: 2px solid #333;
-            z-index: 5;
-        }
-
-        #track-cover {
+        /* --- Playlist Card --- */
+        .playlist-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 32px;
+            padding: 20px;
             width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-            animation: spin 8s linear infinite;
-            animation-play-state: paused;
-            transition: 0.3s;
+            max-width: 400px;
+            backdrop-filter: blur(20px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            max-height: 520px; /* Aligns with player height */
         }
 
-        #track-cover.playing {
-            animation-play-state: running;
-            filter: drop-shadow(0 0 15px rgba(255,255,255,0.2));
+        .playlist-card h3 {
+            margin: 0 0 15px 10px;
+            font-size: 18px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
 
-        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .playlist-container {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 5px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
 
-        .track-info h2 { 
-            margin: 0 0 5px; 
-            font-size: 24px; 
-            letter-spacing: -0.5px;
+        .playlist-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 15px;
+            border-radius: 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .playlist-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .playlist-item.active {
+            background: rgba(74, 222, 128, 0.1);
+            border-color: rgba(74, 222, 128, 0.3);
+        }
+
+        .playlist-item-info {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            overflow: hidden;
+        }
+
+        .playlist-item-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #f5f7fa;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
-        .track-info p { 
+
+        .playlist-item.active .playlist-item-title {
+            color: #4ade80;
+        }
+
+        .playlist-item-artist {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        /* --- Animated Equalizer Bars --- */
+        .bars {
+            display: none;
+            align-items: flex-end;
+            gap: 3px;
+            height: 18px;
+        }
+        
+        /* Only show animation if it's the active track AND playing */
+        .playlist-item.active.playing .bars { display: flex; }
+
+        .bar {
+            width: 4px;
+            background: #4ade80;
+            border-radius: 2px;
+            animation: bounce 1s ease-in-out infinite;
+        }
+
+        .bar:nth-child(1) { animation-delay: 0.0s; height: 100%; }
+        .bar:nth-child(2) { animation-delay: 0.2s; height: 60%; }
+        .bar:nth-child(3) { animation-delay: 0.4s; height: 80%; }
+
+        @keyframes bounce {
+            0%, 100% { transform: scaleY(0.3); }
+            50% { transform: scaleY(1); }
+        }
+
+        /* --- Record & Art --- */
+        .record-container {
+            width: 200px; height: 200px;
+            margin: 0 auto 30px; border-radius: 50%;
+            position: relative; padding: 10px;
+            background: rgba(0, 0, 0, 0.4);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        .record-container::after {
+            content: ''; position: absolute;
+            top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 30px; height: 30px; background: #0b0b0b;
+            border-radius: 50%; border: 2px solid #333; z-index: 5;
+        }
+        #track-cover {
+            width: 100%; height: 100%; border-radius: 50%;
+            object-fit: cover; animation: spin 8s linear infinite;
+            animation-play-state: paused; transition: 0.3s;
+        }
+        #track-cover.playing {
+            animation-play-state: running; filter: drop-shadow(0 0 15px rgba(255,255,255,0.2));
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* --- Marquee Text Effect --- */
+        .title-container {
+            width: 100%;
+            overflow: hidden;
+            white-space: nowrap;
+            position: relative;
+            margin-bottom: 5px;
+            /* Fades the edges so the text seamlessly disappears */
+            mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+            -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+        }
+
+        .track-title { 
+            display: inline-block;
+            font-size: 24px; 
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            padding: 0 10px;
+        }
+
+        .track-artist { 
             margin: 0 0 25px; 
             color: #4ade80; 
             font-weight: 500; 
@@ -85,80 +211,54 @@
             text-overflow: ellipsis;
         }
 
+        @keyframes marquee {
+            0% { transform: translateX(10%); }
+            100% { transform: translateX(-100%); }
+        }
+        .marquee-active {
+            animation: marquee linear infinite;
+        }
+
+        /* --- Progress Bar --- */
         .progress-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 25px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 12px;
-            color: var(--text-muted);
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 25px; font-family: 'JetBrains Mono', monospace;
+            font-size: 12px; color: var(--text-muted);
         }
-
         input[type="range"] {
-            flex: 1;
-            -webkit-appearance: none;
+            flex: 1; -webkit-appearance: none;
             background: linear-gradient(to right, #fff var(--progress, 0%), rgba(255,255,255,0.1) var(--progress, 0%));
-            height: 6px;
-            border-radius: 99px;
-            outline: none;
-            padding: 0;
-            margin: 0;
-            cursor: pointer;
+            height: 6px; border-radius: 99px; outline: none; padding: 0; margin: 0; cursor: pointer;
         }
-
         input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: #fff;
-            box-shadow: 0 0 10px rgba(255,255,255,0.5);
-            transition: 0.2s;
+            -webkit-appearance: none; width: 16px; height: 16px;
+            border-radius: 50%; background: #fff;
+            box-shadow: 0 0 10px rgba(255,255,255,0.5); transition: 0.2s;
         }
-
         input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
 
-        .controls {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
-        }
+        /* --- Upgraded Controls --- */
+        .controls { display: flex; align-items: center; justify-content: center; gap: 20px; }
 
         .ctrl-btn {
-            background: transparent;
-            border: none;
-            color: #fff;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            width: 44px; height: 44px; border-radius: 50%;
             transition: 0.2s cubic-bezier(0.25, 1, 0.5, 1);
-            opacity: 0.7;
         }
-        
-        .ctrl-btn:hover { opacity: 1; transform: scale(1.1); }
-        .ctrl-btn svg { width: 28px; height: 28px; }
+        .ctrl-btn:hover { background: rgba(255, 255, 255, 0.15); transform: scale(1.1); }
+        .ctrl-btn svg { width: 22px; height: 22px; }
 
         .play-btn {
-            width: 64px;
-            height: 64px;
-            border-radius: 50%;
-            background: #fff;
-            color: #111;
-            opacity: 1;
+            width: 64px; height: 64px;
+            background: #fff; color: #111;
             box-shadow: 0 10px 20px rgba(255,255,255,0.2);
         }
-        .play-btn:hover {
-            transform: scale(1.05) translateY(-2px);
-            box-shadow: 0 15px 25px rgba(255,255,255,0.3);
-        }
+        .play-btn:hover { background: #fff; transform: scale(1.05) translateY(-2px); box-shadow: 0 15px 25px rgba(255,255,255,0.3); }
         .play-btn svg { width: 28px; height: 28px; fill: currentColor; }
-
-        .play-icon-centered {
-            transform: translateX(2px);
-        }
+        .play-icon-centered { transform: translateX(2px); }
 
         .navBtn { display: inline-flex; align-items: center; gap: 6px; z-index: 50; }
     </style>
@@ -168,29 +268,39 @@
     
     <a class="navBtn" id="dynamicBackBtn" href="index"><i data-lucide="home"></i> Home</a>
 
-    <div class="player-card">
-        <div class="record-container">
-            <img id="track-cover" src="assets/morocco.png" alt="Album Cover">
-        </div>
-        
-        <div class="track-info">
-            <h2 id="track-title">Scanning System...</h2>
-            <p id="track-artist">Checking for files</p>
+    <div class="music-layout">
+        <div class="player-card">
+            <div class="record-container">
+                <img id="track-cover" src="assets/morocco.png" alt="Album Cover">
+            </div>
+            
+            <div class="track-info">
+                <div class="title-container" id="title-container">
+                    <h2 id="track-title" class="track-title">Scanning System...</h2>
+                </div>
+                <p id="track-artist" class="track-artist">Checking for files</p>
+            </div>
+
+            <div class="progress-wrapper">
+                <span id="curr-time">0:00</span>
+                <input type="range" id="progress-bar" min="0" max="100" value="0" style="--progress: 0%;">
+                <span id="total-time">0:00</span>
+            </div>
+
+            <div class="controls">
+                <button class="ctrl-btn" id="prev-btn"><i data-lucide="skip-back"></i></button>
+                <button class="ctrl-btn play-btn" id="play-btn"><i data-lucide="play" class="play-icon-centered"></i></button>
+                <button class="ctrl-btn" id="next-btn"><i data-lucide="skip-forward"></i></button>
+            </div>
+
+            <audio id="audio-player"></audio>
         </div>
 
-        <div class="progress-wrapper">
-            <span id="curr-time">0:00</span>
-            <input type="range" id="progress-bar" min="0" max="100" value="0" style="--progress: 0%;">
-            <span id="total-time">0:00</span>
+        <div class="playlist-card">
+            <h3><i data-lucide="list-music"></i> Up Next</h3>
+            <div class="playlist-container" id="playlist-container">
+                </div>
         </div>
-
-        <div class="controls">
-            <button class="ctrl-btn" id="prev-btn"><i data-lucide="skip-back"></i></button>
-            <button class="ctrl-btn play-btn" id="play-btn"><i data-lucide="play" class="play-icon-centered"></i></button>
-            <button class="ctrl-btn" id="next-btn"><i data-lucide="skip-forward"></i></button>
-        </div>
-
-        <audio id="audio-player"></audio>
     </div>
 
     <script src="js/config.js"></script>
@@ -198,61 +308,123 @@
         let playlist = [];
         let trackIndex = 0;
         let isPlaying = false;
+        let initialTimeToSet = 0; // Handled from localStorage
 
         const audio = document.getElementById('audio-player');
         const playBtn = document.getElementById('play-btn');
         const prevBtn = document.getElementById('prev-btn');
         const nextBtn = document.getElementById('next-btn');
-        const title = document.getElementById('track-title');
-        const artist = document.getElementById('track-artist');
+        const titleContainer = document.getElementById('title-container');
+        const titleEl = document.getElementById('track-title');
+        const artistEl = document.getElementById('track-artist');
         const cover = document.getElementById('track-cover');
         const progressBar = document.getElementById('progress-bar');
         const currTimeDisp = document.getElementById('curr-time');
         const totalTimeDisp = document.getElementById('total-time');
+        const playlistUI = document.getElementById('playlist-container');
+
+        // Check if text is too long and needs marquee effect
+        function updateMarquee() {
+            titleEl.style.animation = 'none';
+            titleEl.classList.remove('marquee-active');
+            
+            // If the text width is larger than its container, animate it!
+            if (titleEl.scrollWidth > titleContainer.clientWidth) {
+                const duration = titleEl.scrollWidth / 35; // Adjust speed here
+                titleEl.style.animationDuration = `${duration}s`;
+                titleEl.classList.add('marquee-active');
+            }
+        }
+
+        // Render Right/Bottom Playlist UI
+        function renderPlaylist() {
+            playlistUI.innerHTML = "";
+            playlist.forEach((track, idx) => {
+                const item = document.createElement('div');
+                item.className = `playlist-item ${idx === trackIndex ? 'active' : ''}`;
+                
+                item.innerHTML = `
+                    <div class="playlist-item-info">
+                        <span class="playlist-item-title">${track.title}</span>
+                        <span class="playlist-item-artist">${track.artist || "WaelOS Media"}</span>
+                    </div>
+                    <div class="bars">
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                    </div>
+                `;
+
+                item.addEventListener('click', () => {
+                    trackIndex = idx;
+                    loadTrack(trackIndex);
+                    playTrack();
+                });
+
+                playlistUI.appendChild(item);
+            });
+        }
+
+        function updatePlaylistActiveState() {
+            const items = playlistUI.querySelectorAll('.playlist-item');
+            items.forEach((item, idx) => {
+                if (idx === trackIndex) {
+                    item.classList.add('active');
+                    if (isPlaying) item.classList.add('playing');
+                    else item.classList.remove('playing');
+                } else {
+                    item.classList.remove('active', 'playing');
+                }
+            });
+        }
 
         async function loadPlaylist() {
             try {
-                if (typeof CONFIG === 'undefined' || !CONFIG.REPO_PATH) {
-                    throw new Error("Configuration not loaded.");
-                }
+                if (typeof CONFIG === 'undefined' || !CONFIG.REPO_PATH) throw new Error("Config not loaded.");
 
                 const response = await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/music`, {
                     headers: { 'Authorization': `Bearer ${CONFIG.GITHUB_TOKEN}` }
                 });
 
-                if (!response.ok) throw new Error("Folder not found or API limit reached.");
+                if (!response.ok) throw new Error("Folder not found.");
 
                 const files = await response.json();
                 
                 playlist = files
                     .filter(file => file.name.toLowerCase().endsWith('.mp3') || file.name.toLowerCase().endsWith('.m4a'))
                     .map(file => {
-                        let cleanName = decodeURIComponent(file.name);
-                        cleanName = cleanName.replace(/\.[^/.]+$/, "").replace(/_/g, " ");
-                        
-                        // FIX 1: Safely URL Encode the path so spaces and symbols (&) don't break the URL
+                        let cleanName = decodeURIComponent(file.name).replace(/\.[^/.]+$/, "").replace(/_/g, " ");
                         const encodedPath = file.path.split('/').map(encodeURIComponent).join('/');
-                        const cdnUrl = `https://cdn.jsdelivr.net/gh/${CONFIG.REPO_PATH}@main/${encodedPath}`;
                         
                         return {
                             title: cleanName, 
+                            fallbackTitle: cleanName,
                             artist: "WaelOS Media",
-                            src: cdnUrl, 
+                            src: `https://cdn.jsdelivr.net/gh/${CONFIG.REPO_PATH}@main/${encodedPath}`, 
                             cover: "assets/morocco.png"
                         };
                     });
 
                 if (playlist.length > 0) {
-                    loadTrack(0);
+                    // Check local storage for last played state
+                    const savedIndex = localStorage.getItem('waelos_music_index');
+                    if (savedIndex !== null && savedIndex < playlist.length) {
+                        trackIndex = parseInt(savedIndex);
+                        initialTimeToSet = parseFloat(localStorage.getItem('waelos_music_time')) || 0;
+                    }
+                    
+                    renderPlaylist();
+                    loadTrack(trackIndex);
                 } else {
-                    throw new Error("No audio files found in folder.");
+                    throw new Error("No audio files found.");
                 }
 
             } catch(e) {
                 console.warn(e.message);
-                playlist = [{ title: "No Music Found", artist: "Push .mp3 to GitHub", src: "", cover: "assets/icon.svg" }];
-                loadTrack(0);
-                title.style.color = "#ff6b6b"; 
+                titleEl.innerText = "No Music Found";
+                artistEl.innerText = "Upload files to GitHub";
+                titleEl.style.color = "#ff6b6b"; 
+                updateMarquee();
             }
         }
 
@@ -261,65 +433,80 @@
             const track = playlist[index];
             audio.src = track.src;
             
-            title.innerText = track.title;
-            artist.innerText = track.artist;
+            // Save index to Local Storage
+            localStorage.setItem('waelos_music_index', index);
+
+            // Set "Loading..." State initially
+            titleEl.innerText = "Loading...";
+            artistEl.innerText = "Fetching Metadata...";
             cover.src = track.cover;
             cover.style.filter = 'none';
-            cover.style.background = 'transparent';
+            updateMarquee();
+            updatePlaylistActiveState();
 
-            // FIX 2: Fetch the file as a Blob first to bypass jsmediatags XHR CORS restrictions!
+            // Fetch Blob and extract metadata
             if (window.jsmediatags && track.src) {
                 fetch(track.src)
-                    .then(response => {
-                        if (!response.ok) throw new Error("Network error fetching audio blob");
-                        return response.blob();
-                    })
+                    .then(response => response.ok ? response.blob() : Promise.reject("Fetch error"))
                     .then(blob => {
-                        // Ensure user hasn't skipped to next song while fetching
-                        if (trackIndex !== index) return;
+                        if (trackIndex !== index) return; // Prevent overwrite if user skipped
                         
                         jsmediatags.read(blob, {
                             onSuccess: function(tag) {
                                 if (trackIndex !== index) return;
-                                
                                 const tags = tag.tags;
-                                if (tags.title) title.innerText = tags.title;
-                                if (tags.artist) artist.innerText = tags.artist;
+                                
+                                titleEl.innerText = tags.title || track.fallbackTitle;
+                                artistEl.innerText = tags.artist || "WaelOS Media";
+                                
+                                // Update playlist text too
+                                track.title = tags.title || track.fallbackTitle;
+                                track.artist = tags.artist || "WaelOS Media";
+                                renderPlaylist(); 
+                                updatePlaylistActiveState();
 
                                 if (tags.picture) {
                                     try {
                                         const data = tags.picture.data;
                                         let base64String = "";
-                                        for (let i = 0; i < data.length; i++) {
-                                            base64String += String.fromCharCode(data[i]);
-                                        }
+                                        for (let i = 0; i < data.length; i++) base64String += String.fromCharCode(data[i]);
                                         cover.src = "data:" + tags.picture.format + ";base64," + window.btoa(base64String);
-                                    } catch (e) {
-                                        console.warn("Failed to parse cover art", e);
-                                    }
+                                    } catch (e) {}
                                 }
+                                updateMarquee();
                             },
                             onError: function(error) {
-                                console.log("No metadata found in file.", error);
+                                // Apply Fallback if metadata fails
+                                titleEl.innerText = track.fallbackTitle;
+                                artistEl.innerText = "WaelOS Media";
+                                updateMarquee();
                             }
                         });
                     })
-                    .catch(err => console.log("Blob fetch blocked or failed:", err));
+                    .catch(err => {
+                        // Apply Fallback if fetch blocked
+                        titleEl.innerText = track.fallbackTitle;
+                        artistEl.innerText = "WaelOS Media";
+                        updateMarquee();
+                    });
+            } else {
+                titleEl.innerText = track.fallbackTitle;
+                artistEl.innerText = "WaelOS Media";
+                updateMarquee();
             }
         }
 
         function playTrack() {
-            if (!audio.src || audio.src.endsWith(window.location.pathname)) return;
-            
+            if (!audio.src) return;
             const playPromise = audio.play();
             if (playPromise !== undefined) {
                 playPromise.then(_ => {
                     isPlaying = true;
                     playBtn.innerHTML = '<i data-lucide="pause"></i>';
                     cover.classList.add('playing');
+                    updatePlaylistActiveState(); // Start Equalizer Animation
                     lucide.createIcons();
-                }).catch(error => {
-                    console.warn("Autoplay prevented or interrupted:", error);
+                }).catch(e => {
                     isPlaying = false;
                 });
             }
@@ -330,6 +517,7 @@
             isPlaying = false;
             playBtn.innerHTML = '<i data-lucide="play" class="play-icon-centered"></i>';
             cover.classList.remove('playing');
+            updatePlaylistActiveState(); // Stop Equalizer Animation
             lucide.createIcons();
         }
 
@@ -361,10 +549,21 @@
                 let currentSecs = Math.floor(audio.currentTime % 60);
                 if (currentSecs < 10) currentSecs = `0${currentSecs}`;
                 currTimeDisp.innerText = `${currentMins}:${currentSecs}`;
+                
+                // Save time to local storage every update
+                if(audio.currentTime > 0) {
+                    localStorage.setItem('waelos_music_time', audio.currentTime);
+                }
             }
         });
 
         audio.addEventListener('loadedmetadata', () => {
+            // Check if we need to restore a saved time on load
+            if (initialTimeToSet > 0 && initialTimeToSet < audio.duration) {
+                audio.currentTime = initialTimeToSet;
+                initialTimeToSet = 0; // Clear it so it only happens on first load
+            }
+
             let durationMins = Math.floor(audio.duration / 60);
             let durationSecs = Math.floor(audio.duration % 60);
             if (durationSecs < 10) durationSecs = `0${durationSecs}`;
@@ -383,6 +582,11 @@
             backBtn.href = 'shortcuts';
             backBtn.innerHTML = '<i data-lucide="zap"></i> Shortcuts';
         }
+
+        // Handle window resizing to recalculate Marquee length
+        window.addEventListener('resize', () => {
+            if(playlist.length > 0) updateMarquee();
+        });
         
         loadPlaylist().then(() => lucide.createIcons());
     </script>
