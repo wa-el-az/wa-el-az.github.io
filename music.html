@@ -14,7 +14,6 @@
         .player-card {
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.15);
-            border-left: 4px solid #fff; 
             border-radius: 32px;
             padding: 40px;
             width: 100%;
@@ -258,7 +257,7 @@
             const track = playlist[index];
             audio.src = track.src;
             
-            // 1. Set fallback data immediately so UI doesn't look broken while processing
+            // 1. Set fallback data immediately
             title.innerText = track.title;
             artist.innerText = track.artist;
             cover.src = track.cover;
@@ -269,16 +268,13 @@
             if (window.jsmediatags && track.src) {
                 jsmediatags.read(track.src, {
                     onSuccess: function(tag) {
-                        // Prevent overwriting if user skipped to next song before this finished loading
                         if (trackIndex !== index) return;
 
                         const tags = tag.tags;
                         
-                        // Update text if found in the file
                         if (tags.title) title.innerText = tags.title;
                         if (tags.artist) artist.innerText = tags.artist;
 
-                        // Parse the raw byte array into an image blob for the cover art
                         if (tags.picture) {
                             try {
                                 const byteArray = new Uint8Array(tags.picture.data);
