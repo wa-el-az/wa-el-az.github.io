@@ -13,6 +13,8 @@
         .player-card {
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.15);
+            /* Added the white line to the left */
+            border-left: 4px solid #fff; 
             border-radius: 32px;
             padding: 40px;
             width: 100%;
@@ -142,6 +144,11 @@
         }
         .play-btn svg { width: 28px; height: 28px; fill: currentColor; }
 
+        /* Nudge the Play icon slightly right so it looks centered */
+        .play-icon-centered {
+            transform: translateX(2px);
+        }
+
         .navBtn { display: inline-flex; align-items: center; gap: 6px; z-index: 50; }
     </style>
 </head>
@@ -152,7 +159,7 @@
 
     <div class="player-card">
         <div class="record-container">
-            <img id="track-cover" src="https://images.unsplash.com/photo-1542204625-242398463991?q=80&w=500&auto=format&fit=crop" alt="Album Cover">
+            <img id="track-cover" src="assets/morocco.png" alt="Album Cover">
         </div>
         
         <div class="track-info">
@@ -168,7 +175,7 @@
 
         <div class="controls">
             <button class="ctrl-btn" id="prev-btn"><i data-lucide="skip-back"></i></button>
-            <button class="ctrl-btn play-btn" id="play-btn"><i data-lucide="play" id="play-icon"></i></button>
+            <button class="ctrl-btn play-btn" id="play-btn"><i data-lucide="play" class="play-icon-centered"></i></button>
             <button class="ctrl-btn" id="next-btn"><i data-lucide="skip-forward"></i></button>
         </div>
 
@@ -177,35 +184,7 @@
 
     <script src="js/config.js"></script>
     <script>
-        // 1. Your Custom Playlist
-        // NOTE: Replace the 'src' URLs with actual paths to your .mp3 files in your assets folder (e.g., 'assets/audio/sweden.mp3')
-        const playlist = [
-            {
-                title: "Stereo Madness",
-                artist: "ForeverBound",
-                src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3", // PLACEHOLDER URL
-                cover: "assets/gd/gd-logo.svg" 
-            },
-            {
-                title: "Sweden",
-                artist: "C418",
-                src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3", // PLACEHOLDER URL
-                cover: "https://images.unsplash.com/photo-1607513814833-2895b6dd3b2d?q=80&w=500&auto=format&fit=crop" // Minecraft vibe placeholder
-            },
-            {
-                title: "Lace",
-                artist: "Christopher Larkin",
-                src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3", // PLACEHOLDER URL
-                cover: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=500&auto=format&fit=crop" // Silksong vibe placeholder
-            },
-            {
-                title: "Maghreb Lofi",
-                artist: "WaelOS Records",
-                src: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3", // PLACEHOLDER URL
-                cover: "assets/morocco.png"
-            }
-        ];
-
+        let playlist = [];
         let trackIndex = 0;
         let isPlaying = false;
 
@@ -221,6 +200,42 @@
         const currTimeDisp = document.getElementById('curr-time');
         const totalTimeDisp = document.getElementById('total-time');
 
+        // Fetch Music Data
+        async function loadPlaylist() {
+            try {
+                // Try to load the dynamic JSON file first
+                const response = await fetch('json/music.json');
+                if (response.ok) {
+                    playlist = await response.json();
+                } else {
+                    throw new Error("Local fallback");
+                }
+            } catch(e) {
+                // Fallback to local /music folder files (.mp3 and .m4a support)
+                playlist = [
+                    {
+                        title: "Track 1",
+                        artist: "Local Audio",
+                        src: "music/track1.mp3",
+                        cover: "assets/morocco.png" 
+                    },
+                    {
+                        title: "Track 2",
+                        artist: "Local Audio",
+                        src: "music/track2.m4a",
+                        cover: "assets/icon.svg"
+                    }
+                ];
+            }
+            
+            if(playlist.length > 0) {
+                loadTrack(0);
+            } else {
+                title.innerText = "No files found";
+                artist.innerText = "Add songs to /music";
+            }
+        }
+
         // Initialize Player
         function loadTrack(index) {
             const track = playlist[index];
@@ -228,7 +243,6 @@
             title.innerText = track.title;
             artist.innerText = track.artist;
             
-            // Fix GD icon inversion if it's the SVG
             if(track.cover.includes('gd-logo')) {
                 cover.style.filter = 'invert(1) drop-shadow(0 0 10px rgba(255,255,255,0.3))';
                 cover.style.background = '#111';
@@ -242,6 +256,7 @@
         function playTrack() {
             audio.play();
             isPlaying = true;
+            // Removed the custom nudge class since pause is naturally centered
             playBtn.innerHTML = '<i data-lucide="pause"></i>';
             cover.classList.add('playing');
             lucide.createIcons();
@@ -250,7 +265,8 @@
         function pauseTrack() {
             audio.pause();
             isPlaying = false;
-            playBtn.innerHTML = '<i data-lucide="play" style="margin-left: 4px;"></i>';
+            // Added the custom nudge class to perfectly center the play triangle
+            playBtn.innerHTML = '<i data-lucide="play" class="play-icon-centered"></i>';
             cover.classList.remove('playing');
             lucide.createIcons();
         }
@@ -270,7 +286,7 @@
             if (isPlaying) playTrack();
         });
 
-        // Auto-play next track when ended
+        // Auto-play next track
         audio.addEventListener('ended', () => nextBtn.click());
 
         // Progress Bar Logic
@@ -279,7 +295,6 @@
                 const progressPercent = (audio.currentTime / audio.duration) * 100;
                 progressBar.value = progressPercent;
                 
-                // Format time (M:SS)
                 let currentMins = Math.floor(audio.currentTime / 60);
                 let currentSecs = Math.floor(audio.currentTime % 60);
                 if (currentSecs < 10) currentSecs = `0${currentSecs}`;
@@ -298,16 +313,15 @@
             audio.currentTime = (progressBar.value / 100) * audio.duration;
         });
 
-        // Setup Back Button
+        // Dynamic Back Button setup
         const backBtn = document.getElementById('dynamicBackBtn');
         if (document.referrer.toLowerCase().includes('shortcuts')) {
             backBtn.href = 'shortcuts';
             backBtn.innerHTML = '<i data-lucide="zap"></i> Shortcuts';
         }
         
-        // Initial Load
-        loadTrack(trackIndex);
-        lucide.createIcons();
+        // Initial execution
+        loadPlaylist().then(() => lucide.createIcons());
     </script>
     <script src="js/context-menu.js"></script>
     <script src="js/core.js"></script>
