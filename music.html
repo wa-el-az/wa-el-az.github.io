@@ -63,6 +63,7 @@
 
         #track-cover.playing {
             animation-play-state: running;
+            filter: drop-shadow(0 0 15px rgba(255,255,255,0.2));
         }
 
         @keyframes spin { 100% { transform: rotate(360deg); } }
@@ -218,6 +219,11 @@
         // Fetch Music Directory dynamically via GitHub API
         async function loadPlaylist() {
             try {
+                // Ensure CONFIG is loaded before making the call
+                if (typeof CONFIG === 'undefined' || !CONFIG.REPO_PATH) {
+                    throw new Error("Configuration not loaded.");
+                }
+
                 // Ask GitHub what files are inside your /music folder
                 const response = await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/music`, {
                     headers: { 'Authorization': `Bearer ${CONFIG.GITHUB_TOKEN}` }
@@ -229,13 +235,19 @@
                 
                 // Filter out everything except mp3 and m4a, and build the playlist
                 playlist = files
-                    .filter(file => file.name.endsWith('.mp3') || file.name.endsWith('.m4a'))
-                    .map(file => ({
-                        title: file.name.replace(/\.[^/.]+$/, "").replace(/_/g, " "), // Clean fallback title
-                        artist: "Unknown Artist",
-                        src: file.path, 
-                        cover: "assets/morocco.png" // Default cover
-                    }));
+                    .filter(file => file.name.toLowerCase().endsWith('.mp3') || file.name.toLowerCase().endsWith('.m4a'))
+                    .map(file => {
+                        // Decode URI in case of spaces and remove extensions
+                        let cleanName = decodeURIComponent(file.name);
+                        cleanName = cleanName.replace(/\.[^/.]+$/, "").replace(/_/g, " ");
+                        
+                        return {
+                            title: cleanName, 
+                            artist: "WaelOS Media",
+                            src: file.download_url || file.path, // Use download_url for safer audio fetching
+                            cover: "assets/morocco.png" // Default cover
+                        };
+                    });
 
                 if (playlist.length > 0) {
                     loadTrack(0);
@@ -245,8 +257,16 @@
 
             } catch(e) {
                 console.warn(e.message);
-                title.innerText = "No files found";
-                artist.innerText = "Upload .mp3 to /music";
+                playlist = [
+                    {
+                        title: "No Music Found",
+                        artist: "Push .mp3 files to GitHub",
+                        src: "",
+                        cover: "assets/icon.svg"
+                    }
+                ];
+                loadTrack(0);
+                title.style.color = "#ff6b6b"; 
             }
         }
 
@@ -256,20 +276,14 @@
             const track = playlist[index];
             audio.src = track.src;
             
-            // Set fallback data immediately so UI doesn't look broken
+            // 1. Immediately set fallback data to prevent "Scanning System..." getting stuck
             title.innerText = track.title;
             artist.innerText = track.artist;
-            
-            if(track.cover.includes('gd-logo')) {
-                cover.style.filter = 'invert(1) drop-shadow(0 0 10px rgba(255,255,255,0.3))';
-                cover.style.background = '#111';
-            } else {
-                cover.style.filter = 'none';
-                cover.style.background = 'transparent';
-            }
             cover.src = track.cover;
+            cover.style.filter = 'none';
+            cover.style.background = 'transparent';
 
-            // Extract genuine ID3 Metadata (Title, Artist, Cover Art)
+            // 2. Extract genuine ID3 Metadata (Title, Artist, Cover Art)
             if (window.jsmediatags && track.src) {
                 jsmediatags.read(track.src, {
                     onSuccess: function(tag) {
@@ -278,30 +292,33 @@
 
                         const tags = tag.tags;
                         
+                        // Update UI if tags exist inside the file
                         if (tags.title) title.innerText = tags.title;
                         if (tags.artist) artist.innerText = tags.artist;
 
+                        // Parse the raw byte array into an image properly for all browsers
                         if (tags.picture) {
                             try {
-                                const byteArray = new Uint8Array(tags.picture.data);
-                                const blob = new Blob([byteArray], { type: tags.picture.format });
-                                cover.src = URL.createObjectURL(blob);
-                                cover.style.filter = 'none';
-                                cover.style.background = 'transparent';
+                                const data = tags.picture.data;
+                                let base64String = "";
+                                for (let i = 0; i < data.length; i++) {
+                                    base64String += String.fromCharCode(data[i]);
+                                }
+                                cover.src = "data:" + tags.picture.format + ";base64," + window.btoa(base64String);
                             } catch (e) {
                                 console.warn("Failed to parse cover art", e);
                             }
                         }
                     },
                     onError: function(error) {
-                        console.log("No metadata found in this file.", error);
+                        console.log("No metadata found in file or blocked by CORS. Using fallback name.");
                     }
                 });
             }
         }
 
         function playTrack() {
-            if (playlist.length === 0) return;
+            if (!audio.src || audio.src.endsWith(window.location.pathname)) return;
             audio.play();
             isPlaying = true;
             playBtn.innerHTML = '<i data-lucide="pause"></i>';
@@ -337,7 +354,7 @@
         // Auto-play next track
         audio.addEventListener('ended', () => nextBtn.click());
 
-        // Progress Bar Logic
+        // Progress Bar Logic (Updates time and the white fill line)
         audio.addEventListener('timeupdate', () => {
             if (audio.duration) {
                 const progressPercent = (audio.currentTime / audio.duration) * 100;
@@ -359,6 +376,7 @@
             totalTimeDisp.innerText = `${durationMins}:${durationSecs}`;
         });
 
+        // Handle dragging the progress bar
         progressBar.addEventListener('input', () => {
             if (audio.duration) {
                 audio.currentTime = (progressBar.value / 100) * audio.duration;
