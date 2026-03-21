@@ -57,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!document.fullscreenElement) {
             fsItem.innerHTML = '<i data-lucide="maximize"></i> Toggle Fullscreen';
         } else {
-            fsItem.innerHTML = '<i data-lucide="minimize"></i> Toggle Windowed';
+            fsItem.innerHTML = '<i data-lucide="minimize"></i> Toggle Minimize';
         }
         
         // Re-render the specific icon we just swapped
