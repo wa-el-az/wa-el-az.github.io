@@ -174,6 +174,21 @@
                         <span id="blur-value" style="color: #4ade80; font-weight: bold; min-width: 45px;">20px</span>
                     </div>
                 </div>
+
+                <div class="action-row">
+                    <div class="action-text">
+                        <strong style="color: #4ade80; display: block; margin-bottom: 4px;">System Cursor</strong>
+                        Change your global mouse pointer style.
+                    </div>
+                    <select id="cursor-select" class="pwd-input" style="flex: 0 0 auto; width: 180px; cursor: pointer;">
+                        <option value="default">System Default</option>
+                        <option value="win11-light">Win 11 Concept (Light)</option>
+                        <option value="win11-dark">Win 11 Concept (Dark)</option>
+                        <option value="crosshair">Hacker Crosshair</option>
+                        <option value="gd">Geometry Dash Cube</option>
+                        <option value="tea">Moroccan Tea</option>
+                    </select>
+                </div>
             </div>
 
             <div class="setting-group">
@@ -300,6 +315,16 @@
             if(window.lucide) lucide.createIcons();
             calculateStorage();
             
+            // Cursor Selector Logic
+            const cursorSelect = document.getElementById('cursor-select');
+            cursorSelect.value = localStorage.getItem('waelos_cursor') || 'default';
+            cursorSelect.addEventListener('change', (e) => {
+                localStorage.setItem('waelos_cursor', e.target.value);
+                waelConfirm("System Update Required", "Changing the system cursor requires a page refresh. Reload now?", () => {
+                    window.location.reload();
+                });
+            });
+
             // Glassmorphism Slider
             const slider = document.getElementById('blur-slider');
             const blurVal = document.getElementById('blur-value');
