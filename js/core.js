@@ -390,3 +390,13 @@ window.waelConfirm = (title, msg, onConfirm) => {
     overlay.style.opacity = '1';
     card.style.transform = 'scale(1) translateY(0)';
 };
+// ==========================================
+// 7. SYSTEM TELEMETRY (Digital Wellbeing)
+// ==========================================
+// Tracks total time spent across the entire WaelOS ecosystem
+let waelosTimeSpent = parseInt(localStorage.getItem('waelos_time_spent')) || 0;
+
+setInterval(() => {
+    waelosTimeSpent++;
+    localStorage.setItem('waelos_time_spent', waelosTimeSpent);
+}, 1000); // Adds 1 second to your global save file every 1000 milliseconds
