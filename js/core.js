@@ -5,19 +5,20 @@ const savedBlur = localStorage.getItem('waelos_glass_blur') || '20';
 document.documentElement.style.setProperty('--glass-blur', `${savedBlur}px`);
 
 // ==========================================
-// 2. CUSTOM OS CURSOR ENGINE (SVG VECTOR FIX)
+// 2. CUSTOM OS CURSOR ENGINE (LOCAL .CUR FILES)
 // ==========================================
 const cursorType = localStorage.getItem('waelos_cursor') || 'default';
 if (cursorType !== 'default') {
     let normal = '';
     let pointer = '';
 
+    // Pulls your custom cursors directly from your own assets folder!
     if (cursorType === 'win11-light') {
-        normal = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="white" stroke="%23111" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.143 1.143l-1.58 6.124a.5.5 0 0 1-.947.063z"/></svg>') 4 4, auto`;
-        pointer = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="white" stroke="%23111" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 14a8 8 0 0 1-8 8"/><path d="M18 11v-1a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V9a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v1"/><path d="M10 9.5V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v10"/><path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>') 10 4, pointer`;
+        normal = `url('assets/cursors/light-normal.cur'), auto`;
+        pointer = `url('assets/cursors/light-link.cur'), pointer`;
     } else if (cursorType === 'win11-dark') {
-        normal = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="%231e1e1e" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.143 1.143l-1.58 6.124a.5.5 0 0 1-.947.063z"/></svg>') 4 4, auto`;
-        pointer = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="%231e1e1e" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 14a8 8 0 0 1-8 8"/><path d="M18 11v-1a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V9a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v1"/><path d="M10 9.5V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v10"/><path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>') 10 4, pointer`;
+        normal = `url('assets/cursors/dark-normal.cur'), auto`;
+        pointer = `url('assets/cursors/dark-link.cur'), pointer`;
     } else if (cursorType === 'crosshair') {
         normal = 'crosshair';
         pointer = 'crosshair';
