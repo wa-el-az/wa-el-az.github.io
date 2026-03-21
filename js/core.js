@@ -12,7 +12,6 @@ if (cursorType !== 'default') {
     let normal = '';
     let pointer = '';
 
-    // We render the Win11 Concept cursors natively as SVGs so they NEVER fail or get blocked by Github CORS!
     if (cursorType === 'win11-light') {
         normal = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="white" stroke="%23111" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.143 1.143l-1.58 6.124a.5.5 0 0 1-.947.063z"/></svg>') 4 4, auto`;
         pointer = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="white" stroke="%23111" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 14a8 8 0 0 1-8 8"/><path d="M18 11v-1a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V9a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v1"/><path d="M10 9.5V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v10"/><path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>') 10 4, pointer`;
@@ -409,10 +408,12 @@ setInterval(() => {
 // ==========================================
 // 11. GLASSMORPHISM SELECT ENGINE
 // ==========================================
-// This automatically finds boring <select> tags and replaces them with custom WaelOS Glassmorphism modals!
 function initCustomSelects() {
     document.querySelectorAll('select.pwd-input').forEach(select => {
-        select.style.display = 'none'; // Hide the boring OS default
+        // Prevent double initialization
+        if (select.nextElementSibling && select.nextElementSibling.classList.contains('custom-select-wrapper')) return;
+
+        select.style.display = 'none'; // Hide the default OS dropdown
 
         const wrapper = document.createElement('div');
         wrapper.className = 'custom-select-wrapper';
@@ -428,7 +429,8 @@ function initCustomSelects() {
         trigger.style.userSelect = 'none';
         trigger.style.padding = '10px 14px';
         trigger.style.margin = '0';
-        trigger.style.height = '42px'; // Matches standard pwd-input height
+        trigger.style.height = '42px';
+        trigger.style.cursor = 'pointer';
         
         const selectedText = document.createElement('span');
         selectedText.innerText = select.options[select.selectedIndex]?.text || '';
@@ -476,6 +478,7 @@ function initCustomSelects() {
             optDiv.style.color = option.value === select.value ? '#fff' : 'rgba(255, 255, 255, 0.7)';
             optDiv.style.background = option.value === select.value ? 'rgba(255, 255, 255, 0.1)' : 'transparent';
             optDiv.style.transition = '0.2s';
+            optDiv.style.cursor = 'pointer';
             optDiv.style.userSelect = 'none';
 
             optDiv.addEventListener('mouseenter', () => {
@@ -531,27 +534,42 @@ function initCustomSelects() {
             e.stopPropagation();
             const isVisible = optionsPanel.style.display === 'flex';
             
-            // Close all others first
+            // THE FIX: Only close OTHER panels so we don't accidentally close ourselves!
             document.querySelectorAll('.custom-select-options').forEach(p => {
-                p.style.opacity = '0';
-                p.style.transform = 'translateY(-10px)';
-                setTimeout(() => p.style.display = 'none', 200);
+                if (p !== optionsPanel) {
+                    p.style.opacity = '0';
+                    p.style.transform = 'translateY(-10px)';
+                    p.style.display = 'none'; // Instant close to prevent collision
+                }
             });
-            document.querySelectorAll('.custom-select-trigger').forEach(t => t.style.borderColor = 'rgba(255,255,255,0.2)');
+            
+            document.querySelectorAll('.custom-select-trigger').forEach(t => {
+                if (t !== trigger) t.style.borderColor = 'rgba(255,255,255,0.2)';
+            });
+            
             document.querySelectorAll('.custom-select-trigger i').forEach(i => {
-                i.style.transform = 'rotate(0deg)';
-                i.style.color = 'rgba(255,255,255,0.7)';
+                if (i !== icon) {
+                    i.style.transform = 'rotate(0deg)';
+                    i.style.color = 'rgba(255,255,255,0.7)';
+                }
             });
 
             if (!isVisible) {
                 optionsPanel.style.display = 'flex';
-                setTimeout(() => {
-                    optionsPanel.style.opacity = '1';
-                    optionsPanel.style.transform = 'translateY(0)';
-                }, 10);
+                // Force browser reflow to ensure the animation plays
+                void optionsPanel.offsetWidth;
+                optionsPanel.style.opacity = '1';
+                optionsPanel.style.transform = 'translateY(0)';
                 trigger.style.borderColor = '#4ade80';
                 icon.style.transform = 'rotate(180deg)';
                 icon.style.color = '#4ade80';
+            } else {
+                optionsPanel.style.opacity = '0';
+                optionsPanel.style.transform = 'translateY(-10px)';
+                setTimeout(() => optionsPanel.style.display = 'none', 200);
+                trigger.style.borderColor = 'rgba(255,255,255,0.2)';
+                icon.style.transform = 'rotate(0deg)';
+                icon.style.color = 'rgba(255,255,255,0.7)';
             }
         });
     });
