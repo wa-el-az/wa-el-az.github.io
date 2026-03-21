@@ -103,11 +103,11 @@ const spotlightRoutes = [
     { name: "Shortcuts", url: "shortcuts", icon: "zap" },
     { name: "Tea Clicker", url: "tea", icon: "coffee" },
     { name: "Geometry Dash", url: "gd", icon: "play" },
-    { name: "Media Player", url: "music", icon: "music" },
+    { name: "Music Player", url: "music", icon: "assets/gd/gd-logo.svg" },
     { name: "Achievements", url: "achievements", icon: "award" },
     { name: "Redeem", url: "redeem", icon: "gift" },
     { name: "Hardware Specs", url: "hardware", icon: "cpu" },
-    { name: "Windows Gallery", url: "windows", icon: "monitor" },
+    { name: "Windows Vault", url: "windows", icon: "monitor" },
     { name: "My PC", url: "mypc", icon: "hard-drive" }
 ];
 
