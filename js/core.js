@@ -5,19 +5,20 @@ const savedBlur = localStorage.getItem('waelos_glass_blur') || '20';
 document.documentElement.style.setProperty('--glass-blur', `${savedBlur}px`);
 
 // ==========================================
-// 2. CUSTOM OS CURSOR ENGINE
+// 2. CUSTOM OS CURSOR ENGINE (SVG VECTOR FIX)
 // ==========================================
 const cursorType = localStorage.getItem('waelos_cursor') || 'default';
 if (cursorType !== 'default') {
     let normal = '';
     let pointer = '';
 
+    // We render the Win11 Concept cursors natively as SVGs so they NEVER fail or get blocked by Github CORS!
     if (cursorType === 'win11-light') {
-        normal = 'url("https://raw.githubusercontent.com/LeoRH123/Windows-11-Cursor-Concept-Pro-v2.0/main/Light/Normal%20Select.cur"), auto';
-        pointer = 'url("https://raw.githubusercontent.com/LeoRH123/Windows-11-Cursor-Concept-Pro-v2.0/main/Light/Link%20Select.cur"), pointer';
+        normal = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="white" stroke="%23111" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.143 1.143l-1.58 6.124a.5.5 0 0 1-.947.063z"/></svg>') 4 4, auto`;
+        pointer = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="white" stroke="%23111" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 14a8 8 0 0 1-8 8"/><path d="M18 11v-1a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V9a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v1"/><path d="M10 9.5V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v10"/><path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>') 10 4, pointer`;
     } else if (cursorType === 'win11-dark') {
-        normal = 'url("https://raw.githubusercontent.com/LeoRH123/Windows-11-Cursor-Concept-Pro-v2.0/main/Dark/Normal%20Select.cur"), auto';
-        pointer = 'url("https://raw.githubusercontent.com/LeoRH123/Windows-11-Cursor-Concept-Pro-v2.0/main/Dark/Link%20Select.cur"), pointer';
+        normal = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="%231e1e1e" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.143 1.143l-1.58 6.124a.5.5 0 0 1-.947.063z"/></svg>') 4 4, auto`;
+        pointer = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="%231e1e1e" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 14a8 8 0 0 1-8 8"/><path d="M18 11v-1a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V9a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v1"/><path d="M10 9.5V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v10"/><path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>') 10 4, pointer`;
     } else if (cursorType === 'crosshair') {
         normal = 'crosshair';
         pointer = 'crosshair';
@@ -33,7 +34,7 @@ if (cursorType !== 'default') {
         const cursorStyle = document.createElement('style');
         cursorStyle.innerHTML = `
             * { cursor: ${normal} !important; }
-            a, button, .btn, .navBtn, .action-btn, .shortcut-btn, select, input[type="range"], .toggle-switch, .context-item, .spotlight-item { cursor: ${pointer} !important; }
+            a, button, .btn, .navBtn, .action-btn, .shortcut-btn, select, input[type="range"], .toggle-switch, .context-item, .spotlight-item, .custom-select-trigger, .custom-select-option { cursor: ${pointer} !important; }
         `;
         document.head.appendChild(cursorStyle);
     }
@@ -42,20 +43,16 @@ if (cursorType !== 'default') {
 // ==========================================
 // 3. CORE OS MODULE OVERRIDES
 // ==========================================
-// A. Disable Custom Selection Highlight
 if (localStorage.getItem('waelos_feature_selection') === 'false') {
     const selStyle = document.createElement('style');
-    // Forces the selection color back to the browser's default blue highlight
     selStyle.innerHTML = `::selection { background-color: Highlight !important; color: HighlightText !important; } ::-moz-selection { background-color: Highlight !important; color: HighlightText !important; }`;
     document.head.appendChild(selStyle);
 }
 
-// B. Disable Custom Context Menu (Right Click)
 if (localStorage.getItem('waelos_feature_contextmenu') === 'false') {
-    // We add a listener that intercepts the right click before your context-menu.js script can see it!
     document.addEventListener('contextmenu', (e) => {
         e.stopImmediatePropagation();
-    }, true); // "true" ensures it runs in the capture phase FIRST
+    }, true); 
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -83,12 +80,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!text || (!text.includes(MOROCCO_EMOJI) && !text.includes(MOROCCO_SHORTCODE))) {
                 return;
             }
-
             const parts = text.split(/(🇲🇦|:ma:)/g);
             if (parts.length <= 1) return;
-
             const fragment = document.createDocumentFragment();
-
             for (const part of parts) {
                 if (part === MOROCCO_EMOJI || part === MOROCCO_SHORTCODE) {
                     fragment.appendChild(createMoroccoEmojiImage(part));
@@ -96,7 +90,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     fragment.appendChild(document.createTextNode(part));
                 }
             }
-
             node.parentNode.replaceChild(fragment, node);
         }
 
@@ -133,8 +126,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // 5. GLOBAL DYNAMIC BACK BUTTON LOGIC
     // ==========================================
     const backBtn = document.getElementById('dynamicBackBtn');
-    
-    // Only run if the button was manually placed in the HTML
     if (backBtn) {
         const referrer = document.referrer.toLowerCase();
         
@@ -149,7 +140,6 @@ document.addEventListener('DOMContentLoaded', () => {
             backBtn.innerHTML = '<i data-lucide="home"></i> Home';
         }
 
-        // Render the injected icon
         if (typeof lucide !== 'undefined') {
             lucide.createIcons();
         }
@@ -160,7 +150,6 @@ document.addEventListener('DOMContentLoaded', () => {
 // 6. SPOTLIGHT COMMAND CENTER (Ctrl + K)
 // ==========================================
 if (localStorage.getItem('waelos_feature_spotlight') !== 'false') {
-    // The specific WaelOS links the user is allowed to search for
     const spotlightRoutes = [
         { name: "Home", url: "index", icon: "home" },
         { name: "Projects", url: "projects", icon: "layers" },
@@ -177,7 +166,6 @@ if (localStorage.getItem('waelos_feature_spotlight') !== 'false') {
         { name: "System Settings", url: "about", icon: "settings" }
     ];
 
-    // Inject the Spotlight HTML directly into the page
     const spotlightHTML = `
         <div id="spotlight-overlay">
             <div id="spotlight-modal">
@@ -198,7 +186,6 @@ if (localStorage.getItem('waelos_feature_spotlight') !== 'false') {
     function renderSpotlight(query = "") {
         spotlightResults.innerHTML = "";
         
-        // Filter the hardcoded routes based on what the user types
         const filtered = spotlightRoutes.filter(r => 
             r.name.toLowerCase().includes(query.toLowerCase()) || 
             r.url.toLowerCase().includes(query.toLowerCase())
@@ -211,7 +198,7 @@ if (localStorage.getItem('waelos_feature_spotlight') !== 'false') {
 
         filtered.forEach((r, idx) => {
             const div = document.createElement('div');
-            div.className = `spotlight-item ${idx === 0 ? 'active' : ''}`; // Auto-select the first result
+            div.className = `spotlight-item ${idx === 0 ? 'active' : ''}`; 
             div.innerHTML = `<i data-lucide="${r.icon}"></i> ${r.name}`;
             div.onclick = () => window.location.href = r.url;
             spotlightResults.appendChild(div);
@@ -220,34 +207,27 @@ if (localStorage.getItem('waelos_feature_spotlight') !== 'false') {
         if (window.lucide) lucide.createIcons();
     }
 
-    // Listen for Ctrl+K (or Cmd+K on Mac)
     document.addEventListener('keydown', (e) => {
         if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
             e.preventDefault();
             spotlightOverlay.classList.add('active');
             spotlightInput.value = "";
             renderSpotlight();
-            setTimeout(() => spotlightInput.focus(), 50); // Small delay to ensure focus works
+            setTimeout(() => spotlightInput.focus(), 50); 
         }
-        
-        // Close on Escape
         if (e.key === 'Escape' && spotlightOverlay.classList.contains('active')) {
             spotlightOverlay.classList.remove('active');
         }
-        
-        // Navigate on Enter
         if (e.key === 'Enter' && spotlightOverlay.classList.contains('active')) {
             const activeItem = spotlightResults.querySelector('.spotlight-item.active');
             if (activeItem) activeItem.click();
         }
     });
 
-    // Close if they click the blurred background
     spotlightOverlay.addEventListener('click', (e) => {
         if (e.target === spotlightOverlay) spotlightOverlay.classList.remove('active');
     });
 
-    // Update results as they type
     spotlightInput.addEventListener('input', (e) => renderSpotlight(e.target.value));
 }
 
@@ -255,7 +235,6 @@ if (localStorage.getItem('waelos_feature_spotlight') !== 'false') {
 // 7. AMBIENT FLASHLIGHT BUTTON GLOW
 // ==========================================
 if (localStorage.getItem('waelos_feature_glow') !== 'false') {
-    // Tracks the exact X and Y of the mouse inside the button and sends it to CSS
     document.querySelectorAll('.btn, .cta, .redeem, .shortcut-btn, .navBtn').forEach(btn => {
         btn.addEventListener('mousemove', e => {
             const rect = btn.getBoundingClientRect();
@@ -266,7 +245,6 @@ if (localStorage.getItem('waelos_feature_glow') !== 'false') {
         });
     });
 } else {
-    // Forcibly hide the glowing pseudo-elements
     const glowStyle = document.createElement('style');
     glowStyle.innerHTML = `.btn::before, .cta::before, .redeem::before, .shortcut-btn::before, .navBtn::before { display: none !important; }`;
     document.head.appendChild(glowStyle);
@@ -275,8 +253,6 @@ if (localStorage.getItem('waelos_feature_glow') !== 'false') {
 // ==========================================
 // 8. GLOBAL CHEATS ENGINE
 // ==========================================
-
-// --- A. Website-Wide RGB Gamer Mode ---
 if (localStorage.getItem('waelos_cheat_rgb_multiplier') === 'true') {
     const rgbStyle = document.createElement('style');
     rgbStyle.id = 'rgb-global-style';
@@ -285,7 +261,6 @@ if (localStorage.getItem('waelos_cheat_rgb_multiplier') === 'true') {
             0% { filter: hue-rotate(0deg) saturate(1.5); } 
             100% { filter: hue-rotate(360deg) saturate(1.5); } 
         }
-        /* FIXED: Removed .left and .right so the screen doesn't turn black! */
         .bg-left, .bg-right { 
             animation: rgb-hue-spin 4s linear infinite !important; 
         }
@@ -296,7 +271,6 @@ if (localStorage.getItem('waelos_cheat_rgb_multiplier') === 'true') {
     document.head.appendChild(rgbStyle);
 }
 
-// --- B. Unlock All Achievements Logic ---
 if (localStorage.getItem('waelos_cheat_all_achievements') === 'true') {
     let unlocked = JSON.parse(localStorage.getItem('wael_achievements')) || [];
     const allAchievements = [
@@ -313,7 +287,6 @@ if (localStorage.getItem('waelos_cheat_all_achievements') === 'true') {
         }
     });
     
-    // Instantly save all badges to the system if they were missing
     if (newlyUnlocked) {
         localStorage.setItem('wael_achievements', JSON.stringify(unlocked));
     }
@@ -357,7 +330,6 @@ window.waelAlert = (title, msg) => {
     document.getElementById('waelos-popup-title').innerText = title;
     document.getElementById('waelos-popup-msg').innerText = msg;
     
-    // Set icon to glowing green INFO
     const iconContainer = document.getElementById('waelos-popup-icon-container');
     iconContainer.style.color = '#4ade80';
     iconContainer.style.filter = 'drop-shadow(0 0 15px rgba(74, 222, 128, 0.4))';
@@ -366,7 +338,6 @@ window.waelAlert = (title, msg) => {
     const btnContainer = document.getElementById('waelos-popup-btns');
     btnContainer.innerHTML = ''; 
     
-    // Create button using your exact .btn class
     const okBtn = document.createElement('button');
     okBtn.className = 'btn';
     okBtn.style.cssText = 'background: #4ade80; color: #000; font-size: 16px;';
@@ -391,7 +362,6 @@ window.waelConfirm = (title, msg, onConfirm) => {
     document.getElementById('waelos-popup-title').innerText = title;
     document.getElementById('waelos-popup-msg').innerText = msg;
     
-    // Set icon to glowing red WARNING
     const iconContainer = document.getElementById('waelos-popup-icon-container');
     iconContainer.style.color = '#ff4757';
     iconContainer.style.filter = 'drop-shadow(0 0 15px rgba(255, 71, 87, 0.4))';
@@ -400,7 +370,6 @@ window.waelConfirm = (title, msg, onConfirm) => {
     const btnContainer = document.getElementById('waelos-popup-btns');
     btnContainer.innerHTML = ''; 
     
-    // Create buttons using your exact .btn class
     const cancelBtn = document.createElement('button');
     cancelBtn.className = 'btn';
     cancelBtn.style.cssText = 'background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #fff; font-size: 16px;';
@@ -430,10 +399,180 @@ window.waelConfirm = (title, msg, onConfirm) => {
 // ==========================================
 // 10. SYSTEM TELEMETRY (Digital Wellbeing)
 // ==========================================
-// Tracks total time spent across the entire WaelOS ecosystem
 let waelosTimeSpent = parseInt(localStorage.getItem('waelos_time_spent')) || 0;
 
 setInterval(() => {
     waelosTimeSpent++;
     localStorage.setItem('waelos_time_spent', waelosTimeSpent);
-}, 1000); // Adds 1 second to your global save file every 1000 milliseconds
+}, 1000);
+
+// ==========================================
+// 11. GLASSMORPHISM SELECT ENGINE
+// ==========================================
+// This automatically finds boring <select> tags and replaces them with custom WaelOS Glassmorphism modals!
+function initCustomSelects() {
+    document.querySelectorAll('select.pwd-input').forEach(select => {
+        select.style.display = 'none'; // Hide the boring OS default
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'custom-select-wrapper';
+        wrapper.style.position = 'relative';
+        wrapper.style.flex = select.style.flex || '1';
+        wrapper.style.width = select.style.width || '100%';
+
+        const trigger = document.createElement('div');
+        trigger.className = 'custom-select-trigger pwd-input';
+        trigger.style.display = 'flex';
+        trigger.style.justifyContent = 'space-between';
+        trigger.style.alignItems = 'center';
+        trigger.style.userSelect = 'none';
+        trigger.style.padding = '10px 14px';
+        trigger.style.margin = '0';
+        trigger.style.height = '42px'; // Matches standard pwd-input height
+        
+        const selectedText = document.createElement('span');
+        selectedText.innerText = select.options[select.selectedIndex]?.text || '';
+        trigger.appendChild(selectedText);
+
+        const icon = document.createElement('i');
+        icon.setAttribute('data-lucide', 'chevron-down');
+        icon.style.width = '18px';
+        icon.style.height = '18px';
+        icon.style.transition = 'transform 0.3s cubic-bezier(0.25, 1, 0.5, 1), color 0.3s';
+        icon.style.color = 'var(--text-muted, rgba(255,255,255,0.7))';
+        trigger.appendChild(icon);
+
+        const optionsPanel = document.createElement('div');
+        optionsPanel.className = 'custom-select-options custom-scrollbar';
+        optionsPanel.style.position = 'absolute';
+        optionsPanel.style.top = 'calc(100% + 8px)';
+        optionsPanel.style.left = '0';
+        optionsPanel.style.width = '100%';
+        optionsPanel.style.background = 'rgba(20, 20, 20, 0.85)';
+        optionsPanel.style.backdropFilter = 'blur(16px)';
+        optionsPanel.style.webkitBackdropFilter = 'blur(16px)';
+        optionsPanel.style.border = '1px solid rgba(255, 255, 255, 0.15)';
+        optionsPanel.style.borderRadius = '12px';
+        optionsPanel.style.boxShadow = '0 15px 40px rgba(0,0,0,0.6)';
+        optionsPanel.style.padding = '6px';
+        optionsPanel.style.display = 'none';
+        optionsPanel.style.flexDirection = 'column';
+        optionsPanel.style.gap = '4px';
+        optionsPanel.style.zIndex = '999999';
+        optionsPanel.style.maxHeight = '240px';
+        optionsPanel.style.overflowY = 'auto';
+        optionsPanel.style.opacity = '0';
+        optionsPanel.style.transform = 'translateY(-10px)';
+        optionsPanel.style.transition = 'opacity 0.2s ease, transform 0.2s cubic-bezier(0.25, 1, 0.5, 1)';
+
+        Array.from(select.options).forEach(option => {
+            const optDiv = document.createElement('div');
+            optDiv.className = 'custom-select-option';
+            optDiv.innerText = option.text;
+            optDiv.style.padding = '10px 14px';
+            optDiv.style.borderRadius = '8px';
+            optDiv.style.fontSize = '14px';
+            optDiv.style.fontWeight = '500';
+            optDiv.style.color = option.value === select.value ? '#fff' : 'rgba(255, 255, 255, 0.7)';
+            optDiv.style.background = option.value === select.value ? 'rgba(255, 255, 255, 0.1)' : 'transparent';
+            optDiv.style.transition = '0.2s';
+            optDiv.style.userSelect = 'none';
+
+            optDiv.addEventListener('mouseenter', () => {
+                optDiv.style.background = 'rgba(255, 255, 255, 0.15)';
+                optDiv.style.color = '#fff';
+            });
+            
+            optDiv.addEventListener('mouseleave', () => {
+                if(option.value !== select.value) {
+                    optDiv.style.background = 'transparent';
+                    optDiv.style.color = 'rgba(255, 255, 255, 0.7)';
+                } else {
+                    optDiv.style.background = 'rgba(255, 255, 255, 0.1)';
+                    optDiv.style.color = '#fff';
+                }
+            });
+
+            optDiv.addEventListener('click', (e) => {
+                e.stopPropagation();
+                select.value = option.value;
+                selectedText.innerText = option.text;
+                
+                // Animate close
+                optionsPanel.style.opacity = '0';
+                optionsPanel.style.transform = 'translateY(-10px)';
+                setTimeout(() => optionsPanel.style.display = 'none', 200);
+                
+                trigger.style.borderColor = 'rgba(255,255,255,0.2)';
+                icon.style.transform = 'rotate(0deg)';
+                icon.style.color = 'rgba(255,255,255,0.7)';
+                
+                select.dispatchEvent(new Event('change')); // Retriggers your waelConfirm logic natively!
+
+                // Reset all highlights
+                Array.from(optionsPanel.children).forEach((child, idx) => {
+                    if (select.options[idx].value !== select.value) {
+                        child.style.background = 'transparent';
+                        child.style.color = 'rgba(255,255,255,0.7)';
+                    }
+                });
+                optDiv.style.background = 'rgba(255, 255, 255, 0.1)';
+                optDiv.style.color = '#fff';
+            });
+            
+            optionsPanel.appendChild(optDiv);
+        });
+
+        wrapper.appendChild(trigger);
+        wrapper.appendChild(optionsPanel);
+        select.parentNode.insertBefore(wrapper, select.nextSibling);
+
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isVisible = optionsPanel.style.display === 'flex';
+            
+            // Close all others first
+            document.querySelectorAll('.custom-select-options').forEach(p => {
+                p.style.opacity = '0';
+                p.style.transform = 'translateY(-10px)';
+                setTimeout(() => p.style.display = 'none', 200);
+            });
+            document.querySelectorAll('.custom-select-trigger').forEach(t => t.style.borderColor = 'rgba(255,255,255,0.2)');
+            document.querySelectorAll('.custom-select-trigger i').forEach(i => {
+                i.style.transform = 'rotate(0deg)';
+                i.style.color = 'rgba(255,255,255,0.7)';
+            });
+
+            if (!isVisible) {
+                optionsPanel.style.display = 'flex';
+                setTimeout(() => {
+                    optionsPanel.style.opacity = '1';
+                    optionsPanel.style.transform = 'translateY(0)';
+                }, 10);
+                trigger.style.borderColor = '#4ade80';
+                icon.style.transform = 'rotate(180deg)';
+                icon.style.color = '#4ade80';
+            }
+        });
+    });
+
+    document.addEventListener('click', () => {
+        document.querySelectorAll('.custom-select-options').forEach(p => {
+            p.style.opacity = '0';
+            p.style.transform = 'translateY(-10px)';
+            setTimeout(() => p.style.display = 'none', 200);
+        });
+        document.querySelectorAll('.custom-select-trigger').forEach(t => t.style.borderColor = 'rgba(255,255,255,0.2)');
+        document.querySelectorAll('.custom-select-trigger i').forEach(i => {
+            i.style.transform = 'rotate(0deg)';
+            i.style.color = 'rgba(255,255,255,0.7)';
+        });
+    });
+    
+    if (window.lucide) lucide.createIcons();
+}
+
+// Runs immediately after your about.html scripts set the saved initial values!
+window.addEventListener('load', () => {
+    setTimeout(initCustomSelects, 50);
+});
