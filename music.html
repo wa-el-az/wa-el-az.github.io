@@ -39,7 +39,6 @@
         .player-card {
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.15);
-            /* REMOVED: border-left: 4px solid #fff; */
             border-radius: 32px;
             padding: 40px;
             width: 100%;
@@ -382,28 +381,52 @@
             try {
                 if (typeof CONFIG === 'undefined' || !CONFIG.REPO_PATH) throw new Error("Config not loaded.");
 
-                const response = await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/music`, {
-                    headers: { 'Authorization': `Bearer ${CONFIG.GITHUB_TOKEN}` }
-                });
+                // STEP 1: Attempt to load from JSON first (FAST)
+                try {
+                    const jsonRes = await fetch('json/music.json');
+                    if (jsonRes.ok) {
+                        const db = await jsonRes.json();
+                        if (db && db.length > 0) {
+                            playlist = db.map(t => ({
+                                title: t.title,
+                                fallbackTitle: t.title,
+                                artist: t.artist || "WaelOS Media",
+                                src: `https://cdn.jsdelivr.net/gh/${CONFIG.REPO_PATH}@main/${t.file.split('/').map(encodeURIComponent).join('/')}`,
+                                cover: t.cover || "assets/morocco.png",
+                                isPreloaded: true // Flag indicating we don't need to parse text metadata
+                            }));
+                        }
+                    }
+                } catch(err) {
+                    console.log("No music.json found or invalid, falling back to dynamic folder scan.");
+                }
 
-                if (!response.ok) throw new Error("Folder not found.");
-
-                const files = await response.json();
-                
-                playlist = files
-                    .filter(file => file.name.toLowerCase().endsWith('.mp3') || file.name.toLowerCase().endsWith('.m4a'))
-                    .map(file => {
-                        let cleanName = decodeURIComponent(file.name).replace(/\.[^/.]+$/, "").replace(/_/g, " ");
-                        const encodedPath = file.path.split('/').map(encodeURIComponent).join('/');
-                        
-                        return {
-                            title: cleanName, 
-                            fallbackTitle: cleanName,
-                            artist: "WaelOS Media",
-                            src: `https://cdn.jsdelivr.net/gh/${CONFIG.REPO_PATH}@main/${encodedPath}`, 
-                            cover: "assets/morocco.png"
-                        };
+                // STEP 2: Fallback to GitHub API if JSON was missing or empty
+                if (playlist.length === 0) {
+                    const response = await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/music`, {
+                        headers: { 'Authorization': `Bearer ${CONFIG.GITHUB_TOKEN}` }
                     });
+
+                    if (!response.ok) throw new Error("Folder not found.");
+
+                    const files = await response.json();
+                    
+                    playlist = files
+                        .filter(file => file.name.toLowerCase().endsWith('.mp3') || file.name.toLowerCase().endsWith('.m4a'))
+                        .map(file => {
+                            let cleanName = decodeURIComponent(file.name).replace(/\.[^/.]+$/, "").replace(/_/g, " ");
+                            const encodedPath = file.path.split('/').map(encodeURIComponent).join('/');
+                            
+                            return {
+                                title: cleanName, 
+                                fallbackTitle: cleanName,
+                                artist: "WaelOS Media",
+                                src: `https://cdn.jsdelivr.net/gh/${CONFIG.REPO_PATH}@main/${encodedPath}`, 
+                                cover: "assets/morocco.png",
+                                isPreloaded: false // Needs full parsing
+                            };
+                        });
+                }
 
                 if (playlist.length > 0) {
                     // Check local storage for last played state
@@ -422,7 +445,7 @@
             } catch(e) {
                 console.warn(e.message);
                 titleEl.innerText = "No Music Found";
-                artistEl.innerText = "Upload files to GitHub";
+                artistEl.innerText = "Upload files or check music.json";
                 titleEl.style.color = "#ff6b6b"; 
                 updateMarquee();
             }
@@ -436,63 +459,99 @@
             // Save index to Local Storage
             localStorage.setItem('waelos_music_index', index);
 
-            // Set "Loading..." State initially
-            titleEl.innerText = "Loading...";
-            artistEl.innerText = "Fetching Metadata...";
             cover.src = track.cover;
             cover.style.filter = 'none';
-            updateMarquee();
-            updatePlaylistActiveState();
+            cover.style.background = 'transparent';
 
-            // Fetch Blob and extract metadata
-            if (window.jsmediatags && track.src) {
-                fetch(track.src)
-                    .then(response => response.ok ? response.blob() : Promise.reject("Fetch error"))
-                    .then(blob => {
-                        if (trackIndex !== index) return; // Prevent overwrite if user skipped
-                        
-                        jsmediatags.read(blob, {
-                            onSuccess: function(tag) {
-                                if (trackIndex !== index) return;
-                                const tags = tag.tags;
-                                
-                                titleEl.innerText = tags.title || track.fallbackTitle;
-                                artistEl.innerText = tags.artist || "WaelOS Media";
-                                
-                                // Update playlist text too
-                                track.title = tags.title || track.fallbackTitle;
-                                track.artist = tags.artist || "WaelOS Media";
-                                renderPlaylist(); 
-                                updatePlaylistActiveState();
-
-                                if (tags.picture) {
-                                    try {
-                                        const data = tags.picture.data;
-                                        let base64String = "";
-                                        for (let i = 0; i < data.length; i++) base64String += String.fromCharCode(data[i]);
-                                        cover.src = "data:" + tags.picture.format + ";base64," + window.btoa(base64String);
-                                    } catch (e) {}
-                                }
-                                updateMarquee();
-                            },
-                            onError: function(error) {
-                                // Apply Fallback if metadata fails
-                                titleEl.innerText = track.fallbackTitle;
-                                artistEl.innerText = "WaelOS Media";
-                                updateMarquee();
-                            }
-                        });
-                    })
-                    .catch(err => {
-                        // Apply Fallback if fetch blocked
-                        titleEl.innerText = track.fallbackTitle;
-                        artistEl.innerText = "WaelOS Media";
-                        updateMarquee();
-                    });
-            } else {
-                titleEl.innerText = track.fallbackTitle;
-                artistEl.innerText = "WaelOS Media";
+            if (track.isPreloaded) {
+                // FAST MODE: Text data loaded from JSON immediately
+                titleEl.innerText = track.title;
+                artistEl.innerText = track.artist;
                 updateMarquee();
+                updatePlaylistActiveState();
+
+                // Still fetch raw file in the background JUST to extract the picture
+                if (window.jsmediatags && track.src) {
+                    fetch(track.src)
+                        .then(response => response.ok ? response.blob() : Promise.reject("Fetch error"))
+                        .then(blob => {
+                            if (trackIndex !== index) return;
+                            
+                            jsmediatags.read(blob, {
+                                onSuccess: function(tag) {
+                                    if (trackIndex !== index) return;
+                                    const tags = tag.tags;
+
+                                    if (tags.picture) {
+                                        try {
+                                            const data = tags.picture.data;
+                                            let base64String = "";
+                                            for (let i = 0; i < data.length; i++) base64String += String.fromCharCode(data[i]);
+                                            cover.src = "data:" + tags.picture.format + ";base64," + window.btoa(base64String);
+                                        } catch (e) {}
+                                    }
+                                },
+                                onError: function(error) {} // Ignore error, keep fallback cover
+                            });
+                        }).catch(err => {}); // Ignore fetch errors, keep fallback cover
+                }
+
+            } else {
+                // SLOW MODE: Full fallback logic (fetches text AND image)
+                titleEl.innerText = "Loading...";
+                artistEl.innerText = "Fetching Metadata...";
+                updateMarquee();
+                updatePlaylistActiveState();
+
+                if (window.jsmediatags && track.src) {
+                    fetch(track.src)
+                        .then(response => response.ok ? response.blob() : Promise.reject("Fetch error"))
+                        .then(blob => {
+                            if (trackIndex !== index) return; // Prevent overwrite if user skipped
+                            
+                            jsmediatags.read(blob, {
+                                onSuccess: function(tag) {
+                                    if (trackIndex !== index) return;
+                                    const tags = tag.tags;
+                                    
+                                    titleEl.innerText = tags.title || track.fallbackTitle;
+                                    artistEl.innerText = tags.artist || "WaelOS Media";
+                                    
+                                    // Update playlist text too
+                                    track.title = tags.title || track.fallbackTitle;
+                                    track.artist = tags.artist || "WaelOS Media";
+                                    renderPlaylist(); 
+                                    updatePlaylistActiveState();
+
+                                    if (tags.picture) {
+                                        try {
+                                            const data = tags.picture.data;
+                                            let base64String = "";
+                                            for (let i = 0; i < data.length; i++) base64String += String.fromCharCode(data[i]);
+                                            cover.src = "data:" + tags.picture.format + ";base64," + window.btoa(base64String);
+                                        } catch (e) {}
+                                    }
+                                    updateMarquee();
+                                },
+                                onError: function(error) {
+                                    // Apply Fallback if metadata fails
+                                    titleEl.innerText = track.fallbackTitle;
+                                    artistEl.innerText = "WaelOS Media";
+                                    updateMarquee();
+                                }
+                            });
+                        })
+                        .catch(err => {
+                            // Apply Fallback if fetch blocked
+                            titleEl.innerText = track.fallbackTitle;
+                            artistEl.innerText = "WaelOS Media";
+                            updateMarquee();
+                        });
+                } else {
+                    titleEl.innerText = track.fallbackTitle;
+                    artistEl.innerText = "WaelOS Media";
+                    updateMarquee();
+                }
             }
         }
 
