@@ -177,9 +177,53 @@
             </div>
 
             <div class="setting-group">
+                <h3><i data-lucide="toggle-left"></i> Core OS Modules</h3>
+                
+                <div class="action-row" style="border-top: none; padding-top: 0; margin-top: 5px;">
+                    <div class="action-text">
+                        <strong style="color: #fff; display: block; margin-bottom: 4px;">Spotlight Search</strong>
+                        Enable the Ctrl + K global search menu overlay.
+                    </div>
+                    <div class="toggle-switch" id="feat-spotlight-toggle" onclick="toggleFeature('spotlight')"></div>
+                </div>
+
+                <div class="action-row">
+                    <div class="action-text">
+                        <strong style="color: #fff; display: block; margin-bottom: 4px;">Custom Context Menu</strong>
+                        Override the browser's default right-click menu with WaelOS styling.
+                    </div>
+                    <div class="toggle-switch" id="feat-contextmenu-toggle" onclick="toggleFeature('contextmenu')"></div>
+                </div>
+
+                <div class="action-row">
+                    <div class="action-text">
+                        <strong style="color: #fff; display: block; margin-bottom: 4px;">Terminal Text Selection</strong>
+                        Use the custom WaelOS green highlight when selecting text.
+                    </div>
+                    <div class="toggle-switch" id="feat-selection-toggle" onclick="toggleFeature('selection')"></div>
+                </div>
+
+                <div class="action-row">
+                    <div class="action-text">
+                        <strong style="color: #fff; display: block; margin-bottom: 4px;">Ambient Button Glow</strong>
+                        Enable the flashlight hover effect on WaelOS interactive buttons.
+                    </div>
+                    <div class="toggle-switch" id="feat-glow-toggle" onclick="toggleFeature('glow')"></div>
+                </div>
+
+                <div class="action-row">
+                    <div class="action-text">
+                        <strong style="color: #fff; display: block; margin-bottom: 4px;">Moroccan Emoji Engine</strong>
+                        Automatically render ultra-high quality flag emojis in text fields.
+                    </div>
+                    <div class="toggle-switch" id="feat-emoji-toggle" onclick="toggleFeature('emoji')"></div>
+                </div>
+            </div>
+
+            <div class="setting-group">
                 <h3><i data-lucide="info"></i> System Specifications</h3>
                 <ul class="info-list">
-                    <li>Version: <span id="os-version" title="Click me 7 times...">WaelOS 2.1 (200326)</span></li>
+                    <li>Version: <span id="os-version" title="Click me 7 times...">WaelOS 2.1 (210326)</span></li>
                     <li>Administrator: <span>Wael Amrani Zerrifi</span></li>
                     <li>Core Environment: <span>Vanilla JS + GitHub Pages</span></li>
                     <li>Last Update Check: <span id="update-status">Checking...</span></li>
@@ -263,11 +307,33 @@
                 localStorage.setItem('waelos_glass_blur', val);
             });
             
+            // Setup Core OS Modules Toggles
+            const features = ['spotlight', 'contextmenu', 'selection', 'glow', 'emoji'];
+            features.forEach(feat => {
+                const toggle = document.getElementById(`feat-${feat}-toggle`);
+                // Assume TRUE if it hasn't been set yet
+                const isEnabled = localStorage.getItem(`waelos_feature_${feat}`) !== 'false';
+                if (isEnabled) toggle.classList.add('active');
+                else toggle.classList.remove('active');
+            });
+
             // Check if cheats were previously unlocked
             if (localStorage.getItem('waelos_cheats_unlocked') === 'true') {
                 showCheatsMenu();
             }
         });
+
+        // Toggle Core OS Features Logic
+        function toggleFeature(feat) {
+            const toggle = document.getElementById(`feat-${feat}-toggle`);
+            toggle.classList.toggle('active');
+            const isEnabled = toggle.classList.contains('active');
+            localStorage.setItem(`waelos_feature_${feat}`, isEnabled ? 'true' : 'false');
+            
+            waelConfirm("System Update Required", "Changing Core OS Modules requires a system refresh to apply properly. Reload page now?", () => {
+                window.location.reload();
+            });
+        }
 
         // --- 2. Calculate Storage Use ---
         function calculateStorage() {
