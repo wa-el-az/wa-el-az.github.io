@@ -1,11 +1,46 @@
 // ==========================================
-// 0. GLOBAL BLUR ENGINE (Glassmorphism Pro)
+// 1. GLOBAL BLUR ENGINE (Glassmorphism Pro)
 // ==========================================
 const savedBlur = localStorage.getItem('waelos_glass_blur') || '20';
 document.documentElement.style.setProperty('--glass-blur', `${savedBlur}px`);
 
 // ==========================================
-// 0.5 CORE OS MODULE OVERRIDES
+// 2. CUSTOM OS CURSOR ENGINE
+// ==========================================
+const cursorType = localStorage.getItem('waelos_cursor') || 'default';
+if (cursorType !== 'default') {
+    let normal = '';
+    let pointer = '';
+
+    if (cursorType === 'win11-light') {
+        normal = 'url("https://raw.githubusercontent.com/LeoRH123/Windows-11-Cursor-Concept-Pro-v2.0/main/Light/Normal%20Select.cur"), auto';
+        pointer = 'url("https://raw.githubusercontent.com/LeoRH123/Windows-11-Cursor-Concept-Pro-v2.0/main/Light/Link%20Select.cur"), pointer';
+    } else if (cursorType === 'win11-dark') {
+        normal = 'url("https://raw.githubusercontent.com/LeoRH123/Windows-11-Cursor-Concept-Pro-v2.0/main/Dark/Normal%20Select.cur"), auto';
+        pointer = 'url("https://raw.githubusercontent.com/LeoRH123/Windows-11-Cursor-Concept-Pro-v2.0/main/Dark/Link%20Select.cur"), pointer';
+    } else if (cursorType === 'crosshair') {
+        normal = 'crosshair';
+        pointer = 'crosshair';
+    } else if (cursorType === 'tea') {
+        normal = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" style="font-size:24px"><text y="24">🍵</text></svg>') 16 16, auto`;
+        pointer = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" style="font-size:24px"><text y="24">🫖</text></svg>') 16 16, pointer`;
+    } else if (cursorType === 'gd') {
+        normal = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><rect x="4" y="4" width="24" height="24" rx="4" fill="%234ade80" stroke="black" stroke-width="3"/><rect x="10" y="10" width="4" height="4" fill="black"/><rect x="18" y="10" width="4" height="4" fill="black"/><rect x="10" y="18" width="12" height="4" fill="black"/></svg>') 16 16, auto`;
+        pointer = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><rect x="4" y="4" width="24" height="24" rx="4" fill="%234ade80" stroke="black" stroke-width="3"/><rect x="10" y="10" width="4" height="4" fill="black"/><rect x="18" y="10" width="4" height="4" fill="black"/><rect x="10" y="18" width="12" height="4" fill="black"/></svg>') 16 16, pointer`;
+    }
+
+    if (normal) {
+        const cursorStyle = document.createElement('style');
+        cursorStyle.innerHTML = `
+            * { cursor: ${normal} !important; }
+            a, button, .btn, .navBtn, .action-btn, .shortcut-btn, select, input[type="range"], .toggle-switch, .context-item, .spotlight-item { cursor: ${pointer} !important; }
+        `;
+        document.head.appendChild(cursorStyle);
+    }
+}
+
+// ==========================================
+// 3. CORE OS MODULE OVERRIDES
 // ==========================================
 // A. Disable Custom Selection Highlight
 if (localStorage.getItem('waelos_feature_selection') === 'false') {
@@ -25,7 +60,7 @@ if (localStorage.getItem('waelos_feature_contextmenu') === 'false') {
 
 document.addEventListener('DOMContentLoaded', () => {
     // ==========================================
-    // 1. MOROCCO EMOJI LOGIC
+    // 4. MOROCCO EMOJI LOGIC
     // ==========================================
     if (localStorage.getItem('waelos_feature_emoji') !== 'false') {
         const MOROCCO_EMOJI = '🇲🇦';
@@ -95,7 +130,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ==========================================
-    // 2. GLOBAL DYNAMIC BACK BUTTON LOGIC
+    // 5. GLOBAL DYNAMIC BACK BUTTON LOGIC
     // ==========================================
     const backBtn = document.getElementById('dynamicBackBtn');
     
@@ -122,7 +157,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ==========================================
-// 3. SPOTLIGHT COMMAND CENTER (Ctrl + K)
+// 6. SPOTLIGHT COMMAND CENTER (Ctrl + K)
 // ==========================================
 if (localStorage.getItem('waelos_feature_spotlight') !== 'false') {
     // The specific WaelOS links the user is allowed to search for
@@ -217,7 +252,7 @@ if (localStorage.getItem('waelos_feature_spotlight') !== 'false') {
 }
 
 // ==========================================
-// 4. AMBIENT FLASHLIGHT BUTTON GLOW
+// 7. AMBIENT FLASHLIGHT BUTTON GLOW
 // ==========================================
 if (localStorage.getItem('waelos_feature_glow') !== 'false') {
     // Tracks the exact X and Y of the mouse inside the button and sends it to CSS
@@ -238,7 +273,7 @@ if (localStorage.getItem('waelos_feature_glow') !== 'false') {
 }
 
 // ==========================================
-// 5. GLOBAL CHEATS ENGINE
+// 8. GLOBAL CHEATS ENGINE
 // ==========================================
 
 // --- A. Website-Wide RGB Gamer Mode ---
@@ -283,8 +318,9 @@ if (localStorage.getItem('waelos_cheat_all_achievements') === 'true') {
         localStorage.setItem('wael_achievements', JSON.stringify(unlocked));
     }
 }
+
 // ==========================================
-// 6. CUSTOM WAELOS POPUP SYSTEM (REDEEM STYLE)
+// 9. CUSTOM WAELOS POPUP SYSTEM (REDEEM STYLE)
 // ==========================================
 const injectPopup = () => {
     if (!document.getElementById('waelos-popup-overlay')) {
@@ -390,8 +426,9 @@ window.waelConfirm = (title, msg, onConfirm) => {
     overlay.style.opacity = '1';
     card.style.transform = 'scale(1) translateY(0)';
 };
+
 // ==========================================
-// 7. SYSTEM TELEMETRY (Digital Wellbeing)
+// 10. SYSTEM TELEMETRY (Digital Wellbeing)
 // ==========================================
 // Tracks total time spent across the entire WaelOS ecosystem
 let waelosTimeSpent = parseInt(localStorage.getItem('waelos_time_spent')) || 0;
