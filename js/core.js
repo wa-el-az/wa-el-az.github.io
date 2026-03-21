@@ -103,7 +103,7 @@ const spotlightRoutes = [
     { name: "Shortcuts", url: "shortcuts", icon: "zap" },
     { name: "Tea Clicker", url: "tea", icon: "coffee" },
     { name: "Geometry Dash", url: "gd", icon: "play" },
-    { name: "Music Player", url: "music", icon: "assets/gd/gd-logo.svg" },
+    { name: "Music Player", url: "music", icon: "music" },
     { name: "Achievements", url: "achievements", icon: "award" },
     { name: "Redeem", url: "redeem", icon: "gift" },
     { name: "Hardware Specs", url: "hardware", icon: "cpu" },
