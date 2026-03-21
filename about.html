@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>WaelOS — About System</title>
+    <link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            /* Sets the default blur, but it can be overridden by JavaScript */
+            --glass-blur: 20px;
+        }
+
+        body { 
+            padding: 80px 5vw; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            min-height: 100vh; 
+            overflow: hidden; 
+        }
+
+        .settings-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 24px;
+            width: 100%;
+            max-width: 650px;
+            backdrop-filter: blur(var(--glass-blur));
+            box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+            animation: fadePageIn 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .settings-header {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 25px 30px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .settings-header i { width: 32px; height: 32px; color: #4ade80; }
+        .settings-header h1 { margin: 0; font-size: 24px; color: #fff; }
+        .settings-header p { margin: 5px 0 0; font-size: 14px; color: var(--text-muted); }
+
+        .settings-body {
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .setting-group {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            padding: 20px;
+        }
+
+        .setting-group h3 {
+            margin: 0 0 15px 0;
+            font-size: 16px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+        }
+
+        /* Lists */
+        .info-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+        .info-list li { display: flex; justify-content: space-between; font-size: 14px; color: var(--text-muted); }
+        .info-list li span { color: #fff; font-weight: 500; cursor: pointer; }
+
+        /* Actions / Buttons */
+        .action-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed rgba(255,255,255,0.1);
+        }
+
+        .action-text { font-size: 14px; color: var(--text-muted); max-width: 60%; line-height: 1.5; }
+        
+        .action-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff; padding: 10px 18px; border-radius: 8px;
+            cursor: pointer; font-size: 13px; font-weight: bold;
+            display: inline-flex; align-items: center; justify-content: center; gap: 6px; transition: 0.2s;
+            height: fit-content; margin: 0; /* Prevents vertical stretching */
+            white-space: nowrap;
+        }
+        .action-btn:hover { background: rgba(255, 255, 255, 0.2); transform: translateY(-2px); }
+        
+        .btn-danger-outline { border-color: #ff4757; color: #ff4757; background: transparent; }
+        .btn-danger-outline:hover { background: #ff4757; color: #fff; }
+
+        /* Toggles */
+        .toggle-switch {
+            position: relative; width: 44px; height: 24px;
+            background: rgba(255,255,255,0.2); border-radius: 99px; cursor: pointer; transition: 0.3s;
+            flex-shrink: 0;
+        }
+        .toggle-switch.active { background: #4ade80; }
+        .toggle-switch::after {
+            content: ''; position: absolute; top: 2px; left: 2px;
+            width: 20px; height: 20px; background: #fff; border-radius: 50%;
+            transition: 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .toggle-switch.active::after { transform: translateX(20px); }
+
+        /* Password Input */
+        .pwd-input {
+            flex: 1; padding: 10px 14px; border-radius: 8px; 
+            border: 1px solid rgba(255,255,255,0.2); 
+            background: rgba(0,0,0,0.3); color: #fff; outline: none;
+            font-family: inherit; font-size: 14px; margin: 0;
+        }
+        .pwd-input:focus { border-color: #4ade80; }
+
+        /* Custom Slider Styling */
+        input[type="range"] {
+            -webkit-appearance: none; width: 100%; background: transparent; cursor: pointer;
+        }
+        input[type="range"]::-webkit-slider-runnable-track {
+            background: rgba(255, 255, 255, 0.1); height: 6px; border-radius: 3px;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none; height: 18px; width: 18px; background: #4ade80;
+            border-radius: 50%; margin-top: -6px; box-shadow: 0 0 10px rgba(74, 222, 128, 0.4);
+            transition: transform 0.1s;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+
+    </style>
+</head>
+<body>
+    <div class="bg-left"></div><div class="bg-right"></div>
+    
+    <a class="navBtn" id="dynamicBackBtn" href="index"><i data-lucide="home"></i> Home</a>
+
+    <div class="settings-card">
+        <div class="settings-header">
+            <i data-lucide="cpu"></i>
+            <div>
+                <h1>About WaelOS</h1>
+                <p>System Information & Preferences</p>
+            </div>
+        </div>
+
+        <div class="settings-body custom-scrollbar">
+            
+            <div class="setting-group">
+                <h3><i data-lucide="palette"></i> Appearance</h3>
+                <div class="action-row" style="flex-direction: column; align-items: flex-start; gap: 12px; border-top: none; padding-top: 0; margin-top: 5px;">
+                    <div class="action-text">
+                        <strong style="color: #4ade80; display: block; margin-bottom: 4px;">Glassmorphism Pro</strong>
+                        Adjust the intensity of the system background blur for an ultra-premium look.
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 15px; width: 100%; margin-top: 5px;">
+                        <input type="range" id="blur-slider" min="0" max="80" value="20" step="1">
+                        <span id="blur-value" style="color: #4ade80; font-weight: bold; min-width: 45px;">20px</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="setting-group">
+                <h3><i data-lucide="info"></i> System Specifications</h3>
+                <ul class="info-list">
+                    <li>Version: <span id="os-version" title="Click me 7 times...">WaelOS 2.1 (200326)</span></li>
+                    <li>Administrator: <span>Wael Amrani Zerrifi</span></li>
+                    <li>Core Environment: <span>Vanilla JS + GitHub Pages</span></li>
+                    <li>Last Update Check: <span id="update-status">Checking...</span></li>
+                </ul>
+                <div class="action-row">
+                    <div class="action-text">Ensure your system is running the latest code.</div>
+                    <button class="action-btn" onclick="checkUpdates()"><i data-lucide="refresh-cw"></i> Check Updates</button>
+                </div>
+            </div>
+
+            <div class="setting-group">
+                <h3><i data-lucide="hard-drive"></i> Storage & Cache Management</h3>
+                <ul class="info-list">
+                    <li>Local Storage Used: <span id="storage-size">Calculating...</span></li>
+                    <li>Music Metadata Cached: <span id="music-cache-status">Checking...</span></li>
+                </ul>
+                
+                <div class="action-row">
+                    <div class="action-text">Clear temporary web assets (like fonts, scripts, and images) to free up memory. Forces a reload.</div>
+                    <button class="action-btn" id="cache-btn" onclick="clearAssetCache()"><i data-lucide="trash"></i> Clear Asset Cache</button>
+                </div>
+
+                <div class="action-row">
+                    <div class="action-text"><strong>Warning:</strong> This wipes all saved WaelOS data (like your music timeline) and returns the system to factory defaults.</div>
+                    <button class="action-btn btn-danger-outline" onclick="factoryReset()"><i data-lucide="alert-triangle"></i> Factory Reset</button>
+                </div>
+            </div>
+
+            <div class="setting-group" id="cheats-container">
+                <h3><i data-lucide="gamepad-2"></i> Developer Menu (Game Mods)</h3>
+                
+                <div id="cheats-locked" class="action-row" style="flex-direction: column; align-items: flex-start; gap: 12px; border-top: none; padding-top: 0; margin-top: 5px;">
+                    <div class="action-text">This section is restricted. Enter the system administrator passcode to unlock system overrides.</div>
+                    <div style="display: flex; align-items: center; gap: 10px; width: 100%;">
+                        <input type="password" id="cheat-pwd" class="pwd-input" placeholder="Enter password..." autocomplete="off">
+                        <button class="action-btn" onclick="verifyPassword()"><i data-lucide="unlock"></i> Unlock</button>
+                    </div>
+                    <div id="cheat-error" style="color: #ff4757; font-size: 13px; display: none;">Access Denied. Incorrect password.</div>
+                </div>
+
+                <div id="cheats-unlocked" style="display: none;">
+                    <div class="action-row" style="border-top: none; padding-top: 0; margin-top: 5px;">
+                        <div class="action-text">
+                            <strong style="color: #4ade80; display: block; margin-bottom: 4px;">Aesthetic: RGB Gamer Mode</strong>
+                            Turns the WaelOS background into a shifting rainbow.
+                        </div>
+                        <div class="toggle-switch" id="cheat-rgb-toggle" onclick="toggleCheat('rgb')"></div>
+                    </div>
+
+                    <div class="action-row">
+                        <div class="action-text">
+                            <strong style="color: #4ade80; display: block; margin-bottom: 4px;">Unlock All Achievements</strong>
+                            Instantly grant all WaelOS system achievements.
+                        </div>
+                        <button class="action-btn" onclick="grantAchievements()"><i data-lucide="award"></i> Grant All</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script>
+        // --- 1. Load Initial States ---
+        document.addEventListener("DOMContentLoaded", () => {
+            if(window.lucide) lucide.createIcons();
+            calculateStorage();
+            
+            // Setup Glassmorphism Slider
+            const slider = document.getElementById('blur-slider');
+            const blurVal = document.getElementById('blur-value');
+            const savedBlur = localStorage.getItem('waelos_glass_blur') || 20;
+            slider.value = savedBlur;
+            blurVal.innerText = savedBlur + 'px';
+
+            slider.addEventListener('input', (e) => {
+                const val = e.target.value;
+                blurVal.innerText = val + 'px';
+                document.documentElement.style.setProperty('--glass-blur', val + 'px');
+                localStorage.setItem('waelos_glass_blur', val);
+            });
+            
+            // Check if cheats were previously unlocked
+            if (localStorage.getItem('waelos_cheats_unlocked') === 'true') {
+                showCheatsMenu();
+            }
+        });
+
+        // --- 2. Calculate Storage Use ---
+        function calculateStorage() {
+            let totalLength = 0;
+            for (let key in localStorage) {
+                if (localStorage.hasOwnProperty(key)) {
+                    totalLength += ((localStorage[key].length + key.length) * 2);
+                }
+            }
+            const sizeKB = (totalLength / 1024).toFixed(2);
+            document.getElementById('storage-size').innerText = sizeKB + " KB";
+
+            const musicCache = localStorage.getItem('waelos_metadata_cache');
+            if (musicCache) {
+                const parsed = JSON.parse(musicCache);
+                document.getElementById('music-cache-status').innerText = Object.keys(parsed).length + " Tracks";
+            } else {
+                document.getElementById('music-cache-status').innerText = "Empty";
+            }
+        }
+
+        // --- 3. Clear Browser Asset Cache ---
+        async function clearAssetCache() {
+            const btn = document.getElementById('cache-btn');
+            btn.innerHTML = '<i data-lucide="loader"></i> Clearing...';
+            if(window.lucide) lucide.createIcons();
+            
+            try {
+                if ('caches' in window) {
+                    const cacheNames = await caches.keys();
+                    await Promise.all(cacheNames.map(name => caches.delete(name)));
+                }
+                setTimeout(() => {
+                    waelAlert("Cache Cleared", "Asset cache cleared! The page will now reload to fetch fresh files.");
+                    setTimeout(() => window.location.reload(true), 2000);
+                }, 600);
+            } catch (err) {
+                waelAlert("System Error", "Could not clear cache automatically. Please clear browser data manually.");
+                btn.innerHTML = '<i data-lucide="trash"></i> Clear Asset Cache';
+                if(window.lucide) lucide.createIcons();
+            }
+        }
+
+        // --- 4. Factory Reset ---
+        function factoryReset() {
+            waelConfirm(
+                "System Reset", 
+                "Are you sure? This will delete all your local variables, cached music data, and saved time. WaelOS will restart.",
+                () => {
+                    localStorage.clear();
+                    window.location.href = "index"; 
+                }
+            );
+        }
+
+        // --- 5. Fake Update Check ---
+        function checkUpdates() {
+            const statusText = document.getElementById('update-status');
+            statusText.innerText = "Connecting to GitHub...";
+            statusText.style.color = "#fff";
+            
+            setTimeout(() => {
+                statusText.innerText = "System is up to date.";
+                statusText.style.color = "#4ade80";
+            }, 1200);
+        }
+
+        // --- 6. Easter Egg: GitHub Redirect ---
+        let clickCount = 0;
+        document.getElementById('os-version').addEventListener('click', () => {
+            clickCount++;
+            if (clickCount === 7) {
+                waelAlert("Developer Mode", "Accessing Repository Source...");
+                setTimeout(() => window.location.href = "https://github.com/wa-el-az/WaelOS", 1500);
+            }
+        });
+
+        // --- 7. GAME MODS & CHEATS LOGIC ---
+        function verifyPassword() {
+            const input = document.getElementById('cheat-pwd').value;
+            const errorText = document.getElementById('cheat-error');
+            
+            if (input === 'Wael') {
+                errorText.style.display = 'none';
+                localStorage.setItem('waelos_cheats_unlocked', 'true');
+                showCheatsMenu();
+                waelAlert("Access Granted", "Developer menu unlocked successfully.");
+            } else {
+                errorText.style.display = 'block';
+            }
+        }
+
+        function showCheatsMenu() {
+            document.getElementById('cheats-locked').style.display = 'none';
+            document.getElementById('cheats-unlocked').style.display = 'block';
+            
+            if (localStorage.getItem('waelos_cheat_rgb_multiplier') === 'true') {
+                document.getElementById('cheat-rgb-toggle').classList.add('active');
+            }
+        }
+
+        function toggleCheat(game) {
+            const toggle = document.getElementById(`cheat-${game}-toggle`);
+            toggle.classList.toggle('active');
+            
+            if (toggle.classList.contains('active')) {
+                localStorage.setItem(`waelos_cheat_${game}_multiplier`, 'true');
+            } else {
+                localStorage.removeItem(`waelos_cheat_${game}_multiplier`);
+            }
+            
+            if (game === 'rgb') {
+                if (toggle.classList.contains('active')) applyRGBCheat();
+                else removeRGBCheat();
+            }
+        }
+
+        function grantAchievements() {
+            waelAlert("Cheat Activated", "All WaelOS system achievements have been unlocked!");
+            localStorage.setItem('waelos_cheat_all_achievements', 'true');
+        }
+
+        document.getElementById('cheat-pwd').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') verifyPassword();
+        });
+
+        // Instant application logic for RGB cheat on the Settings page
+        function applyRGBCheat() {
+            if (!document.getElementById('rgb-local-style')) {
+                const rgbStyle = document.createElement('style');
+                rgbStyle.id = 'rgb-local-style';
+                rgbStyle.innerHTML = `
+                    @keyframes rgb-hue-spin { 0% { filter: hue-rotate(0deg) saturate(1.5); } 100% { filter: hue-rotate(360deg) saturate(1.5); } }
+                    .bg-left, .bg-right, .left, .right { animation: rgb-hue-spin 4s linear infinite !important; }
+                    .cta, .redeem, .btn, .shortcut-btn, .action-btn { animation: rgb-hue-spin 2s linear infinite !important; }
+                `;
+                document.head.appendChild(rgbStyle);
+            }
+        }
+
+        function removeRGBCheat() {
+            const style = document.getElementById('rgb-local-style');
+            if (style) style.remove();
+            const globalStyle = document.getElementById('rgb-global-style');
+            if (globalStyle) globalStyle.remove();
+        }
+    </script>
+    <script src="js/context-menu.js"></script>
+    <script src="js/core.js"></script>
+    <script src="/js/emoji-replacer.js"></script>
+</body>
+</html>

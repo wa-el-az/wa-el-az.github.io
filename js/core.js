@@ -93,8 +93,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+
 // ==========================================
-// 2. SPOTLIGHT COMMAND CENTER (Ctrl + K)
+// 3. SPOTLIGHT COMMAND CENTER (Ctrl + K)
 // ==========================================
 // The specific WaelOS links the user is allowed to search for
 const spotlightRoutes = [
@@ -108,7 +109,9 @@ const spotlightRoutes = [
     { name: "Redeem", url: "redeem", icon: "gift" },
     { name: "Hardware Specs", url: "hardware", icon: "cpu" },
     { name: "Windows Vault", url: "windows", icon: "monitor" },
-    { name: "My PC", url: "mypc", icon: "hard-drive" }
+    { name: "My PC", url: "mypc", icon: "hard-drive" },
+    { name: "About Website", url: "about", icon: "info" },
+    { name: "System Settings", url: "about", icon: "settings" }
 ];
 
 // Inject the Spotlight HTML directly into the page
@@ -186,7 +189,7 @@ spotlightInput.addEventListener('input', (e) => renderSpotlight(e.target.value))
 
 
 // ==========================================
-// 3. AMBIENT FLASHLIGHT BUTTON GLOW
+// 4. AMBIENT FLASHLIGHT BUTTON GLOW
 // ==========================================
 // Tracks the exact X and Y of the mouse inside the button and sends it to CSS
 document.querySelectorAll('.btn, .cta, .redeem, .shortcut-btn, .navBtn').forEach(btn => {
@@ -198,3 +201,157 @@ document.querySelectorAll('.btn, .cta, .redeem, .shortcut-btn, .navBtn').forEach
         btn.style.setProperty('--y', y + 'px');
     });
 });
+
+// ==========================================
+// 5. GLOBAL CHEATS ENGINE
+// ==========================================
+
+// --- A. Website-Wide RGB Gamer Mode ---
+if (localStorage.getItem('waelos_cheat_rgb_multiplier') === 'true') {
+    const rgbStyle = document.createElement('style');
+    rgbStyle.id = 'rgb-global-style';
+    rgbStyle.innerHTML = `
+        @keyframes rgb-hue-spin { 
+            0% { filter: hue-rotate(0deg) saturate(1.5); } 
+            100% { filter: hue-rotate(360deg) saturate(1.5); } 
+        }
+        /* FIXED: Removed .left and .right so the screen doesn't turn black! */
+        .bg-left, .bg-right { 
+            animation: rgb-hue-spin 4s linear infinite !important; 
+        }
+        .cta, .redeem, .btn, .shortcut-btn, .action-btn { 
+            animation: rgb-hue-spin 2s linear infinite !important; 
+        }
+    `;
+    document.head.appendChild(rgbStyle);
+}
+
+// --- B. Unlock All Achievements Logic ---
+if (localStorage.getItem('waelos_cheat_all_achievements') === 'true') {
+    let unlocked = JSON.parse(localStorage.getItem('wael_achievements')) || [];
+    const allAchievements = [
+        "tea_first", "tea_500", "tea_10k", "tea_sync", "ttt_win", 
+        "ttt_tie", "ttt_hack", "exp_404", "exp_mail", "exp_proj", 
+        "hack_denied", "hack_brute", "hack_captain", "egg_patriot", "egg_owl"
+    ];
+    let newlyUnlocked = false;
+    
+    allAchievements.forEach(id => {
+        if (!unlocked.includes(id)) {
+            unlocked.push(id);
+            newlyUnlocked = true;
+        }
+    });
+    
+    // Instantly save all badges to the system if they were missing
+    if (newlyUnlocked) {
+        localStorage.setItem('wael_achievements', JSON.stringify(unlocked));
+    }
+}
+// ==========================================
+// 6. CUSTOM WAELOS POPUP SYSTEM (REDEEM STYLE)
+// ==========================================
+const injectPopup = () => {
+    if (!document.getElementById('waelos-popup-overlay')) {
+        const html = `
+        <div id="waelos-popup-overlay" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 9999999; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease;">
+            <div id="waelos-popup-card" class="card" style="width: 90%; max-width: 450px; text-align: center; transform: scale(0.9) translateY(20px); transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1); margin: 0 auto; padding: 40px 30px;">
+                <div id="waelos-popup-icon-container" style="margin-bottom: 15px; filter: drop-shadow(0 0 15px rgba(74, 222, 128, 0.4)); color: #4ade80;">
+                    <i data-lucide="info" style="width: 64px; height: 64px;"></i>
+                </div>
+                <h1 id="waelos-popup-title" style="margin: 0 0 5px; font-size: 32px;">Alert</h1>
+                <p id="waelos-popup-msg" class="sub" style="margin-bottom: 25px;"></p>
+                <div id="waelos-popup-btns" style="display: flex; gap: 15px; justify-content: center; width: 100%;"></div>
+            </div>
+        </div>`;
+        document.body.insertAdjacentHTML('beforeend', html);
+    }
+};
+
+window.closeWaelPopup = () => {
+    const overlay = document.getElementById('waelos-popup-overlay');
+    const card = document.getElementById('waelos-popup-card');
+    if (overlay) {
+        overlay.style.opacity = '0';
+        card.style.transform = 'scale(0.9) translateY(20px)';
+        setTimeout(() => { overlay.style.display = 'none'; }, 300); 
+    }
+};
+
+window.waelAlert = (title, msg) => {
+    injectPopup();
+    const overlay = document.getElementById('waelos-popup-overlay');
+    const card = document.getElementById('waelos-popup-card');
+    
+    document.getElementById('waelos-popup-title').innerText = title;
+    document.getElementById('waelos-popup-msg').innerText = msg;
+    
+    // Set icon to glowing green INFO
+    const iconContainer = document.getElementById('waelos-popup-icon-container');
+    iconContainer.style.color = '#4ade80';
+    iconContainer.style.filter = 'drop-shadow(0 0 15px rgba(74, 222, 128, 0.4))';
+    iconContainer.innerHTML = '<i data-lucide="info" style="width: 64px; height: 64px;"></i>';
+    
+    const btnContainer = document.getElementById('waelos-popup-btns');
+    btnContainer.innerHTML = ''; 
+    
+    // Create button using your exact .btn class
+    const okBtn = document.createElement('button');
+    okBtn.className = 'btn';
+    okBtn.style.cssText = 'background: #4ade80; color: #000; font-size: 16px;';
+    okBtn.innerText = 'OK';
+    okBtn.addEventListener('click', () => window.closeWaelPopup());
+    
+    btnContainer.appendChild(okBtn);
+    
+    if(window.lucide) lucide.createIcons();
+    
+    overlay.style.display = 'flex';
+    void overlay.offsetWidth; 
+    overlay.style.opacity = '1';
+    card.style.transform = 'scale(1) translateY(0)';
+};
+
+window.waelConfirm = (title, msg, onConfirm) => {
+    injectPopup();
+    const overlay = document.getElementById('waelos-popup-overlay');
+    const card = document.getElementById('waelos-popup-card');
+    
+    document.getElementById('waelos-popup-title').innerText = title;
+    document.getElementById('waelos-popup-msg').innerText = msg;
+    
+    // Set icon to glowing red WARNING
+    const iconContainer = document.getElementById('waelos-popup-icon-container');
+    iconContainer.style.color = '#ff4757';
+    iconContainer.style.filter = 'drop-shadow(0 0 15px rgba(255, 71, 87, 0.4))';
+    iconContainer.innerHTML = '<i data-lucide="alert-triangle" style="width: 64px; height: 64px;"></i>';
+    
+    const btnContainer = document.getElementById('waelos-popup-btns');
+    btnContainer.innerHTML = ''; 
+    
+    // Create buttons using your exact .btn class
+    const cancelBtn = document.createElement('button');
+    cancelBtn.className = 'btn';
+    cancelBtn.style.cssText = 'background: transparent; border: 1px solid rgba(255,255,255,0.2); color: #fff; font-size: 16px;';
+    cancelBtn.innerText = 'Cancel';
+    cancelBtn.addEventListener('click', () => window.closeWaelPopup());
+    
+    const proceedBtn = document.createElement('button');
+    proceedBtn.className = 'btn';
+    proceedBtn.style.cssText = 'background: #ff4757; color: #fff; font-size: 16px; border: none;';
+    proceedBtn.innerText = 'Proceed';
+    proceedBtn.addEventListener('click', () => {
+        window.closeWaelPopup();
+        if (onConfirm) onConfirm();
+    });
+    
+    btnContainer.appendChild(cancelBtn);
+    btnContainer.appendChild(proceedBtn);
+    
+    if(window.lucide) lucide.createIcons();
+    
+    overlay.style.display = 'flex';
+    void overlay.offsetWidth;
+    overlay.style.opacity = '1';
+    card.style.transform = 'scale(1) translateY(0)';
+};
