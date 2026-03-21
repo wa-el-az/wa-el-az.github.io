@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
         <div class="context-divider"></div>
         <div class="context-item" id="ctx-fullscreen"><i data-lucide="maximize"></i> Toggle Fullscreen</div>
         <div class="context-item" id="ctx-source"><i data-lucide="code"></i> View Source Code</div>
+        <div class="context-divider"></div>
+        <div class="context-item" id="ctx-about"><i data-lucide="info"></i> About</div>
     `;
     document.body.appendChild(contextMenu);
 
@@ -38,8 +40,16 @@ document.addEventListener('DOMContentLoaded', () => {
         contextMenu.style.display = 'none';
     });
 
+    document.getElementById('ctx-about').addEventListener('click', () => {
+        window.location.href = 'about';
+        contextMenu.style.display = 'none';
+    });
+
     // 3. Intercept the right-click globally
     document.addEventListener('contextmenu', (e) => {
+        // If the user disabled the custom context menu in Settings, revert to default browser menu!
+        if (localStorage.getItem('waelos_feature_contextmenu') === 'false') return;
+
         e.preventDefault();
         
         // --- DYNAMIC FULLSCREEN CHECK ---
@@ -59,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
         let x = e.clientX;
         let y = e.clientY;
         const menuWidth = 220;
-        const menuHeight = 140; 
+        const menuHeight = 180; // Increased slightly to make room for the new About Wael button
         
         // Prevent menu from clipping off the edges of the screen
         if (x + menuWidth > window.innerWidth) x = window.innerWidth - menuWidth - 10;
