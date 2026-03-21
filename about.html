@@ -221,6 +221,13 @@
             </div>
 
             <div class="setting-group">
+                <h3><i data-lucide="activity"></i> Digital Wellbeing</h3>
+                <ul class="info-list">
+                    <li>Total Time on WaelOS: <span id="time-spent-display" style="font-family: 'JetBrains Mono', monospace; font-weight: bold; color: #4ade80;">Calculating...</span></li>
+                </ul>
+            </div>
+
+            <div class="setting-group">
                 <h3><i data-lucide="info"></i> System Specifications</h3>
                 <ul class="info-list">
                     <li>Version: <span id="os-version" title="Click me 7 times...">WaelOS 2.1 (210326)</span></li>
@@ -293,7 +300,7 @@
             if(window.lucide) lucide.createIcons();
             calculateStorage();
             
-            // Setup Glassmorphism Slider
+            // Glassmorphism Slider
             const slider = document.getElementById('blur-slider');
             const blurVal = document.getElementById('blur-value');
             const savedBlur = localStorage.getItem('waelos_glass_blur') || 20;
@@ -321,6 +328,10 @@
             if (localStorage.getItem('waelos_cheats_unlocked') === 'true') {
                 showCheatsMenu();
             }
+
+            // Start Live Time Tracker Display
+            updateTimeDisplay();
+            setInterval(updateTimeDisplay, 1000);
         });
 
         // Toggle Core OS Features Logic
@@ -333,6 +344,22 @@
             waelConfirm("System Update Required", "Changing Core OS Modules requires a system refresh to apply properly. Reload page now?", () => {
                 window.location.reload();
             });
+        }
+
+        // Live Screen Time Logic
+        function updateTimeDisplay() {
+            const totalSeconds = parseInt(localStorage.getItem('waelos_time_spent')) || 0;
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+            
+            let displayStr = "";
+            if (hours > 0) displayStr += `${hours}h `;
+            if (minutes > 0 || hours > 0) displayStr += `${minutes}m `;
+            displayStr += `${seconds}s`;
+            
+            const displayEl = document.getElementById('time-spent-display');
+            if (displayEl) displayEl.innerText = displayStr;
         }
 
         // --- 2. Calculate Storage Use ---
