@@ -5,29 +5,29 @@ const savedBlur = localStorage.getItem('waelos_glass_blur') || '20';
 document.documentElement.style.setProperty('--glass-blur', `${savedBlur}px`);
 
 // ==========================================
-// 2. CUSTOM OS CURSOR ENGINE (LOCAL .CUR FILES)
+// 2. CUSTOM OS CURSOR ENGINE (RESIZED & FIXED)
 // ==========================================
 const cursorType = localStorage.getItem('waelos_cursor') || 'default';
 if (cursorType !== 'default') {
     let normal = '';
     let pointer = '';
 
-    // Pulls your custom cursors directly from your own assets folder!
+    // SVGs resized from 28px/32px down to 20px/24px for a normal OS feel!
     if (cursorType === 'win11-light') {
-        normal = `url('assets/cursors/light-normal.cur'), auto`;
-        pointer = `url('assets/cursors/light-link.cur'), pointer`;
+        normal = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white" stroke="%23111" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.143 1.143l-1.58 6.124a.5.5 0 0 1-.947.063z"/></svg>') 3 3, auto`;
+        pointer = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="white" stroke="%23111" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 14a8 8 0 0 1-8 8"/><path d="M18 11v-1a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V9a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v1"/><path d="M10 9.5V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v10"/><path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>') 8 3, pointer`;
     } else if (cursorType === 'win11-dark') {
-        normal = `url('assets/cursors/dark-normal.cur'), auto`;
-        pointer = `url('assets/cursors/dark-link.cur'), pointer`;
+        normal = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="%231e1e1e" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4.037 4.688a.495.495 0 0 1 .651-.651l16 6.5a.5.5 0 0 1-.063.947l-6.124 1.58a2 2 0 0 0-1.143 1.143l-1.58 6.124a.5.5 0 0 1-.947.063z"/></svg>') 3 3, auto`;
+        pointer = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="%231e1e1e" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 14a8 8 0 0 1-8 8"/><path d="M18 11v-1a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v0"/><path d="M14 10V9a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v1"/><path d="M10 9.5V4a2 2 0 0 0-2-2v0a2 2 0 0 0-2 2v10"/><path d="M18 11a2 2 0 1 1 4 0v3a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg>') 8 3, pointer`;
     } else if (cursorType === 'crosshair') {
         normal = 'crosshair';
         pointer = 'crosshair';
     } else if (cursorType === 'tea') {
-        normal = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" style="font-size:24px"><text y="24">🍵</text></svg>') 16 16, auto`;
-        pointer = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" style="font-size:24px"><text y="24">🫖</text></svg>') 16 16, pointer`;
+        normal = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" style="font-size:18px"><text y="18">🍵</text></svg>') 12 12, auto`;
+        pointer = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" style="font-size:18px"><text y="18">🫖</text></svg>') 12 12, pointer`;
     } else if (cursorType === 'gd') {
-        normal = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><rect x="4" y="4" width="24" height="24" rx="4" fill="%234ade80" stroke="black" stroke-width="3"/><rect x="10" y="10" width="4" height="4" fill="black"/><rect x="18" y="10" width="4" height="4" fill="black"/><rect x="10" y="18" width="12" height="4" fill="black"/></svg>') 16 16, auto`;
-        pointer = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><rect x="4" y="4" width="24" height="24" rx="4" fill="%234ade80" stroke="black" stroke-width="3"/><rect x="10" y="10" width="4" height="4" fill="black"/><rect x="18" y="10" width="4" height="4" fill="black"/><rect x="10" y="18" width="12" height="4" fill="black"/></svg>') 16 16, pointer`;
+        normal = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"><rect x="2" y="2" width="20" height="20" rx="3" fill="%234ade80" stroke="black" stroke-width="2"/><rect x="6" y="8" width="4" height="4" fill="black"/><rect x="14" y="8" width="4" height="4" fill="black"/><rect x="8" y="14" width="8" height="3" fill="black"/></svg>') 12 12, auto`;
+        pointer = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"><rect x="2" y="2" width="20" height="20" rx="3" fill="%234ade80" stroke="black" stroke-width="2"/><rect x="6" y="8" width="4" height="4" fill="black"/><rect x="14" y="8" width="4" height="4" fill="black"/><rect x="8" y="14" width="8" height="3" fill="black"/></svg>') 12 12, pointer`;
     }
 
     if (normal) {
