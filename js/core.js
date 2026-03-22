@@ -5,7 +5,7 @@ const savedBlur = localStorage.getItem('waelos_glass_blur') || '20';
 document.documentElement.style.setProperty('--glass-blur', `${savedBlur}px`);
 
 // ==========================================
-// 2. CUSTOM OS CURSOR ENGINE (LOCAL .CUR FILES)
+// 2. CUSTOM OS CURSOR ENGINE (LOCAL SVG FILES - FIXED SIZE)
 // ==========================================
 const cursorType = localStorage.getItem('waelos_cursor') || 'default';
 if (cursorType !== 'default') {
@@ -13,11 +13,11 @@ if (cursorType !== 'default') {
     let pointer = '';
 
     if (cursorType === 'win11-light') {
-        normal = `url('assets/cursors/light-normal.cur'), auto`;
-        pointer = `url('assets/cursors/light-link.cur'), pointer`;
+        normal = `url('assets/cursors/light-normal.svg') 3 3, auto`;
+        pointer = `url('assets/cursors/light-link.svg') 8 3, pointer`;
     } else if (cursorType === 'win11-dark') {
-        normal = `url('assets/cursors/dark-normal.cur'), auto`;
-        pointer = `url('assets/cursors/dark-link.cur'), pointer`;
+        normal = `url('assets/cursors/dark-normal.svg') 3 3, auto`;
+        pointer = `url('assets/cursors/dark-link.svg') 8 3, pointer`;
     } else if (cursorType === 'crosshair') {
         normal = 'crosshair';
         pointer = 'crosshair';
@@ -410,10 +410,9 @@ setInterval(() => {
 // ==========================================
 function initCustomSelects() {
     document.querySelectorAll('select.pwd-input').forEach(select => {
-        // Prevent double initialization
         if (select.nextElementSibling && select.nextElementSibling.classList.contains('custom-select-wrapper')) return;
 
-        select.style.display = 'none'; // Hide the default OS dropdown
+        select.style.display = 'none';
 
         const wrapper = document.createElement('div');
         wrapper.className = 'custom-select-wrapper';
@@ -501,7 +500,6 @@ function initCustomSelects() {
                 select.value = option.value;
                 selectedText.innerText = option.text;
                 
-                // Animate close
                 optionsPanel.style.opacity = '0';
                 optionsPanel.style.transform = 'translateY(-10px)';
                 setTimeout(() => optionsPanel.style.display = 'none', 200);
@@ -510,9 +508,8 @@ function initCustomSelects() {
                 icon.style.transform = 'rotate(0deg)';
                 icon.style.color = 'rgba(255,255,255,0.7)';
                 
-                select.dispatchEvent(new Event('change')); // Retriggers your waelConfirm logic natively!
+                select.dispatchEvent(new Event('change'));
 
-                // Reset all highlights
                 Array.from(optionsPanel.children).forEach((child, idx) => {
                     if (select.options[idx].value !== select.value) {
                         child.style.background = 'transparent';
@@ -534,12 +531,11 @@ function initCustomSelects() {
             e.stopPropagation();
             const isVisible = optionsPanel.style.display === 'flex';
             
-            // THE FIX: Only close OTHER panels so we don't accidentally close ourselves!
             document.querySelectorAll('.custom-select-options').forEach(p => {
                 if (p !== optionsPanel) {
                     p.style.opacity = '0';
                     p.style.transform = 'translateY(-10px)';
-                    p.style.display = 'none'; // Instant close to prevent collision
+                    p.style.display = 'none'; 
                 }
             });
             
@@ -556,7 +552,6 @@ function initCustomSelects() {
 
             if (!isVisible) {
                 optionsPanel.style.display = 'flex';
-                // Force browser reflow to ensure the animation plays
                 void optionsPanel.offsetWidth;
                 optionsPanel.style.opacity = '1';
                 optionsPanel.style.transform = 'translateY(0)';
@@ -590,7 +585,6 @@ function initCustomSelects() {
     if (window.lucide) lucide.createIcons();
 }
 
-// Runs immediately after your about.html scripts set the saved initial values!
 window.addEventListener('load', () => {
     setTimeout(initCustomSelects, 50);
 });
