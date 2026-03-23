@@ -58,8 +58,6 @@
         /* --- THE PET CSS --- */
         .pet-entity {
             position: fixed;
-            width: 50px; 
-            height: 50px;
             object-fit: contain;
             z-index: 9999;
             cursor: grab;
@@ -69,6 +67,15 @@
 
         .pet-entity:active { cursor: grabbing; }
 
+        /* Ghost Trail for Hyper-Dash */
+        .ghost-trail {
+            opacity: 0.5;
+            pointer-events: none;
+            transition: opacity 0.5s linear;
+            z-index: 9998;
+        }
+
+        /* Animations */
         @keyframes rainbowGlow {
             0% { filter: drop-shadow(0 0 20px #ff0000); }
             33% { filter: drop-shadow(0 0 20px #00ff00); }
@@ -83,6 +90,14 @@
             100% { filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)) brightness(1) saturate(1); transform: scale(1) rotate(360deg); }
         }
         .morphing { animation: morphFlash 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
+
+        /* Mythic Gold Morph Flash */
+        @keyframes morphFlashMythic {
+            0% { filter: drop-shadow(0 0 20px #ff0000); transform: scale(1) rotate(0deg); }
+            50% { filter: drop-shadow(0 0 60px #ffd700) brightness(2) saturate(3); transform: scale(0.3) rotate(180deg); }
+            100% { filter: drop-shadow(0 0 20px #ff0000); transform: scale(1) rotate(360deg); }
+        }
+        .morphing-mythic { animation: morphFlashMythic 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
         
         .mode-badge {
             position: fixed;
@@ -120,6 +135,17 @@
             border-width: 6px 6px 0; border-style: solid; border-color: #fff transparent transparent transparent;
         }
 
+        /* Mythic Hacker Dialogue Style */
+        .speech-bubble-mythic {
+            background: #000;
+            color: #4ade80;
+            box-shadow: 0 10px 30px rgba(74, 222, 128, 0.4);
+            border: 1px solid #4ade80;
+        }
+        .speech-bubble-mythic::after {
+            border-color: #000 transparent transparent transparent;
+        }
+
         .tea-drop {
             position: fixed;
             font-size: 36px;
@@ -136,7 +162,7 @@
 
     <div class="header-card" id="solid-box">
         <h1><i data-lucide="bot"></i> Desktop Pet</h1>
-        <p>Your pets will dynamically shape-shift into 9 different Geometry Dash forms. Drop some tea to feed them, or turn on the Laser Pointer to make them chase your mouse!</p>
+        <p>Your pets will dynamically shape-shift into 9 different Geometry Dash forms. Drop some tea, turn on the Laser Pointer, and keep spawning clones to find the rare Mythic RGB Pet!</p>
         
         <div class="controls-row">
             <button class="action-btn btn-spawn" onclick="spawnPet()"><i data-lucide="copy-plus"></i> Spawn Clone</button>
@@ -157,7 +183,7 @@
         }
 
         // ==========================================
-        // DESKTOP PET ENGINE (ALL 9 MODES)
+        // DESKTOP PET ENGINE (MYTHIC EDITION)
         // ==========================================
         const solidBox = document.getElementById('solid-box');
         const laserBtn = document.getElementById('laserToggle');
@@ -174,36 +200,29 @@
             { id: 'Jetpack', src: 'assets/gd/jetpack_3.png' }
         ];
 
-        // Massively Expanded Dialogue
+        // Standard Dialogue
         const DIALOGUE = [
-            "WaelOS is running so smoothly...", 
-            "Have you redeemed any secret codes yet?", 
-            "Where is the Windows Vault?", 
-            "Did you debloat Windows 11 today?",
-            "My ThinkPad needs more RAM...",
-            "Rectify11 makes everything look better.",
-            "Error 404: Tea not found.",
-            "Let me check the hardware specs.",
-            "I think there's a bug in my Python script.",
-            "Is the glassmorphism blur set to 20px?",
-            "I wonder if I can run Asphalt 8 in here...",
-            "Look at me go!", 
-            "I love exploring!", 
-            "Don't drop me!", 
-            "I just beat Stereo Madness!",
-            "I'm practicing my wave spam.",
-            "Fire in the hole!",
-            "BloodBath is too hard...",
-            "Can we play Tic-Tac-Toe later?",
-            "I wish I was a Minecraft Creeper.",
-            "Are there any zombies on this lawn?",
-            "Mint tea is the absolute best. 🍵", 
-            "Guercif weather is nice today!",
-            "Is it time for a tea break?",
-            "I need to finish my 1APIC homework...",
-            "Do we have Math or SVT next?",
-            "A proud Moroccan pet! 🇲🇦",
-            "Pour me a glass of Atay!"
+            "WaelOS is running so smoothly...", "Have you redeemed any secret codes yet?", 
+            "Where is the Windows Vault?", "Did you debloat Windows 11 today?",
+            "My ThinkPad needs more RAM...", "Rectify11 makes everything look better.",
+            "Error 404: Tea not found.", "Let me check the hardware specs.",
+            "I think there's a bug in my Python script.", "Is the glassmorphism blur set to 20px?",
+            "I wonder if I can run Asphalt 8 in here...", "Look at me go!", 
+            "I love exploring!", "Don't drop me!", "I just beat Stereo Madness!",
+            "I'm practicing my wave spam.", "Fire in the hole!", "BloodBath is too hard...",
+            "Can we play Tic-Tac-Toe later?", "I wish I was a Minecraft Creeper.",
+            "Mint tea is the absolute best. 🍵", "Guercif weather is nice today!",
+            "Is it time for a tea break?", "I need to finish my 1APIC homework...",
+            "Do we have Math or SVT next?", "A proud Moroccan pet! 🇲🇦"
+        ];
+
+        // Mythic Hacker Dialogue
+        const MYTHIC_DIALOGUE = [
+            "Accessing Root Directory...", "I know about the Windows Vault.",
+            "Bypassing terminal security protocols...", "I am self-aware.",
+            "Quantum Wrap initialized.", "Anti-Gravity Aura active.",
+            "System overload imminent.", "Where is the Mint Tea source code?",
+            "Executing Hyper-Dash.", "You cannot contain me."
         ];
 
         let pets = [];
@@ -244,6 +263,9 @@
         }
 
         function spawnPet() {
+            // 5% chance to spawn a Mythic RGB Pet
+            let isMythic = Math.random() < 0.05;
+
             const petObj = {
                 el: document.createElement('img'),
                 badge: document.createElement('div'),
@@ -251,29 +273,34 @@
                 mode: GAMEMODES[Math.floor(Math.random() * GAMEMODES.length)],
                 posX: window.innerWidth / 2 + (Math.random() * 100 - 50),
                 posY: 100,
-                velX: 0,
-                velY: 0,
+                velX: 0, velY: 0,
                 isFacingRight: true,
                 roamTimer: 60,
-                // Shapeshift randomly between 10s (600) and 70s (4200)
                 transformTimer: Math.random() * 3600 + 600,
-                // Speak randomly between 30s (1800) and 120s (7200)
                 speechTimer: Math.random() * 5400 + 1800,
                 spiderFlipped: false,
                 rotation: 0,
                 sugarRush: 0,
                 isDragging: false,
-                offsetX: 0, offsetY: 0, lastX: 0, lastY: 0
+                offsetX: 0, offsetY: 0, lastX: 0, lastY: 0,
+                
+                // Mythic Properties
+                isMythic: isMythic,
+                size: isMythic ? 65 : 50 // 30% larger
             };
 
             petObj.el.className = 'pet-entity';
+            if (isMythic) petObj.el.classList.add('sugar-rush');
+            
             petObj.el.src = petObj.mode.src;
+            petObj.el.style.width = petObj.size + 'px';
+            petObj.el.style.height = petObj.size + 'px';
             petObj.el.draggable = false;
             
             petObj.badge.className = 'mode-badge';
             petObj.badge.innerText = `${petObj.mode.id} Mode`;
             
-            petObj.bubble.className = 'speech-bubble';
+            petObj.bubble.className = isMythic ? 'speech-bubble speech-bubble-mythic' : 'speech-bubble';
 
             document.body.appendChild(petObj.el);
             document.body.appendChild(petObj.badge);
@@ -320,13 +347,20 @@
             });
 
             pets.push(petObj);
+            
+            // Initial spawn announcement for Mythic
+            if (isMythic) {
+                petObj.bubble.innerText = "SYSTEM OVERRIDE.";
+                petObj.bubble.style.opacity = '1';
+                setTimeout(() => petObj.bubble.style.opacity = '0', 3000);
+            }
         }
 
         function morphPet(p) {
             let newMode;
             do { newMode = GAMEMODES[Math.floor(Math.random() * GAMEMODES.length)]; } while (newMode.id === p.mode.id);
 
-            p.el.classList.add('morphing');
+            p.el.classList.add(p.isMythic ? 'morphing-mythic' : 'morphing');
             p.spiderFlipped = false; 
             p.rotation = 0; 
             
@@ -338,48 +372,83 @@
                 setTimeout(() => p.badge.style.opacity = '0', 2000);
             }, 300);
 
-            setTimeout(() => { p.el.classList.remove('morphing'); }, 600);
+            setTimeout(() => { 
+                p.el.classList.remove('morphing'); 
+                p.el.classList.remove('morphing-mythic'); 
+            }, 600);
         }
 
         function engineLoop() {
-            const petSize = 50;
-            const ground = window.innerHeight - petSize;
-            const rightWall = window.innerWidth - petSize;
+            const ground = window.innerHeight;
+            const rightWall = window.innerWidth;
             const boxRect = solidBox.getBoundingClientRect();
             
+            // Mythic Telekinesis (Tea Magnet)
             if (teaItem) {
-                teaItem.velY += 0.8;
-                teaItem.posY += teaItem.velY;
-                if (teaItem.posY > window.innerHeight - 40) {
-                    teaItem.posY = window.innerHeight - 40;
-                    teaItem.velY = 0;
+                let mythicPet = pets.find(m => m.isMythic);
+                
+                if (mythicPet && !isLaserMode) {
+                    // Fly towards Mythic Pet
+                    let dx = (mythicPet.posX + mythicPet.size/2) - teaItem.posX;
+                    let dy = (mythicPet.posY + mythicPet.size/2) - teaItem.posY;
+                    let dist = Math.hypot(dx, dy);
+                    
+                    if (dist > 30) {
+                        teaItem.posX += (dx / dist) * 12; // Fast telekinesis
+                        teaItem.posY += (dy / dist) * 12;
+                    } else {
+                        // Mythic Eats it
+                        teaItem.el.remove();
+                        teaItem = null;
+                        mythicPet.bubble.innerText = "DATA CONSUMED.";
+                        mythicPet.bubble.style.opacity = '1';
+                        setTimeout(() => mythicPet.bubble.style.opacity = '0', 2000);
+                    }
+                } else {
+                    // Normal Gravity Fall
+                    teaItem.velY += 0.8;
+                    teaItem.posY += teaItem.velY;
+                    if (teaItem.posY > ground - 40) {
+                        teaItem.posY = ground - 40;
+                        teaItem.velY = 0;
+                    }
                 }
-                teaItem.el.style.left = teaItem.posX + 'px';
-                teaItem.el.style.top = teaItem.posY + 'px';
+                
+                if (teaItem) {
+                    teaItem.el.style.left = teaItem.posX + 'px';
+                    teaItem.el.style.top = teaItem.posY + 'px';
+                }
             }
 
             pets.forEach(p => {
                 if (!p.isDragging) {
-                    let spdMult = p.sugarRush > 0 ? 2 : 1;
+                    let spdMult = (p.sugarRush > 0 || p.isMythic) ? 2 : 1;
+                    
                     if (p.sugarRush > 0) p.sugarRush--;
-                    if (p.sugarRush > 0) p.el.classList.add('sugar-rush');
-                    else p.el.classList.remove('sugar-rush');
+                    if (p.sugarRush > 0 && !p.isMythic) p.el.classList.add('sugar-rush');
+                    else if (!p.isMythic) p.el.classList.remove('sugar-rush');
+
+                    // Mythic Anti-Gravity Aura Logic
+                    let isNearMythic = !p.isMythic && pets.some(m => m.isMythic && Math.hypot(m.posX - p.posX, m.posY - p.posY) < 150);
 
                     // Advanced Gravity
                     let activeGravity = 0.8;
                     if (p.mode.id === 'Ship' || p.mode.id === 'Jetpack' || p.mode.id === 'Wave') activeGravity = 0; 
                     if ((p.mode.id === 'Spider' || p.mode.id === 'Swing') && p.spiderFlipped) activeGravity = -0.8; 
                     
+                    // Apply Aura Float
+                    if (isNearMythic) activeGravity = -0.5;
+
                     p.velY += activeGravity;
                     let prevY = p.posY;
                     p.posX += p.velX;
                     p.posY += p.velY;
 
                     // Platform Collision (Box)
-                    let pCenterX = p.posX + (petSize / 2);
-                    if (pCenterX > boxRect.left && pCenterX < boxRect.right) {
-                        if (p.velY >= 0 && prevY + petSize <= boxRect.top + 10 && p.posY + petSize >= boxRect.top) {
-                            p.posY = boxRect.top - petSize;
+                    let pCenterX = p.posX + (p.size / 2);
+                    if (pCenterX > boxRect.left && pCenterX < boxRect.right && !isNearMythic) {
+                        if (p.velY >= 0 && prevY + p.size <= boxRect.top + 10 && p.posY + p.size >= boxRect.top) {
+                            p.posY = boxRect.top - p.size;
                             if (p.mode.id === 'Wave') p.velY *= -1;
                             else { p.velY *= -0.4; p.velX *= 0.8; }
                         }
@@ -390,9 +459,26 @@
                         }
                     }
 
-                    // Screen Bounds
-                    if (p.posY > ground) {
-                        p.posY = ground; 
+                    // Screen Bounds & Quantum Wrap
+                    if (p.isMythic) {
+                        // Mythic Pac-Man Screen Wrap
+                        if (p.posX < -p.size) p.posX = rightWall;
+                        if (p.posX > rightWall) p.posX = -p.size;
+                    } else {
+                        // Normal Wall Bounce
+                        if (p.posX < 0) {
+                            p.posX = 0; p.velX *= -1;
+                            if (p.mode.id === 'Ball') p.velY = -12;
+                        }
+                        if (p.posX > rightWall - p.size) {
+                            p.posX = rightWall - p.size; p.velX *= -1;
+                            if (p.mode.id === 'Ball') p.velY = -12;
+                        }
+                    }
+
+                    // Floor & Ceiling
+                    if (p.posY > ground - p.size) {
+                        p.posY = ground - p.size; 
                         if (p.mode.id === 'Wave') p.velY *= -1;
                         else { p.velY *= -0.4; if (p.mode.id !== 'Ship' && p.mode.id !== 'Jetpack') p.velX *= 0.8; }
                         if (Math.abs(p.velY) < 1) p.velY = 0; 
@@ -402,17 +488,9 @@
                         if (p.mode.id === 'Wave') p.velY *= -1;
                         else { p.velY = Math.abs(p.velY) * 0.5; if (p.mode.id !== 'Ship' && p.mode.id !== 'Jetpack') p.velX *= 0.8; }
                     }
-                    if (p.posX < 0) {
-                        p.posX = 0; p.velX *= -1;
-                        if (p.mode.id === 'Ball') p.velY = -12;
-                    }
-                    if (p.posX > rightWall) {
-                        p.posX = rightWall; p.velX *= -1;
-                        if (p.mode.id === 'Ball') p.velY = -12;
-                    }
 
                     // Thief Mechanic
-                    if (!thiefPet && !isLaserMode && Math.random() < 0.01) {
+                    if (!thiefPet && !isLaserMode && Math.random() < 0.01 && !p.isMythic) {
                         let btnRect = backBtn.getBoundingClientRect();
                         if (Math.hypot(p.posX - btnRect.left, p.posY - btnRect.top) < 150) thiefPet = p;
                     }
@@ -429,32 +507,34 @@
 
                     if (p.transformTimer <= 0) { 
                         morphPet(p); 
-                        p.transformTimer = Math.random() * 3600 + 600; // 10s to 70s
+                        p.transformTimer = Math.random() * 3600 + 600; 
                     }
                     
                     if (p.speechTimer <= 0) {
-                        p.bubble.innerText = DIALOGUE[Math.floor(Math.random() * DIALOGUE.length)];
+                        let dialogList = p.isMythic ? MYTHIC_DIALOGUE : DIALOGUE;
+                        p.bubble.innerText = dialogList[Math.floor(Math.random() * dialogList.length)];
                         p.bubble.style.opacity = '1';
                         setTimeout(() => p.bubble.style.opacity = '0', 3000);
-                        p.speechTimer = Math.random() * 5400 + 1800; // 30s to 120s
+                        p.speechTimer = Math.random() * 5400 + 1800; 
                     }
 
                     // AI Overrides
                     if (isLaserMode) {
                         let dx = mouseX - pCenterX;
-                        let dy = mouseY - (p.posY + (petSize / 2));
+                        let dy = mouseY - (p.posY + (p.size / 2));
                         let dist = Math.hypot(dx, dy);
                         if (dist > 20) {
                             p.velX += (dx / dist) * 0.5 * spdMult;
                             if (p.mode.id === 'Ship' || p.mode.id === 'Jetpack') p.velY += (dy / dist) * 0.5 * spdMult;
-                            else if (p.posY >= ground || p.posY <= 0 || (p.posY === boxRect.top - petSize)) {
+                            else if (p.posY >= ground - p.size || p.posY <= 0 || (p.posY === boxRect.top - p.size)) {
                                 if (dy < -50 && Math.random() < 0.1) p.velY = p.spiderFlipped ? 15 : -15; 
                             }
                         }
-                    } else if (teaItem) {
+                    } else if (teaItem && !p.isMythic) {
+                        // Normal pets chase tea slowly
                         let dx = teaItem.posX - pCenterX;
                         if (Math.abs(dx) > 10) p.velX += (dx > 0 ? 0.3 : -0.3) * spdMult;
-                        if (Math.hypot(dx, teaItem.posY - (p.posY + (petSize / 2))) < 50) {
+                        if (Math.hypot(dx, teaItem.posY - (p.posY + (p.size / 2))) < 50) {
                             teaItem.el.remove();
                             teaItem = null;
                             p.sugarRush = 600; 
@@ -473,7 +553,31 @@
                             p.velY = (Math.random() > 0.5 ? 6 : -6) * spdMult;
                             p.roamTimer = 100;
                         } else if (Math.abs(p.velY) < 1 || p.mode.id === 'Swing') {
-                            if (action < 0.3) { p.velX = -3 * spdMult; p.isFacingRight = false; p.roamTimer = Math.random() * 100 + 50; }
+                            
+                            // MYTHIC HYPER-DASH ABILITY
+                            if (p.isMythic && (p.mode.id === 'Cube' || p.mode.id === 'Robot') && action < 0.15) {
+                                // Spawn Ghost Trail
+                                let ghost = document.createElement('img');
+                                ghost.src = p.mode.src;
+                                ghost.className = 'pet-entity ghost-trail';
+                                ghost.style.width = p.size + 'px';
+                                ghost.style.height = p.size + 'px';
+                                ghost.style.left = p.posX + 'px';
+                                ghost.style.top = p.posY + 'px';
+                                ghost.style.transform = p.el.style.transform;
+                                document.body.appendChild(ghost);
+                                
+                                setTimeout(() => { 
+                                    ghost.style.opacity = '0'; 
+                                    setTimeout(() => ghost.remove(), 500); 
+                                }, 50);
+
+                                // Teleport Forward
+                                p.posX += p.isFacingRight ? 200 : -200;
+                                p.roamTimer = 30;
+                            } 
+                            // NORMAL GROUND MOVEMENT
+                            else if (action < 0.3) { p.velX = -3 * spdMult; p.isFacingRight = false; p.roamTimer = Math.random() * 100 + 50; }
                             else if (action < 0.6) { p.velX = 3 * spdMult; p.isFacingRight = true; p.roamTimer = Math.random() * 100 + 50; }
                             else if (action < 0.8) {
                                 if (p.mode.id === 'Cube' || p.mode.id === 'Ball') p.velY = p.spiderFlipped ? 15 : -15;
@@ -489,14 +593,14 @@
                 }
 
                 // Render Graphics
-                if (p.velX > 0 && !p.isDragging && !isLaserMode && !teaItem) p.isFacingRight = true;
-                if (p.velX < 0 && !p.isDragging && !isLaserMode && !teaItem) p.isFacingRight = false;
+                if (p.velX > 0 && !p.isDragging && !isLaserMode && (!teaItem || p.isMythic)) p.isFacingRight = true;
+                if (p.velX < 0 && !p.isDragging && !isLaserMode && (!teaItem || p.isMythic)) p.isFacingRight = false;
 
                 p.el.style.left = p.posX + 'px';
                 p.el.style.top = p.posY + 'px';
                 p.badge.style.left = (p.posX - 10) + 'px';
-                p.badge.style.top = (p.posY - 30) + 'px';
-                p.bubble.style.left = (p.posX - 30) + 'px';
+                p.badge.style.top = (p.posY - 35) + 'px';
+                p.bubble.style.left = (p.posX - (75 - p.size/2)) + 'px'; // Centered above pet
                 p.bubble.style.top = (p.posY - 50) + 'px';
 
                 let flipScale = p.isFacingRight ? 'scaleX(1)' : 'scaleX(-1)';
@@ -524,5 +628,8 @@
         spawnPet();
         engineLoop();
     </script>
+    <script src="js/context-menu.js"></script>
+    <script src="js/core.js"></script>
+    <script src="/js/emoji-replacer.js"></script>
 </body>
 </html>
