@@ -32,14 +32,28 @@
         }
 
         .header-card h1 { margin: 0 0 10px; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .header-card p { color: var(--text-muted); line-height: 1.5; margin: 0 0 20px; }
+        .header-card p { color: var(--text-muted); line-height: 1.5; margin: 0 0 25px; }
 
         .controls-row {
             display: flex;
-            gap: 10px;
+            gap: 12px;
             justify-content: center;
             flex-wrap: wrap;
         }
+
+        .action-btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 12px 20px; border-radius: 12px; font-weight: bold; font-size: 14px;
+            cursor: pointer; border: none; transition: transform 0.2s, box-shadow 0.2s;
+            font-family: inherit;
+        }
+        .action-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 15px rgba(0,0,0,0.2); }
+        .action-btn:active { transform: scale(0.95); }
+
+        .btn-spawn { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
+        .btn-tea { background: #4ade80; color: #0b0b0b; }
+        .btn-laser { background: #34495e; color: #fff; }
+        .btn-laser.active { background: #e74c3c; box-shadow: 0 0 15px rgba(231, 76, 60, 0.4); }
 
         /* --- THE PET CSS --- */
         .pet-entity {
@@ -108,34 +122,7 @@
             border-width: 6px 6px 0; border-style: solid; border-color: #fff transparent transparent transparent;
         }
 
-        /* --- OBSTACLES & ITEMS --- */
-        .jump-pad {
-            position: absolute;
-            top: -6px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 6px;
-            background: #f1c40f;
-            border-radius: 6px 6px 0 0;
-            box-shadow: 0 -5px 15px rgba(241, 196, 15, 0.6);
-            z-index: 15;
-        }
-
-        .portal {
-            position: fixed;
-            width: 40px;
-            height: 90px;
-            border-radius: 50%;
-            z-index: 5;
-            box-shadow: 0 0 30px currentColor;
-            border: 4px solid currentColor;
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(5px);
-        }
-        .portal-blue { top: 30%; left: 10vw; color: #3498db; }
-        .portal-yellow { top: 30%; right: 10vw; color: #f1c40f; }
-
+        /* --- ITEMS --- */
         .tea-drop {
             position: fixed;
             font-size: 36px;
@@ -150,18 +137,14 @@
     
     <a class="navBtn" id="dynamicBackBtn" href="index" style="transition: none;"><i data-lucide="home"></i> Home</a>
 
-    <div id="portalBlue" class="portal portal-blue"></div>
-    <div id="portalYellow" class="portal portal-yellow"></div>
-
     <div class="header-card" id="solid-box">
-        <div id="jumpPad" class="jump-pad"></div>
-        <h1><i data-lucide="bot"></i> GD Chaos Sandbox</h1>
-        <p>Your pets will dynamically shape-shift and interact with the environment! Hit the yellow Jump Pad, fly through the Gravity Portals, feed them Moroccan Tea, or turn on the Laser Pointer to make them chase your mouse!</p>
+        <h1><i data-lucide="bot"></i> Desktop Pet</h1>
+        <p>Your pets will dynamically shape-shift into different forms as they wander. Drop some tea to feed them, or turn on the Laser Pointer to make them chase your mouse!</p>
         
         <div class="controls-row">
-            <button class="btn" style="width: auto;" onclick="spawnPet()"><i data-lucide="copy"></i> Spawn Clone</button>
-            <button class="btn" style="width: auto; background: #4ade80; color: #111;" onclick="dropTea()"><i data-lucide="coffee"></i> Drop Tea</button>
-            <button class="btn" style="width: auto; background: #e74c3c; color: #fff;" id="laserToggle" onclick="toggleLaser()"><i data-lucide="mouse-pointer"></i> Laser: OFF</button>
+            <button class="action-btn btn-spawn" onclick="spawnPet()"><i data-lucide="copy-plus"></i> Spawn Clone</button>
+            <button class="action-btn btn-tea" onclick="dropTea()"><i data-lucide="coffee"></i> Drop Tea</button>
+            <button class="action-btn btn-laser" id="laserToggle" onclick="toggleLaser()"><i data-lucide="mouse-pointer-2"></i> Laser: OFF</button>
         </div>
     </div>
 
@@ -177,12 +160,9 @@
         }
 
         // ==========================================
-        // ADVANCED MULTI-PET ENGINE
+        // DESKTOP PET ENGINE
         // ==========================================
         const solidBox = document.getElementById('solid-box');
-        const jumpPad = document.getElementById('jumpPad');
-        const pBlue = document.getElementById('portalBlue');
-        const pYellow = document.getElementById('portalYellow');
         const laserBtn = document.getElementById('laserToggle');
         
         const GAMEMODES = [
@@ -194,9 +174,9 @@
         ];
 
         const DIALOGUE = [
-            "I beat Stereo Madness!", "WaelOS is so smooth...", "Have you redeemed a code?", 
-            "Need more RAM!", "Mint tea is the best.", "Where is the Windows Vault?", 
-            "I love jumping!", "Are you an admin?", "Don't drop me!"
+            "WaelOS is so smooth...", "Have you redeemed a code?", 
+            "Mint tea is the best.", "Where is the Windows Vault?", 
+            "I love exploring!", "Don't drop me!"
         ];
 
         let pets = [];
@@ -213,13 +193,18 @@
 
         function toggleLaser() {
             isLaserMode = !isLaserMode;
-            laserBtn.innerHTML = isLaserMode ? `<i data-lucide="mouse-pointer"></i> Laser: ON` : `<i data-lucide="mouse-pointer"></i> Laser: OFF`;
-            laserBtn.style.background = isLaserMode ? '#3498db' : '#e74c3c';
+            if (isLaserMode) {
+                laserBtn.innerHTML = `<i data-lucide="mouse-pointer-2"></i> Laser: ON`;
+                laserBtn.classList.add('active');
+            } else {
+                laserBtn.innerHTML = `<i data-lucide="mouse-pointer-2"></i> Laser: OFF`;
+                laserBtn.classList.remove('active');
+            }
             lucide.createIcons();
         }
 
         function dropTea() {
-            if (teaItem) return; // Only one tea at a time
+            if (teaItem) return; 
             teaItem = {
                 el: document.createElement('div'),
                 posX: Math.random() * (window.innerWidth - 50),
@@ -337,10 +322,6 @@
             const rightWall = window.innerWidth - petSize;
             const boxRect = solidBox.getBoundingClientRect();
             
-            // Portals Rects
-            const pbRect = pBlue.getBoundingClientRect();
-            const pyRect = pYellow.getBoundingClientRect();
-            
             // Tea Physics
             if (teaItem) {
                 teaItem.velY += 0.8;
@@ -381,11 +362,6 @@
                             p.posY = boxRect.top - petSize;
                             p.velY *= -0.4;
                             p.velX *= 0.8;
-                            
-                            // JUMP PAD LOGIC
-                            if (pCenterX > boxRect.left + (boxRect.width/2) - 40 && pCenterX < boxRect.left + (boxRect.width/2) + 40) {
-                                p.velY = -25; // BOING
-                            }
                         }
                         // Spider hit bottom
                         if (p.velY <= 0 && prevY >= boxRect.bottom - 10 && p.posY <= boxRect.bottom) {
@@ -393,14 +369,6 @@
                             p.velY *= -0.4;
                             p.velX *= 0.8;
                         }
-                    }
-
-                    // Portal Logic
-                    if (pCenterX > pbRect.left && pCenterX < pbRect.right && pCenterY > pbRect.top && pCenterY < pbRect.bottom) {
-                        p.spiderFlipped = true; // Blue = Anti-gravity
-                    }
-                    if (pCenterX > pyRect.left && pCenterX < pyRect.right && pCenterY > pyRect.top && pCenterY < pyRect.bottom) {
-                        p.spiderFlipped = false; // Yellow = Normal gravity
                     }
 
                     // Screen Bounds
