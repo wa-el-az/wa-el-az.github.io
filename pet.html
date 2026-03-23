@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>WaelOS — Desktop Pet</title>
+    <link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
+    <link rel="stylesheet" href="css/style.css" />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { 
+            padding: 80px 5vw; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            min-height: 100vh; 
+            overflow: hidden; /* Keep the pet from walking off the page scroll */
+        }
+        
+        .header-card {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 24px;
+            padding: 30px;
+            backdrop-filter: blur(14px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.4);
+            text-align: center;
+            max-width: 600px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header-card h1 { margin: 0 0 10px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .header-card p { color: var(--text-muted); line-height: 1.5; margin: 0; }
+
+        /* --- THE PET CSS --- */
+        #shimeji {
+            position: fixed;
+            width: 64px; /* Size of your pet */
+            height: 64px;
+            object-fit: contain;
+            z-index: 9999;
+            cursor: grab;
+            user-select: none;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));
+            /* The transition makes the flipping smooth when it changes direction */
+            transition: transform 0.2s; 
+        }
+
+        #shimeji:active {
+            cursor: grabbing;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-left"></div><div class="bg-right"></div>
+    
+    <a class="navBtn" id="dynamicBackBtn" href="index"><i data-lucide="home"></i> Home</a>
+
+    <div class="header-card">
+        <h1><i data-lucide="bot"></i> Desktop Pet Sandbox</h1>
+        <p>Welcome to the Shimeji testing ground! You can click and drag your pet to throw them around, or just leave them alone and watch them wander across the bottom of your screen.</p>
+    </div>
+
+    <img id="shimeji" src="assets/gd/cube_274.png" alt="Desktop Pet" draggable="false">
+
+    <script src="js/config.js"></script>
+    <script>
+        lucide.createIcons();
+
+        // Dynamic Back Button
+        const backBtn = document.getElementById('dynamicBackBtn');
+        if (document.referrer.toLowerCase().includes('shortcuts')) {
+            backBtn.href = 'shortcuts';
+            backBtn.innerHTML = '<i data-lucide="zap"></i> Shortcuts';
+            lucide.createIcons();
+        }
+
+        // ==========================================
+        // SHIMEJI PET ENGINE
+        // ==========================================
+        const pet = document.getElementById('shimeji');
+        
+        // Physics & Position Variables
+        let posX = window.innerWidth / 2; // Start in middle
+        let posY = window.innerHeight / 2; // Start in middle
+        let velX = 0; // Speed moving left/right
+        let velY = 0; // Speed moving up/down (Gravity)
+        
+        const gravity = 0.8;
+        const friction = 0.8; // Slows pet down when sliding
+        const bounce = -0.5; // How bouncy the pet is when it hits the floor
+        const speed = 2; // Walking speed
+        
+        let isDragging = false;
+        let isFacingRight = true;
+        let roamTimer = 0;
+        
+        // --- 1. Animation Loop (Runs 60 times a second) ---
+        function updatePhysics() {
+            const petWidth = pet.offsetWidth;
+            const petHeight = pet.offsetHeight;
+            const ground = window.innerHeight - petHeight;
+            const rightWall = window.innerWidth - petWidth;
+
+            if (!isDragging) {
+                // Apply Gravity
+                velY += gravity;
+                
+                // Update Positions
+                posX += velX;
+                posY += velY;
+
+                // --- Collisions ---
+                // Hit the floor
+                if (posY > ground) {
+                    posY = ground;
+                    velY *= bounce; // Bounce slightly
+                    velX *= friction; // Apply friction to stop sliding
+                    
+                    // Stop bouncing if moving very slowly
+                    if (Math.abs(velY) < 1) velY = 0; 
+                }
+
+                // Hit left wall
+                if (posX < 0) {
+                    posX = 0;
+                    velX *= -1; // Turn around
+                }
+                // Hit right wall
+                if (posX > rightWall) {
+                    posX = rightWall;
+                    velX *= -1; // Turn around
+                }
+
+                // --- AI Walking Logic (Only walk if standing on the floor) ---
+                if (posY === ground && Math.abs(velY) === 0 && Math.abs(velX) < 0.5) {
+                    roamTimer--;
+                    
+                    if (roamTimer <= 0) {
+                        // Pick a new random action
+                        const action = Math.random();
+                        
+                        if (action < 0.3) {
+                            // Walk Left
+                            velX = -speed;
+                            isFacingRight = false;
+                            roamTimer = Math.random() * 100 + 50; // Walk for 50-150 frames
+                        } else if (action < 0.6) {
+                            // Walk Right
+                            velX = speed;
+                            isFacingRight = true;
+                            roamTimer = Math.random() * 100 + 50;
+                        } else if (action < 0.7) {
+                            // Jump
+                            velY = -15;
+                            roamTimer = 30;
+                        } else {
+                            // Stand still
+                            velX = 0;
+                            roamTimer = Math.random() * 150 + 50;
+                        }
+                    }
+                }
+            }
+
+            // Apply the position to the CSS
+            pet.style.left = posX + 'px';
+            pet.style.top = posY + 'px';
+            
+            // Flip the image depending on which way it is walking
+            pet.style.transform = isFacingRight ? 'scaleX(1)' : 'scaleX(-1)';
+
+            // Loop the animation
+            requestAnimationFrame(updatePhysics);
+        }
+
+        // --- 2. Mouse Dragging Logic ---
+        let offsetX = 0;
+        let offsetY = 0;
+        let lastMouseX = 0;
+        let lastMouseY = 0;
+
+        pet.addEventListener('mousedown', (e) => {
+            isDragging = true;
+            // Calculate where we clicked on the pet
+            offsetX = e.clientX - posX;
+            offsetY = e.clientY - posY;
+            
+            lastMouseX = e.clientX;
+            lastMouseY = e.clientY;
+            
+            // Reset timers so it stops trying to walk while grabbed
+            velX = 0;
+            velY = 0;
+            pet.style.transition = 'none'; // Remove flip transition so it doesn't lag while dragging
+        });
+
+        window.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                // Calculate throw velocity based on how fast the mouse is moving
+                velX = e.clientX - lastMouseX;
+                velY = e.clientY - lastMouseY;
+                
+                lastMouseX = e.clientX;
+                lastMouseY = e.clientY;
+
+                // Move pet to mouse
+                posX = e.clientX - offsetX;
+                posY = e.clientY - offsetY;
+                
+                // Look the direction we are being dragged
+                if (velX > 0) isFacingRight = true;
+                if (velX < 0) isFacingRight = false;
+            }
+        });
+
+        window.addEventListener('mouseup', () => {
+            if (isDragging) {
+                isDragging = false;
+                pet.style.transition = 'transform 0.2s'; // Turn flip transition back on
+                roamTimer = 60; // Make it wait a second before deciding what to do next
+            }
+        });
+
+        // Start the engine
+        updatePhysics();
+    </script>
+    <script src="js/context-menu.js"></script>
+    <script src="js/core.js"></script>
+</body>
+</html>
