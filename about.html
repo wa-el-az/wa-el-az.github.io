@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Wael — About System</title>
+    <title>WaelOS — About System</title>
     <link rel="icon" type="image/svg+xml" href="assets/icon.svg" />
     <link rel="stylesheet" href="css/style.css" />
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -99,7 +99,7 @@
             color: #fff; padding: 10px 18px; border-radius: 8px;
             cursor: pointer; font-size: 13px; font-weight: bold;
             display: inline-flex; align-items: center; justify-content: center; gap: 6px; transition: 0.2s;
-            height: fit-content; margin: 0; /* Prevents vertical stretching */
+            height: fit-content; margin: 0; 
             white-space: nowrap;
         }
         .action-btn:hover { background: rgba(255, 255, 255, 0.2); transform: translateY(-2px); }
@@ -144,6 +144,14 @@
         }
         input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
 
+        /* --- MOBILE UI CLEANUP --- */
+        @media (max-width: 768px) {
+            .desc-text { display: none !important; }
+            .action-text strong { margin-bottom: 0 !important; font-size: 14px; }
+            .action-text { max-width: 65%; }
+            .action-row { align-items: center; }
+        }
+
     </style>
 </head>
 <body>
@@ -167,7 +175,7 @@
                 <div class="action-row" style="flex-direction: column; align-items: flex-start; gap: 12px; border-top: none; padding-top: 0; margin-top: 5px;">
                     <div class="action-text">
                         <strong style="color: #4ade80; display: block; margin-bottom: 4px;">Glassmorphism Pro</strong>
-                        Adjust the intensity of the system background blur for an ultra-premium look.
+                        <span class="desc-text">Adjust the intensity of the system background blur for an ultra-premium look.</span>
                     </div>
                     <div style="display: flex; align-items: center; gap: 15px; width: 100%; margin-top: 5px;">
                         <input type="range" id="blur-slider" min="0" max="80" value="20" step="1">
@@ -178,15 +186,12 @@
                 <div class="action-row">
                     <div class="action-text">
                         <strong style="color: #4ade80; display: block; margin-bottom: 4px;">System Cursor</strong>
-                        Change your global mouse pointer style.
+                        <span class="desc-text">Change your global mouse pointer style.</span>
                     </div>
                     <select id="cursor-select" class="pwd-input" style="flex: 0 0 auto; width: 180px; cursor: pointer;">
                         <option value="default">System Default</option>
                         <option value="win11-light">Win 11 Concept (Light)</option>
                         <option value="win11-dark">Win 11 Concept (Dark)</option>
-                        <option value="crosshair">Hacker Crosshair</option>
-                        <option value="gd">Geometry Dash Cube</option>
-                        <option value="tea">Moroccan Tea</option>
                     </select>
                 </div>
             </div>
@@ -197,7 +202,7 @@
                 <div class="action-row" style="border-top: none; padding-top: 0; margin-top: 5px;">
                     <div class="action-text">
                         <strong style="color: #fff; display: block; margin-bottom: 4px;">Spotlight Search</strong>
-                        Enable the Ctrl + K global search menu overlay.
+                        <span class="desc-text">Enable the Ctrl + K global search menu overlay.</span>
                     </div>
                     <div class="toggle-switch" id="feat-spotlight-toggle" onclick="toggleFeature('spotlight')"></div>
                 </div>
@@ -205,7 +210,7 @@
                 <div class="action-row">
                     <div class="action-text">
                         <strong style="color: #fff; display: block; margin-bottom: 4px;">Custom Context Menu</strong>
-                        Override the browser's default right-click menu with WaelOS styling.
+                        <span class="desc-text">Override the browser's default right-click menu with WaelOS styling.</span>
                     </div>
                     <div class="toggle-switch" id="feat-contextmenu-toggle" onclick="toggleFeature('contextmenu')"></div>
                 </div>
@@ -213,7 +218,7 @@
                 <div class="action-row">
                     <div class="action-text">
                         <strong style="color: #fff; display: block; margin-bottom: 4px;">Terminal Text Selection</strong>
-                        Use the custom WaelOS green highlight when selecting text.
+                        <span class="desc-text">Use the custom WaelOS green highlight when selecting text.</span>
                     </div>
                     <div class="toggle-switch" id="feat-selection-toggle" onclick="toggleFeature('selection')"></div>
                 </div>
@@ -221,7 +226,7 @@
                 <div class="action-row">
                     <div class="action-text">
                         <strong style="color: #fff; display: block; margin-bottom: 4px;">Ambient Button Glow</strong>
-                        Enable the flashlight hover effect on WaelOS interactive buttons.
+                        <span class="desc-text">Enable the flashlight hover effect on WaelOS interactive buttons.</span>
                     </div>
                     <div class="toggle-switch" id="feat-glow-toggle" onclick="toggleFeature('glow')"></div>
                 </div>
@@ -229,7 +234,7 @@
                 <div class="action-row">
                     <div class="action-text">
                         <strong style="color: #fff; display: block; margin-bottom: 4px;">Moroccan Emoji Engine</strong>
-                        Automatically render ultra-high quality flag emojis in text fields.
+                        <span class="desc-text">Automatically render ultra-high quality flag emojis in text fields.</span>
                     </div>
                     <div class="toggle-switch" id="feat-emoji-toggle" onclick="toggleFeature('emoji')"></div>
                 </div>
@@ -251,7 +256,10 @@
                     <li>Last Update Check: <span id="update-status">Checking...</span></li>
                 </ul>
                 <div class="action-row">
-                    <div class="action-text">Ensure your system is running the latest code.</div>
+                    <div class="action-text">
+                        <strong style="color: #fff; display: block; margin-bottom: 4px;">System Updates</strong>
+                        <span class="desc-text">Ensure your system is running the latest code.</span>
+                    </div>
                     <button class="action-btn" onclick="checkUpdates()"><i data-lucide="refresh-cw"></i> Check Updates</button>
                 </div>
             </div>
@@ -264,12 +272,18 @@
                 </ul>
                 
                 <div class="action-row">
-                    <div class="action-text">Clear temporary web assets (like fonts, scripts, and images) to free up memory. Forces a reload.</div>
+                    <div class="action-text">
+                        <strong style="color: #fff; display: block; margin-bottom: 4px;">Asset Cache</strong>
+                        <span class="desc-text">Clear temporary web assets (like fonts, scripts, and images) to free up memory. Forces a reload.</span>
+                    </div>
                     <button class="action-btn" id="cache-btn" onclick="clearAssetCache()"><i data-lucide="trash"></i> Clear Asset Cache</button>
                 </div>
 
                 <div class="action-row">
-                    <div class="action-text"><strong>Warning:</strong> This wipes all saved WaelOS data (like your music timeline) and returns the system to factory defaults.</div>
+                    <div class="action-text">
+                        <strong style="color: #ff4757; display: block; margin-bottom: 4px;">Danger Zone</strong>
+                        <span class="desc-text"><strong>Warning:</strong> This wipes all saved WaelOS data (like your music timeline) and returns the system to factory defaults.</span>
+                    </div>
                     <button class="action-btn btn-danger-outline" onclick="factoryReset()"><i data-lucide="alert-triangle"></i> Factory Reset</button>
                 </div>
             </div>
@@ -278,7 +292,10 @@
                 <h3><i data-lucide="gamepad-2"></i> Developer Menu (Game Mods)</h3>
                 
                 <div id="cheats-locked" class="action-row" style="flex-direction: column; align-items: flex-start; gap: 12px; border-top: none; padding-top: 0; margin-top: 5px;">
-                    <div class="action-text">This section is restricted. Enter the system administrator passcode to unlock system overrides.</div>
+                    <div class="action-text">
+                        <strong style="color: #fff; display: block; margin-bottom: 4px;">System Overrides</strong>
+                        <span class="desc-text">This section is restricted. Enter the system administrator passcode to unlock system overrides.</span>
+                    </div>
                     <div style="display: flex; align-items: center; gap: 10px; width: 100%;">
                         <input type="password" id="cheat-pwd" class="pwd-input" placeholder="Enter password..." autocomplete="off">
                         <button class="action-btn" onclick="verifyPassword()"><i data-lucide="unlock"></i> Unlock</button>
@@ -290,7 +307,7 @@
                     <div class="action-row" style="border-top: none; padding-top: 0; margin-top: 5px;">
                         <div class="action-text">
                             <strong style="color: #4ade80; display: block; margin-bottom: 4px;">Aesthetic: RGB Gamer Mode</strong>
-                            Turns the WaelOS background into a shifting rainbow.
+                            <span class="desc-text">Turns the WaelOS background into a shifting rainbow.</span>
                         </div>
                         <div class="toggle-switch" id="cheat-rgb-toggle" onclick="toggleCheat('rgb')"></div>
                     </div>
@@ -298,7 +315,7 @@
                     <div class="action-row">
                         <div class="action-text">
                             <strong style="color: #4ade80; display: block; margin-bottom: 4px;">Unlock All Achievements</strong>
-                            Instantly grant all WaelOS system achievements.
+                            <span class="desc-text">Instantly grant all WaelOS system achievements.</span>
                         </div>
                         <button class="action-btn" onclick="grantAchievements()"><i data-lucide="award"></i> Grant All</button>
                     </div>
@@ -315,17 +332,7 @@
             if(window.lucide) lucide.createIcons();
             calculateStorage();
             
-            // Cursor Selector Logic
-            const cursorSelect = document.getElementById('cursor-select');
-            cursorSelect.value = localStorage.getItem('waelos_cursor') || 'default';
-            cursorSelect.addEventListener('change', (e) => {
-                localStorage.setItem('waelos_cursor', e.target.value);
-                waelConfirm("System Update Required", "Changing the system cursor requires a page refresh. Reload now?", () => {
-                    window.location.reload();
-                });
-            });
-
-            // Glassmorphism Slider
+            // Setup Glassmorphism Slider
             const slider = document.getElementById('blur-slider');
             const blurVal = document.getElementById('blur-value');
             const savedBlur = localStorage.getItem('waelos_glass_blur') || 20;
@@ -339,16 +346,36 @@
                 localStorage.setItem('waelos_glass_blur', val);
             });
             
-            // Setup Core OS Modules Toggles
+            // Setup Core OS Modules Toggles with Mobile Detection for Glow
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
             const features = ['spotlight', 'contextmenu', 'selection', 'glow', 'emoji'];
+            
             features.forEach(feat => {
                 const toggle = document.getElementById(`feat-${feat}-toggle`);
-                // Assume TRUE if it hasn't been set yet
-                const isEnabled = localStorage.getItem(`waelos_feature_${feat}`) !== 'false';
+                const savedValue = localStorage.getItem(`waelos_feature_${feat}`);
+                let isEnabled;
+                
+                // Ambient Glow is strictly OFF by default on Mobile
+                if (feat === 'glow') {
+                    isEnabled = savedValue === 'true' || (savedValue === null && !isMobile);
+                } else {
+                    isEnabled = savedValue !== 'false'; // Everything else is true by default
+                }
+
                 if (isEnabled) toggle.classList.add('active');
                 else toggle.classList.remove('active');
             });
 
+            // Setup Cursor Selector Logic
+            const cursorSelect = document.getElementById('cursor-select');
+            cursorSelect.value = localStorage.getItem('waelos_cursor') || 'default';
+            cursorSelect.addEventListener('change', (e) => {
+                localStorage.setItem('waelos_cursor', e.target.value);
+                waelConfirm("System Update Required", "Changing the system cursor requires a page refresh. Reload now?", () => {
+                    window.location.reload();
+                });
+            });
+            
             // Check if cheats were previously unlocked
             if (localStorage.getItem('waelos_cheats_unlocked') === 'true') {
                 showCheatsMenu();
