@@ -108,7 +108,7 @@
             66% { filter: hue-rotate(240deg) drop-shadow(0 0 20px #0000ff); }
             100% { filter: hue-rotate(360deg) drop-shadow(0 0 20px #ff0000); }
         }
-        .sugar-rush { animation: trueRGB 1.5s linear infinite !important; }
+        .sugar-rush { animation: trueRGB(1.5s) linear infinite !important; }
 
         @keyframes morphFlash {
             0% { filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)) brightness(1) saturate(1); transform: scale(1) rotate(0deg); }
@@ -150,7 +150,6 @@
         }
         .tea-drop { font-size: 36px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5)); }
         .dropped-coin { width: 30px; height: 30px; filter: drop-shadow(0 5px 10px rgba(255,215,0,0.5)); }
-
     </style>
 </head>
 <body>
@@ -160,7 +159,7 @@
 
     <div class="header-card" id="solid-box">
         <h1><i data-lucide="bot"></i> Desktop Pet</h1>
-        <p>Spawn pets, drop tea, and keep spawning to find the rare Mythic RGB Pet! Normal pets can evolve if they collect magic coins dropped by Mythics.</p>
+        <p>Spawn pets, drop tea, and keep spawning to find the rare Mythic RGB Pet! These pets interact, chat, and even evolve if they find the magic stone coin dropped by a Mythic pet.</p>
         
         <div class="controls-row">
             <button class="action-btn btn-spawn" onclick="spawnPet()"><i data-lucide="copy-plus"></i> Spawn Pet</button>
@@ -204,6 +203,7 @@
             "Where is the Windows Vault?", "Did you debloat Windows 11 today?",
             "My ThinkPad needs more RAM...", "Rectify11 makes everything look better.",
             "Error 404: Tea not found.", "Let me check the hardware specs.",
+            "I think there's a bug in my Python script.", "Is the glassmorphism blur set to 20px?",
             "I wonder if I can run Asphalt 8 in here...", "Look at me go!", 
             "I love exploring!", "Don't drop me!", "I just beat Stereo Madness!",
             "I'm practicing my wave spam.", "Fire in the hole!", "BloodBath is too hard...",
@@ -294,7 +294,11 @@
                 petObj.el.style.transition = 'none'; 
 
                 if (thiefPet === petObj) {
-                    thiefPet = null; backBtn.style.position = 'fixed'; backBtn.style.top = '24px'; backBtn.style.right = '24px'; backBtn.style.left = 'auto';
+                    thiefPet = null;
+                    backBtn.style.position = 'fixed';
+                    backBtn.style.top = '24px';
+                    backBtn.style.right = '24px';
+                    backBtn.style.left = 'auto';
                 }
             });
 
@@ -367,7 +371,6 @@
             const tbRect = trashBin.getBoundingClientRect();
             const tbX = tbRect.left + tbRect.width / 2; const tbY = tbRect.top + tbRect.height / 2;
             
-            // Mythic Coin Drop Physics
             for (let i = coinsList.length - 1; i >= 0; i--) {
                 let c = coinsList[i];
                 c.velY += 0.8;
@@ -466,12 +469,10 @@
                     if (p.sugarRush > 0 && !p.isMythic) p.el.classList.add('sugar-rush');
                     else if (!p.isMythic) p.el.classList.remove('sugar-rush');
 
-                    // Coin Drop Logic
                     if (p.isMythic && Math.random() < 0.002) {
                         let cEl = document.createElement('img');
                         cEl.src = 'https://static.wikia.nocookie.net/geometry-dash-fan-ideas/images/4/4d/Stone_coin.png';
-                        cEl.className = 'dropped-coin';
-                        document.body.appendChild(cEl);
+                        cEl.className = 'dropped-coin'; document.body.appendChild(cEl);
                         coinsList.push({ el: cEl, posX: p.posX + p.size/2 - 15, posY: p.posY, velY: -6 });
                     }
 
@@ -590,7 +591,7 @@
 
                         let flipScale = p.isFacingRight ? 'scaleX(1)' : 'scaleX(-1)';
                         let spiderScale = p.spiderFlipped ? ' scaleY(-1)' : '';
-
+                        
                         if (p.mode.id === 'Ball' && Math.abs(p.velX) > 0.5 && !p.isDragging) {
                             p.rotation += p.velX * 3; p.el.style.transform = `rotate(${p.rotation}deg)`;
                         } else if (p.mode.id === 'Ship' || p.mode.id === 'Jetpack') {
