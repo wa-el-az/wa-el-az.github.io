@@ -38,13 +38,15 @@
             display: flex;
             gap: 12px;
             justify-content: center;
+            align-items: center;
             flex-wrap: wrap;
             margin-bottom: 15px;
         }
 
         .action-btn {
             display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-            padding: 12px 20px; border-radius: 12px; font-weight: bold; font-size: 14px;
+            padding: 0 20px; height: 44px; box-sizing: border-box; /* Height fixed here */
+            border-radius: 12px; font-weight: bold; font-size: 14px;
             cursor: pointer; border: none; transition: transform 0.2s, box-shadow 0.2s;
             font-family: inherit;
         }
@@ -57,29 +59,18 @@
         .btn-laser.active { background: #e74c3c; box-shadow: 0 0 15px rgba(231, 76, 60, 0.4); }
 
         .study-input {
-            padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); 
+            padding: 0 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); 
             background: rgba(0,0,0,0.3); color: white; outline: none; font-family: inherit; width: 200px;
+            height: 44px; box-sizing: border-box; /* Height aligned with buttons */
         }
 
         /* --- TRASH BIN --- */
         #trashBin {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 65px;
-            height: 65px;
-            background: rgba(0, 0, 0, 0.6);
-            border: 2px solid rgba(255, 255, 255, 0.15);
-            border-radius: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            cursor: pointer;
-            z-index: 9990;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            position: fixed; bottom: 30px; right: 30px; width: 65px; height: 65px;
+            background: rgba(0, 0, 0, 0.6); border: 2px solid rgba(255, 255, 255, 0.15); border-radius: 18px;
+            display: flex; align-items: center; justify-content: center; color: #fff;
+            cursor: pointer; z-index: 9990; backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         }
         #trashBin:hover {
             background: rgba(231, 76, 60, 0.2); border-color: #e74c3c; color: #e74c3c; transform: scale(1.1) rotate(-5deg);
@@ -92,19 +83,12 @@
 
         /* --- THE PET CSS --- */
         .pet-entity {
-            position: fixed;
-            object-fit: contain;
-            z-index: 9999;
-            cursor: grab;
-            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));
-            transition: transform 0.15s; 
+            position: fixed; object-fit: contain; z-index: 9999; cursor: grab;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)); transition: transform 0.15s; 
         }
-
         .pet-entity:active { cursor: grabbing; }
 
-        .ghost-trail {
-            opacity: 0.5; pointer-events: none; transition: opacity 0.5s linear; z-index: 9998;
-        }
+        .ghost-trail { opacity: 0.5; pointer-events: none; transition: opacity 0.5s linear; z-index: 9998; }
 
         /* True RGB Color Cycling */
         @keyframes trueRGB {
@@ -150,20 +134,17 @@
         }
         .speech-bubble-mythic::after { border-color: #000 transparent transparent transparent; }
 
-        .tea-drop, .dropped-coin {
-            position: fixed; z-index: 9998; pointer-events: none;
-        }
+        .tea-drop, .dropped-coin { position: fixed; z-index: 9998; pointer-events: none; }
         .tea-drop { font-size: 36px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5)); }
         .dropped-coin { width: 30px; height: 30px; filter: drop-shadow(0 5px 10px rgba(255,215,0,0.5)); }
 
         /* --- STUDY BUDDY DESK --- */
         #studyDesk {
             position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
-            display: none; align-items: flex-end; z-index: 9900; pointer-events: none;
+            display: none; justify-content: center; align-items: flex-end; z-index: 9900; pointer-events: none;
         }
-        .desk-lamp { height: 350px; filter: drop-shadow(0 0 60px rgba(255, 255, 255, 1)) brightness(1.5); margin-right: 15px; }
         .desk-chair { height: 160px; margin-bottom: 20px; }
-        .desk-book { position: absolute; bottom: 85px; left: 30px; height: 35px; z-index: 10000; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5)); transform: rotate(-15deg); }
+        .desk-book { position: absolute; bottom: 80px; left: -25px; height: 40px; z-index: 10000; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5)); transform: rotate(-15deg); }
 
     </style>
 </head>
@@ -195,8 +176,7 @@
     </div>
 
     <div id="studyDesk">
-        <img src="https://static.vecteezy.com/system/resources/thumbnails/043/848/271/small/luxury-floor-lamp-front-elevation-isolated-on-transparent-background-png.png" class="desk-lamp">
-        <div style="position: relative;">
+        <div style="position: relative; display: flex; justify-content: center;">
             <img src="https://www.freepnglogos.com/uploads/chair-png/chair-png-transparent-image-pngpix-10.png" class="desk-chair">
             <img src="https://www.pngarts.com/files/3/Open-Book-PNG-Picture.png" class="desk-book">
         </div>
@@ -273,9 +253,7 @@
                 studyToggleBtn.style.background = '#8e44ad';
                 studyDesk.style.display = 'flex';
                 
-                // If no pets exist, spawn one
                 if (pets.length === 0) spawnPet();
-                // Delete all clones to maintain focus
                 if (pets.length > 1) {
                     pets.slice(1).forEach(extra => {
                         extra.el.remove(); extra.badge.remove(); extra.bubble.remove(); extra.isDeleted = true;
@@ -296,7 +274,7 @@
         }
 
         function toggleLaser() {
-            if (isStudyMode) return; // Disable laser during study time
+            if (isStudyMode) return; 
             isLaserMode = !isLaserMode;
             if (isLaserMode) {
                 laserBtn.innerHTML = `<i data-lucide="mouse-pointer-2"></i> Laser: ON`;
@@ -326,7 +304,7 @@
         }
 
         function spawnPet() {
-            if (isStudyMode && pets.length >= 1) return; // Prevent spawning during study mode
+            if (isStudyMode && pets.length >= 1) return; 
 
             let isMythic = Math.random() < 0.05;
 
@@ -441,7 +419,6 @@
             const tbRect = trashBin.getBoundingClientRect();
             const tbX = tbRect.left + tbRect.width / 2; const tbY = tbRect.top + tbRect.height / 2;
             
-            // Mythic Coin Drop Physics
             for (let i = coinsList.length - 1; i >= 0; i--) {
                 let c = coinsList[i];
                 c.velY += 0.8;
@@ -455,7 +432,6 @@
                         let dx = (p.posX + p.size/2) - (c.posX + 15);
                         let dy = (p.posY + p.size/2) - (c.posY + 15);
                         if (Math.hypot(dx, dy) < (p.size/2 + 15)) {
-                            // EVOLUTION GRANTED!
                             collected = true; p.isMythic = true; p.size = 65;
                             p.el.style.width = '65px'; p.el.style.height = '65px'; p.el.classList.add('sugar-rush');
                             p.bubble.className = 'speech-bubble speech-bubble-mythic';
@@ -524,9 +500,9 @@
 
                 if (isStudyMode) {
                     if (!p.isDragging) {
-                        // Force pet to sit directly on the chair
-                        p.posX = (window.innerWidth / 2) + 20;
-                        p.posY = window.innerHeight - 145;
+                        // Perfectly Center Pet on Chair Cushion
+                        p.posX = (window.innerWidth / 2) - (p.size / 2) + 10;
+                        p.posY = window.innerHeight - 135;
                         p.velX = 0; p.velY = 0;
                         p.isFacingRight = false;
                         p.rotation = 0;
@@ -551,12 +527,10 @@
                     if (p.sugarRush > 0 && !p.isMythic) p.el.classList.add('sugar-rush');
                     else if (!p.isMythic) p.el.classList.remove('sugar-rush');
 
-                    // Coin Drop Logic
                     if (p.isMythic && Math.random() < 0.002) {
                         let cEl = document.createElement('img');
                         cEl.src = 'https://static.wikia.nocookie.net/geometry-dash-fan-ideas/images/4/4d/Stone_coin.png';
-                        cEl.className = 'dropped-coin';
-                        document.body.appendChild(cEl);
+                        cEl.className = 'dropped-coin'; document.body.appendChild(cEl);
                         coinsList.push({ el: cEl, posX: p.posX + p.size/2 - 15, posY: p.posY, velY: -6 });
                     }
 
@@ -677,7 +651,7 @@
                         let spiderScale = p.spiderFlipped ? ' scaleY(-1)' : '';
                         
                         if (isStudyMode && !p.isDragging) {
-                            p.el.style.transform = 'scaleX(-1)'; // Face the book
+                            p.el.style.transform = 'scaleX(-1)'; 
                         } else if (p.mode.id === 'Ball' && Math.abs(p.velX) > 0.5 && !p.isDragging) {
                             p.rotation += p.velX * 3; p.el.style.transform = `rotate(${p.rotation}deg)`;
                         } else if (p.mode.id === 'Ship' || p.mode.id === 'Jetpack') {
