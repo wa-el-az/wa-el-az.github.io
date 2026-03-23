@@ -43,12 +43,13 @@
             margin-bottom: 15px;
         }
 
+        /* Fixed Button Alignment */
         .action-btn {
             display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-            padding: 0 20px; height: 44px; box-sizing: border-box; /* Height fixed here */
+            padding: 0 20px; height: 44px; box-sizing: border-box; margin: 0;
             border-radius: 12px; font-weight: bold; font-size: 14px;
             cursor: pointer; border: none; transition: transform 0.2s, box-shadow 0.2s;
-            font-family: inherit;
+            font-family: inherit; vertical-align: middle;
         }
         .action-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 15px rgba(0,0,0,0.2); }
         .action-btn:active { transform: scale(0.95); }
@@ -58,10 +59,11 @@
         .btn-laser { background: #34495e; color: #fff; }
         .btn-laser.active { background: #e74c3c; box-shadow: 0 0 15px rgba(231, 76, 60, 0.4); }
 
+        /* Fixed Input Alignment */
         .study-input {
             padding: 0 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.2); 
             background: rgba(0,0,0,0.3); color: white; outline: none; font-family: inherit; width: 200px;
-            height: 44px; box-sizing: border-box; /* Height aligned with buttons */
+            height: 44px; box-sizing: border-box; margin: 0; vertical-align: middle;
         }
 
         /* --- TRASH BIN --- */
@@ -90,7 +92,6 @@
 
         .ghost-trail { opacity: 0.5; pointer-events: none; transition: opacity 0.5s linear; z-index: 9998; }
 
-        /* True RGB Color Cycling */
         @keyframes trueRGB {
             0% { filter: hue-rotate(0deg) drop-shadow(0 0 20px #ff0000); }
             33% { filter: hue-rotate(120deg) drop-shadow(0 0 20px #00ff00); }
@@ -138,13 +139,34 @@
         .tea-drop { font-size: 36px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5)); }
         .dropped-coin { width: 30px; height: 30px; filter: drop-shadow(0 5px 10px rgba(255,215,0,0.5)); }
 
-        /* --- STUDY BUDDY DESK --- */
+        /* --- PERFECTED STUDY BUDDY DESK --- */
         #studyDesk {
-            position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
-            display: none; justify-content: center; align-items: flex-end; z-index: 9900; pointer-events: none;
+            position: fixed; 
+            bottom: 20px; 
+            left: 50%; 
+            transform: translateX(-50%);
+            width: 140px; 
+            height: 160px;
+            display: none; 
+            z-index: 9900; 
+            pointer-events: none;
         }
-        .desk-chair { height: 160px; margin-bottom: 20px; }
-        .desk-book { position: absolute; bottom: 80px; left: -25px; height: 40px; z-index: 10000; filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5)); transform: rotate(-15deg); }
+        .desk-chair { 
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            height: 100%; 
+        }
+        .desk-book { 
+            position: absolute; 
+            bottom: 70px; /* Perfect eye-level height */
+            left: -30px;  /* Float cleanly to the left */
+            height: 40px; 
+            z-index: 10000; 
+            filter: drop-shadow(0 5px 5px rgba(0,0,0,0.5)); 
+            transform: rotate(-15deg); 
+        }
 
     </style>
 </head>
@@ -176,10 +198,8 @@
     </div>
 
     <div id="studyDesk">
-        <div style="position: relative; display: flex; justify-content: center;">
-            <img src="https://www.freepnglogos.com/uploads/chair-png/chair-png-transparent-image-pngpix-10.png" class="desk-chair">
-            <img src="https://www.pngarts.com/files/3/Open-Book-PNG-Picture.png" class="desk-book">
-        </div>
+        <img src="https://www.freepnglogos.com/uploads/chair-png/chair-png-transparent-image-pngpix-10.png" class="desk-chair">
+        <img src="https://www.pngarts.com/files/3/Open-Book-PNG-Picture.png" class="desk-book">
     </div>
 
     <script src="js/config.js"></script>
@@ -251,7 +271,7 @@
             if (isStudyMode) {
                 studyToggleBtn.innerHTML = `<i data-lucide="book-open"></i> Study Buddy: ON`;
                 studyToggleBtn.style.background = '#8e44ad';
-                studyDesk.style.display = 'flex';
+                studyDesk.style.display = 'block';
                 
                 if (pets.length === 0) spawnPet();
                 if (pets.length > 1) {
@@ -500,11 +520,11 @@
 
                 if (isStudyMode) {
                     if (!p.isDragging) {
-                        // Perfectly Center Pet on Chair Cushion
-                        p.posX = (window.innerWidth / 2) - (p.size / 2) + 10;
-                        p.posY = window.innerHeight - 135;
+                        // Fixed exact pixel calculation for the chair cushion
+                        p.posX = (window.innerWidth / 2) - (p.size / 2) + 15; // Shift slightly right
+                        p.posY = window.innerHeight - 100 - p.size; // Exact cushion height
                         p.velX = 0; p.velY = 0;
-                        p.isFacingRight = false;
+                        p.isFacingRight = false; // Look left towards the book
                         p.rotation = 0;
                     }
                 }
