@@ -45,96 +45,57 @@ if (localStorage.getItem('waelos_feature_contextmenu') === 'false') {
     }, true); 
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    // ==========================================
-    // 4. MOROCCO EMOJI LOGIC
-    // ==========================================
-    if (localStorage.getItem('waelos_feature_emoji') !== 'false') {
-        const MOROCCO_EMOJI = '🇲🇦';
-        const MOROCCO_SHORTCODE = ':ma:';
-        const MOROCCO_IMAGE_SRC = '/assets/morocco_flag_emoji_ios.png';
-        const SKIP_TAGS = new Set(['SCRIPT', 'STYLE', 'TEXTAREA', 'CODE', 'PRE', 'NOSCRIPT']);
+// ==========================================
+// 4. SYSTEM TELEMETRY (Digital Wellbeing)
+// ==========================================
+let waelosTimeSpent = parseInt(localStorage.getItem('waelos_time_spent')) || 0;
 
-        function createMoroccoEmojiImage(originalText) {
-            const img = document.createElement('img');
-            img.src = MOROCCO_IMAGE_SRC;
-            img.alt = originalText || 'Morocco flag';
-            img.className = 'custom-emoji-inline ma-flag';
-            img.loading = 'lazy';
-            img.decoding = 'async';
-            return img;
+setInterval(() => {
+    waelosTimeSpent++;
+    localStorage.setItem('waelos_time_spent', waelosTimeSpent);
+}, 1000);
+
+// ==========================================
+// 5. GLOBAL CHEATS ENGINE
+// ==========================================
+if (localStorage.getItem('waelos_cheat_rgb_multiplier') === 'true') {
+    const rgbStyle = document.createElement('style');
+    rgbStyle.id = 'rgb-global-style';
+    rgbStyle.innerHTML = `
+        @keyframes rgb-hue-spin { 
+            0% { filter: hue-rotate(0deg) saturate(1.5); } 
+            100% { filter: hue-rotate(360deg) saturate(1.5); } 
         }
-
-        function replaceMoroccoEmojiInTextNode(node) {
-            const text = node.nodeValue;
-            if (!text || (!text.includes(MOROCCO_EMOJI) && !text.includes(MOROCCO_SHORTCODE))) {
-                return;
-            }
-            const parts = text.split(/(🇲🇦|:ma:)/g);
-            if (parts.length <= 1) return;
-            const fragment = document.createDocumentFragment();
-            for (const part of parts) {
-                if (part === MOROCCO_EMOJI || part === MOROCCO_SHORTCODE) {
-                    fragment.appendChild(createMoroccoEmojiImage(part));
-                } else if (part) {
-                    fragment.appendChild(document.createTextNode(part));
-                }
-            }
-            node.parentNode.replaceChild(fragment, node);
+        .bg-left, .bg-right { 
+            animation: rgb-hue-spin 4s linear infinite !important; 
         }
-
-        function walkAndReplace(root) {
-            const walker = document.createTreeWalker(
-                root,
-                NodeFilter.SHOW_TEXT,
-                {
-                    acceptNode(node) {
-                        const parent = node.parentElement;
-                        if (!parent) return NodeFilter.FILTER_REJECT;
-                        if (SKIP_TAGS.has(parent.tagName)) return NodeFilter.FILTER_REJECT;
-                        if (!node.nodeValue || (!node.nodeValue.includes(MOROCCO_EMOJI) && !node.nodeValue.includes(MOROCCO_SHORTCODE))) {
-                            return NodeFilter.FILTER_REJECT;
-                        }
-                        return NodeFilter.FILTER_ACCEPT;
-                    }
-                }
-            );
-
-            const nodes = [];
-            let current;
-            while ((current = walker.nextNode())) {
-                nodes.push(current);
-            }
-
-            nodes.forEach(replaceMoroccoEmojiInTextNode);
+        .cta, .redeem, .btn, .shortcut-btn, .action-btn { 
+            animation: rgb-hue-spin 2s linear infinite !important; 
         }
+    `;
+    document.head.appendChild(rgbStyle);
+}
 
-        walkAndReplace(document.body);
+if (localStorage.getItem('waelos_cheat_all_achievements') === 'true') {
+    let unlocked = JSON.parse(localStorage.getItem('wael_achievements')) || [];
+    const allAchievements = [
+        "tea_first", "tea_500", "tea_10k", "tea_sync", "ttt_win", 
+        "ttt_tie", "ttt_hack", "exp_404", "exp_mail", "exp_proj", 
+        "hack_denied", "hack_brute", "hack_captain", "egg_patriot", "egg_owl"
+    ];
+    let newlyUnlocked = false;
+    
+    allAchievements.forEach(id => {
+        if (!unlocked.includes(id)) {
+            unlocked.push(id);
+            newlyUnlocked = true;
+        }
+    });
+    
+    if (newlyUnlocked) {
+        localStorage.setItem('wael_achievements', JSON.stringify(unlocked));
     }
-
-    // ==========================================
-    // 5. GLOBAL DYNAMIC BACK BUTTON LOGIC
-    // ==========================================
-    const backBtn = document.getElementById('dynamicBackBtn');
-    if (backBtn) {
-        const referrer = document.referrer.toLowerCase();
-        
-        if (referrer.includes('shortcuts')) {
-            backBtn.href = 'shortcuts';
-            backBtn.innerHTML = '<i data-lucide="zap"></i> Shortcuts';
-        } else if (referrer.includes('redeem')) {
-            backBtn.href = 'redeem';
-            backBtn.innerHTML = '<i data-lucide="ticket"></i> Redeem';
-        } else {
-            backBtn.href = 'index';
-            backBtn.innerHTML = '<i data-lucide="home"></i> Home';
-        }
-
-        if (typeof lucide !== 'undefined') {
-            lucide.createIcons();
-        }
-    }
-});
+}
 
 // ==========================================
 // 6. SPOTLIGHT COMMAND CENTER (Ctrl + K)
@@ -144,6 +105,7 @@ if (localStorage.getItem('waelos_feature_spotlight') !== 'false') {
         { name: "Home", url: "index", icon: "home" },
         { name: "Projects", url: "projects", icon: "layers" },
         { name: "Shortcuts", url: "shortcuts", icon: "zap" },
+        { name: "Desktop Pet", url: "pet", icon: "bot" }, // Added Desktop Pet!
         { name: "Tea Clicker", url: "tea", icon: "coffee" },
         { name: "Geometry Dash", url: "gd", icon: "play" },
         { name: "Music Player", url: "music", icon: "music" },
@@ -161,7 +123,7 @@ if (localStorage.getItem('waelos_feature_spotlight') !== 'false') {
             <div id="spotlight-modal">
                 <div class="spotlight-input-wrap">
                     <i data-lucide="search"></i>
-                    <input type="text" id="spotlight-input" placeholder="Search WaelOS (e.g. 'tea', 'projects')..." autocomplete="off">
+                    <input type="text" id="spotlight-input" placeholder="Search WaelOS (e.g. 'pet', 'projects')..." autocomplete="off">
                 </div>
                 <div id="spotlight-results"></div>
             </div>
@@ -247,49 +209,7 @@ if (shouldGlow) {
 }
 
 // ==========================================
-// 8. GLOBAL CHEATS ENGINE
-// ==========================================
-if (localStorage.getItem('waelos_cheat_rgb_multiplier') === 'true') {
-    const rgbStyle = document.createElement('style');
-    rgbStyle.id = 'rgb-global-style';
-    rgbStyle.innerHTML = `
-        @keyframes rgb-hue-spin { 
-            0% { filter: hue-rotate(0deg) saturate(1.5); } 
-            100% { filter: hue-rotate(360deg) saturate(1.5); } 
-        }
-        .bg-left, .bg-right { 
-            animation: rgb-hue-spin 4s linear infinite !important; 
-        }
-        .cta, .redeem, .btn, .shortcut-btn, .action-btn { 
-            animation: rgb-hue-spin 2s linear infinite !important; 
-        }
-    `;
-    document.head.appendChild(rgbStyle);
-}
-
-if (localStorage.getItem('waelos_cheat_all_achievements') === 'true') {
-    let unlocked = JSON.parse(localStorage.getItem('wael_achievements')) || [];
-    const allAchievements = [
-        "tea_first", "tea_500", "tea_10k", "tea_sync", "ttt_win", 
-        "ttt_tie", "ttt_hack", "exp_404", "exp_mail", "exp_proj", 
-        "hack_denied", "hack_brute", "hack_captain", "egg_patriot", "egg_owl"
-    ];
-    let newlyUnlocked = false;
-    
-    allAchievements.forEach(id => {
-        if (!unlocked.includes(id)) {
-            unlocked.push(id);
-            newlyUnlocked = true;
-        }
-    });
-    
-    if (newlyUnlocked) {
-        localStorage.setItem('wael_achievements', JSON.stringify(unlocked));
-    }
-}
-
-// ==========================================
-// 9. CUSTOM WAELOS POPUP SYSTEM (REDEEM STYLE)
+// 8. CUSTOM WAELOS POPUP SYSTEM
 // ==========================================
 const injectPopup = () => {
     if (!document.getElementById('waelos-popup-overlay')) {
@@ -393,17 +313,7 @@ window.waelConfirm = (title, msg, onConfirm) => {
 };
 
 // ==========================================
-// 10. SYSTEM TELEMETRY (Digital Wellbeing)
-// ==========================================
-let waelosTimeSpent = parseInt(localStorage.getItem('waelos_time_spent')) || 0;
-
-setInterval(() => {
-    waelosTimeSpent++;
-    localStorage.setItem('waelos_time_spent', waelosTimeSpent);
-}, 1000);
-
-// ==========================================
-// 11. GLASSMORPHISM SELECT ENGINE
+// 9. GLASSMORPHISM SELECT ENGINE
 // ==========================================
 function initCustomSelects() {
     document.querySelectorAll('select.pwd-input').forEach(select => {
@@ -584,4 +494,95 @@ function initCustomSelects() {
 
 window.addEventListener('load', () => {
     setTimeout(initCustomSelects, 50);
+});
+
+// ==========================================
+// 10. DOM LOADED EVENTS (Emoji & Back Button)
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+    
+    // MOROCCO EMOJI LOGIC
+    if (localStorage.getItem('waelos_feature_emoji') !== 'false') {
+        const MOROCCO_EMOJI = '🇲🇦';
+        const MOROCCO_SHORTCODE = ':ma:';
+        const MOROCCO_IMAGE_SRC = '/assets/morocco_flag_emoji_ios.png';
+        const SKIP_TAGS = new Set(['SCRIPT', 'STYLE', 'TEXTAREA', 'CODE', 'PRE', 'NOSCRIPT']);
+
+        function createMoroccoEmojiImage(originalText) {
+            const img = document.createElement('img');
+            img.src = MOROCCO_IMAGE_SRC;
+            img.alt = originalText || 'Morocco flag';
+            img.className = 'custom-emoji-inline ma-flag';
+            img.loading = 'lazy';
+            img.decoding = 'async';
+            return img;
+        }
+
+        function replaceMoroccoEmojiInTextNode(node) {
+            const text = node.nodeValue;
+            if (!text || (!text.includes(MOROCCO_EMOJI) && !text.includes(MOROCCO_SHORTCODE))) {
+                return;
+            }
+            const parts = text.split(/(🇲🇦|:ma:)/g);
+            if (parts.length <= 1) return;
+            const fragment = document.createDocumentFragment();
+            for (const part of parts) {
+                if (part === MOROCCO_EMOJI || part === MOROCCO_SHORTCODE) {
+                    fragment.appendChild(createMoroccoEmojiImage(part));
+                } else if (part) {
+                    fragment.appendChild(document.createTextNode(part));
+                }
+            }
+            node.parentNode.replaceChild(fragment, node);
+        }
+
+        function walkAndReplace(root) {
+            const walker = document.createTreeWalker(
+                root,
+                NodeFilter.SHOW_TEXT,
+                {
+                    acceptNode(node) {
+                        const parent = node.parentElement;
+                        if (!parent) return NodeFilter.FILTER_REJECT;
+                        if (SKIP_TAGS.has(parent.tagName)) return NodeFilter.FILTER_REJECT;
+                        if (!node.nodeValue || (!node.nodeValue.includes(MOROCCO_EMOJI) && !node.nodeValue.includes(MOROCCO_SHORTCODE))) {
+                            return NodeFilter.FILTER_REJECT;
+                        }
+                        return NodeFilter.FILTER_ACCEPT;
+                    }
+                }
+            );
+
+            const nodes = [];
+            let current;
+            while ((current = walker.nextNode())) {
+                nodes.push(current);
+            }
+
+            nodes.forEach(replaceMoroccoEmojiInTextNode);
+        }
+
+        walkAndReplace(document.body);
+    }
+
+    // GLOBAL DYNAMIC BACK BUTTON LOGIC
+    const backBtn = document.getElementById('dynamicBackBtn');
+    if (backBtn) {
+        const referrer = document.referrer.toLowerCase();
+        
+        if (referrer.includes('shortcuts')) {
+            backBtn.href = 'shortcuts';
+            backBtn.innerHTML = '<i data-lucide="zap"></i> Shortcuts';
+        } else if (referrer.includes('redeem')) {
+            backBtn.href = 'redeem';
+            backBtn.innerHTML = '<i data-lucide="ticket"></i> Redeem';
+        } else {
+            backBtn.href = 'index';
+            backBtn.innerHTML = '<i data-lucide="home"></i> Home';
+        }
+
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
+    }
 });
