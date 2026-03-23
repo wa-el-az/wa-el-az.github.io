@@ -55,6 +55,42 @@
         .btn-laser { background: #34495e; color: #fff; }
         .btn-laser.active { background: #e74c3c; box-shadow: 0 0 15px rgba(231, 76, 60, 0.4); }
 
+        /* --- TRASH BIN --- */
+        #trashBin {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 65px;
+            height: 65px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            cursor: pointer;
+            z-index: 9990;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+        #trashBin:hover {
+            background: rgba(231, 76, 60, 0.2);
+            border-color: #e74c3c;
+            color: #e74c3c;
+            transform: scale(1.1) rotate(-5deg);
+        }
+        #trashBin svg { width: 32px; height: 32px; }
+        
+        .magnet-active {
+            background: rgba(231, 76, 60, 0.8) !important;
+            border-color: #fff !important;
+            color: #fff !important;
+            transform: scale(1.2) !important;
+            box-shadow: 0 0 30px rgba(231, 76, 60, 0.6) !important;
+        }
+
         /* --- THE PET CSS --- */
         .pet-entity {
             position: fixed;
@@ -158,13 +194,17 @@
 
     <div class="header-card" id="solid-box">
         <h1><i data-lucide="bot"></i> Desktop Pet</h1>
-        <p>Your pets will dynamically shape-shift and interact with each other! Watch them bump, chat, and react to the rare Mythic RGB Pet if you manage to spawn one.</p>
+        <p>Drop tea, turn on the Laser Pointer, or keep spawning clones to find the rare Mythic Pet! Need to clean up? Drag a pet into the Trash Bin, or click the bin to activate the magnet!</p>
         
         <div class="controls-row">
             <button class="action-btn btn-spawn" onclick="spawnPet()"><i data-lucide="copy-plus"></i> Spawn Clone</button>
             <button class="action-btn btn-tea" onclick="dropTea()"><i data-lucide="coffee"></i> Drop Tea</button>
             <button class="action-btn btn-laser" id="laserToggle" onclick="toggleLaser()"><i data-lucide="mouse-pointer-2"></i> Laser: OFF</button>
         </div>
+    </div>
+
+    <div id="trashBin" onclick="activateMagnet()">
+        <i data-lucide="trash-2"></i>
     </div>
 
     <script src="js/config.js"></script>
@@ -179,10 +219,11 @@
         }
 
         // ==========================================
-        // DESKTOP PET ENGINE (INTERACTIVE EDITION)
+        // DESKTOP PET ENGINE (TRASH BIN UPDATE)
         // ==========================================
         const solidBox = document.getElementById('solid-box');
         const laserBtn = document.getElementById('laserToggle');
+        const trashBin = document.getElementById('trashBin');
         
         const GAMEMODES = [
             { id: 'Cube', src: 'assets/gd/cube_274.png' },
@@ -223,6 +264,7 @@
         let teaItem = null;
         let thiefPet = null;
         let isLaserMode = false;
+        let isMagnetizing = false;
         let mouseX = window.innerWidth / 2;
         let mouseY = window.innerHeight / 2;
 
@@ -256,8 +298,14 @@
             document.body.appendChild(teaItem.el);
         }
 
+        function activateMagnet() {
+            if (pets.length === 0) return;
+            isMagnetizing = true;
+            trashBin.classList.add('magnet-active');
+        }
+
         function spawnPet() {
-            let isMythic = Math.random() < 0.05; // 5% chance
+            let isMythic = Math.random() < 0.05;
 
             const petObj = {
                 el: document.createElement('img'),
@@ -277,7 +325,8 @@
                 isDragging: false,
                 offsetX: 0, offsetY: 0, lastX: 0, lastY: 0,
                 isMythic: isMythic,
-                size: isMythic ? 65 : 50 
+                size: isMythic ? 65 : 50,
+                isDeleted: false
             };
 
             petObj.el.className = 'pet-entity';
@@ -298,6 +347,7 @@
             document.body.appendChild(petObj.bubble);
 
             petObj.el.addEventListener('mousedown', (e) => {
+                if (isMagnetizing) return; // Can't grab during a black hole event
                 petObj.isDragging = true;
                 petObj.offsetX = e.clientX - petObj.posX;
                 petObj.offsetY = e.clientY - petObj.posY;
@@ -334,6 +384,33 @@
                     petObj.el.style.transition = 'transform 0.15s'; 
                     petObj.roamTimer = 60; 
                     if (petObj.mode.id === 'Spider' || petObj.mode.id === 'Swing') petObj.spiderFlipped = false;
+
+                    // DRAG & DROP TRASH CHECK
+                    let tbRect = trashBin.getBoundingClientRect();
+                    let pCenterX = petObj.posX + petObj.size / 2;
+                    let pCenterY = petObj.posY + petObj.size / 2;
+                    
+                    // If dropped directly on or very near the trash bin
+                    if (pCenterX > tbRect.left - 30 && pCenterX < tbRect.right + 30 &&
+                        pCenterY > tbRect.top - 30 && pCenterY < tbRect.bottom + 30) {
+                        
+                        // Delete Animation
+                        petObj.el.style.transition = 'all 0.4s ease-in';
+                        petObj.el.style.transform = 'scale(0) rotate(360deg)';
+                        petObj.el.style.opacity = '0';
+                        petObj.badge.style.opacity = '0';
+                        petObj.bubble.style.opacity = '0';
+                        
+                        setTimeout(() => {
+                            petObj.el.remove();
+                            petObj.badge.remove();
+                            petObj.bubble.remove();
+                        }, 400);
+                        
+                        petObj.isDeleted = true; // Mark for engine loop cleanup
+                        trashBin.style.transform = 'scale(1.2)';
+                        setTimeout(() => trashBin.style.transform = '', 200);
+                    }
                 }
             });
 
@@ -355,6 +432,7 @@
             p.rotation = 0; 
             
             setTimeout(() => {
+                if(p.isDeleted) return;
                 p.el.src = newMode.src;
                 p.mode = newMode;
                 p.badge.innerText = `${p.mode.id} Mode`;
@@ -363,6 +441,7 @@
             }, 300);
 
             setTimeout(() => { 
+                if(p.isDeleted) return;
                 p.el.classList.remove('morphing'); 
                 p.el.classList.remove('morphing-mythic'); 
             }, 600);
@@ -372,12 +451,14 @@
             const ground = window.innerHeight;
             const rightWall = window.innerWidth;
             const boxRect = solidBox.getBoundingClientRect();
+            const tbRect = trashBin.getBoundingClientRect();
+            const tbX = tbRect.left + tbRect.width / 2;
+            const tbY = tbRect.top + tbRect.height / 2;
             
-            // Mythic Telekinesis (Tea Magnet)
             if (teaItem) {
-                let mythicPet = pets.find(m => m.isMythic);
+                let mythicPet = pets.find(m => m.isMythic && !m.isDeleted);
                 
-                if (mythicPet && !isLaserMode) {
+                if (mythicPet && !isLaserMode && !isMagnetizing) {
                     let dx = (mythicPet.posX + mythicPet.size/2) - teaItem.posX;
                     let dy = (mythicPet.posY + mythicPet.size/2) - teaItem.posY;
                     let dist = Math.hypot(dx, dy);
@@ -407,28 +488,24 @@
                 }
             }
 
-            // --- PET-TO-PET INTERACTION ENGINE ---
             for (let i = 0; i < pets.length; i++) {
                 for (let j = i + 1; j < pets.length; j++) {
                     let p1 = pets[i];
                     let p2 = pets[j];
-                    if (p1.isDragging || p2.isDragging) continue;
+                    if (p1.isDragging || p2.isDragging || isMagnetizing || p1.isDeleted || p2.isDeleted) continue;
 
                     let dx = (p1.posX + p1.size/2) - (p2.posX + p2.size/2);
                     let dy = (p1.posY + p1.size/2) - (p2.posY + p2.size/2);
                     let dist = Math.hypot(dx, dy);
                     let minDist = (p1.size + p2.size) / 2;
 
-                    // If they collide
                     if (dist < minDist) {
-                        // 1. Physical Bounce (Push them apart)
                         let angle = Math.atan2(dy, dx);
-                        let pushForce = 2; // How hard they bump
+                        let pushForce = 2; 
                         
                         p1.velX += Math.cos(angle) * pushForce;
                         p2.velX -= Math.cos(angle) * pushForce;
 
-                        // 2. Mythic Interaction (Violent Launch)
                         if (p1.isMythic && !p2.isMythic) {
                             p2.velY = -15; 
                             p1.bubble.innerText = "Move.";
@@ -440,7 +517,6 @@
                             p2.bubble.style.opacity = '1';
                             setTimeout(() => p2.bubble.style.opacity = '0', 2000);
                         } 
-                        // 3. Normal Chatting Interaction (Rare chance to talk when they bump)
                         else if (Math.random() < 0.05 && p1.speechTimer > 200 && p2.speechTimer > 200) {
                             p1.bubble.innerText = "Watch out!";
                             p2.bubble.innerText = "Oops!";
@@ -448,8 +524,6 @@
                             p2.bubble.style.opacity = '1';
                             setTimeout(() => p1.bubble.style.opacity = '0', 2000);
                             setTimeout(() => p2.bubble.style.opacity = '0', 2000);
-                            
-                            // Delay their next normal dialogue
                             p1.speechTimer = Math.random() * 1000 + 500;
                             p2.speechTimer = Math.random() * 1000 + 500;
                         }
@@ -458,14 +532,54 @@
             }
 
             pets.forEach(p => {
-                if (!p.isDragging) {
+                if (p.isDeleted) return;
+
+                let pCenterX = p.posX + (p.size / 2);
+                let pCenterY = p.posY + (p.size / 2);
+
+                // TRASH BIN MAGNET PULL LOGIC
+                if (isMagnetizing && !p.isDragging) {
+                    let dx = tbX - pCenterX;
+                    let dy = tbY - pCenterY;
+                    let dist = Math.hypot(dx, dy);
+
+                    // Pull directly into the trash
+                    p.velX += (dx / dist) * 2;
+                    p.velY += (dy / dist) * 2;
+                    
+                    // Cap speed so it spirals nicely
+                    p.velX *= 0.95;
+                    p.velY *= 0.95;
+
+                    p.posX += p.velX;
+                    p.posY += p.velY;
+
+                    // If sucked in close enough, delete
+                    if (dist < 40) {
+                        p.el.style.transition = 'all 0.3s ease-in';
+                        p.el.style.transform = 'scale(0) rotate(720deg)';
+                        p.el.style.opacity = '0';
+                        p.badge.style.opacity = '0';
+                        p.bubble.style.opacity = '0';
+                        
+                        setTimeout(() => {
+                            p.el.remove();
+                            p.badge.remove();
+                            p.bubble.remove();
+                        }, 300);
+                        
+                        p.isDeleted = true;
+                    }
+                } 
+                // NORMAL PHYSICS LOGIC
+                else if (!p.isDragging) {
                     let spdMult = (p.sugarRush > 0 || p.isMythic) ? 2 : 1;
                     
                     if (p.sugarRush > 0) p.sugarRush--;
                     if (p.sugarRush > 0 && !p.isMythic) p.el.classList.add('sugar-rush');
                     else if (!p.isMythic) p.el.classList.remove('sugar-rush');
 
-                    let isNearMythic = !p.isMythic && pets.some(m => m.isMythic && Math.hypot(m.posX - p.posX, m.posY - p.posY) < 150);
+                    let isNearMythic = !p.isMythic && pets.some(m => m.isMythic && !m.isDeleted && Math.hypot(m.posX - p.posX, m.posY - p.posY) < 150);
 
                     let activeGravity = 0.8;
                     if (p.mode.id === 'Ship' || p.mode.id === 'Jetpack' || p.mode.id === 'Wave') activeGravity = 0; 
@@ -478,7 +592,6 @@
                     p.posX += p.velX;
                     p.posY += p.velY;
 
-                    let pCenterX = p.posX + (p.size / 2);
                     if (pCenterX > boxRect.left && pCenterX < boxRect.right && !isNearMythic) {
                         if (p.velY >= 0 && prevY + p.size <= boxRect.top + 10 && p.posY + p.size >= boxRect.top) {
                             p.posY = boxRect.top - p.size;
@@ -547,7 +660,7 @@
 
                     if (isLaserMode) {
                         let dx = mouseX - pCenterX;
-                        let dy = mouseY - (p.posY + (p.size / 2));
+                        let dy = mouseY - pCenterY;
                         let dist = Math.hypot(dx, dy);
                         if (dist > 20) {
                             p.velX += (dx / dist) * 0.5 * spdMult;
@@ -559,7 +672,7 @@
                     } else if (teaItem && !p.isMythic) {
                         let dx = teaItem.posX - pCenterX;
                         if (Math.abs(dx) > 10) p.velX += (dx > 0 ? 0.3 : -0.3) * spdMult;
-                        if (Math.hypot(dx, teaItem.posY - (p.posY + (p.size / 2))) < 50) {
+                        if (Math.hypot(dx, teaItem.posY - pCenterY) < 50) {
                             teaItem.el.remove();
                             teaItem = null;
                             p.sugarRush = 600; 
@@ -613,34 +726,46 @@
                     }
                 }
 
-                if (p.velX > 0 && !p.isDragging && !isLaserMode && (!teaItem || p.isMythic)) p.isFacingRight = true;
-                if (p.velX < 0 && !p.isDragging && !isLaserMode && (!teaItem || p.isMythic)) p.isFacingRight = false;
+                if (!p.isDeleted) {
+                    if (p.velX > 0 && !p.isDragging && !isLaserMode && (!teaItem || p.isMythic) && !isMagnetizing) p.isFacingRight = true;
+                    if (p.velX < 0 && !p.isDragging && !isLaserMode && (!teaItem || p.isMythic) && !isMagnetizing) p.isFacingRight = false;
 
-                p.el.style.left = p.posX + 'px';
-                p.el.style.top = p.posY + 'px';
-                p.badge.style.left = (p.posX - 10) + 'px';
-                p.badge.style.top = (p.posY - 35) + 'px';
-                p.bubble.style.left = (p.posX - (75 - p.size/2)) + 'px'; 
-                p.bubble.style.top = (p.posY - 50) + 'px';
+                    p.el.style.left = p.posX + 'px';
+                    p.el.style.top = p.posY + 'px';
+                    
+                    if(!isMagnetizing) {
+                        p.badge.style.left = (p.posX - 10) + 'px';
+                        p.badge.style.top = (p.posY - 35) + 'px';
+                        p.bubble.style.left = (p.posX - (75 - p.size/2)) + 'px'; 
+                        p.bubble.style.top = (p.posY - 50) + 'px';
 
-                let flipScale = p.isFacingRight ? 'scaleX(1)' : 'scaleX(-1)';
-                let spiderScale = p.spiderFlipped ? ' scaleY(-1)' : '';
-                
-                if (p.mode.id === 'Ball' && Math.abs(p.velX) > 0.5 && !p.isDragging) {
-                    p.rotation += p.velX * 3; 
-                    p.el.style.transform = `rotate(${p.rotation}deg)`;
-                } else if (p.mode.id === 'Ship' || p.mode.id === 'Jetpack') {
-                    let tilt = p.velY * 2;
-                    if (!p.isFacingRight) tilt *= -1;
-                    p.el.style.transform = `${flipScale} rotate(${tilt}deg)`;
-                } else if (p.mode.id === 'Wave') {
-                    let tilt = p.velY > 0 ? 35 : -35;
-                    if (!p.isFacingRight) tilt *= -1;
-                    p.el.style.transform = `${flipScale} rotate(${tilt}deg)`;
-                } else {
-                    p.el.style.transform = flipScale + spiderScale;
+                        let flipScale = p.isFacingRight ? 'scaleX(1)' : 'scaleX(-1)';
+                        let spiderScale = p.spiderFlipped ? ' scaleY(-1)' : '';
+                        
+                        if (p.mode.id === 'Ball' && Math.abs(p.velX) > 0.5 && !p.isDragging) {
+                            p.rotation += p.velX * 3; 
+                            p.el.style.transform = `rotate(${p.rotation}deg)`;
+                        } else if (p.mode.id === 'Ship' || p.mode.id === 'Jetpack') {
+                            let tilt = p.velY * 2;
+                            if (!p.isFacingRight) tilt *= -1;
+                            p.el.style.transform = `${flipScale} rotate(${tilt}deg)`;
+                        } else if (p.mode.id === 'Wave') {
+                            let tilt = p.velY > 0 ? 35 : -35;
+                            if (!p.isFacingRight) tilt *= -1;
+                            p.el.style.transform = `${flipScale} rotate(${tilt}deg)`;
+                        } else {
+                            p.el.style.transform = flipScale + spiderScale;
+                        }
+                    }
                 }
             });
+
+            // Cleanup deleted pets array and turn off magnet if empty
+            pets = pets.filter(p => !p.isDeleted);
+            if (isMagnetizing && pets.length === 0) {
+                isMagnetizing = false;
+                trashBin.classList.remove('magnet-active');
+            }
 
             requestAnimationFrame(engineLoop);
         }
