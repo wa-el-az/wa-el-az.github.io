@@ -13,21 +13,11 @@ if (cursorType !== 'default') {
     let pointer = '';
 
     if (cursorType === 'win11-light') {
-        // Using your custom .png files with X and Y hotspot coordinates added!
         normal = `url('assets/cursors/light-normal.png') 4 4, auto`;
         pointer = `url('assets/cursors/light-link.png') 10 4, pointer`;
     } else if (cursorType === 'win11-dark') {
         normal = `url('assets/cursors/dark-normal.png') 4 4, auto`;
         pointer = `url('assets/cursors/dark-link.png') 10 4, pointer`;
-    } else if (cursorType === 'crosshair') {
-        normal = 'crosshair';
-        pointer = 'crosshair';
-    } else if (cursorType === 'tea') {
-        normal = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" style="font-size:18px"><text y="18">🍵</text></svg>') 12 12, auto`;
-        pointer = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" style="font-size:18px"><text y="18">🫖</text></svg>') 12 12, pointer`;
-    } else if (cursorType === 'gd') {
-        normal = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"><rect x="2" y="2" width="20" height="20" rx="3" fill="%234ade80" stroke="black" stroke-width="2"/><rect x="6" y="8" width="4" height="4" fill="black"/><rect x="14" y="8" width="4" height="4" fill="black"/><rect x="8" y="14" width="8" height="3" fill="black"/></svg>') 12 12, auto`;
-        pointer = `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"><rect x="2" y="2" width="20" height="20" rx="3" fill="%234ade80" stroke="black" stroke-width="2"/><rect x="6" y="8" width="4" height="4" fill="black"/><rect x="14" y="8" width="4" height="4" fill="black"/><rect x="8" y="14" width="8" height="3" fill="black"/></svg>') 12 12, pointer`;
     }
 
     if (normal) {
@@ -234,7 +224,13 @@ if (localStorage.getItem('waelos_feature_spotlight') !== 'false') {
 // ==========================================
 // 7. AMBIENT FLASHLIGHT BUTTON GLOW
 // ==========================================
-if (localStorage.getItem('waelos_feature_glow') !== 'false') {
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+const glowSetting = localStorage.getItem('waelos_feature_glow');
+
+// OFF by default on mobile devices, ON by default on desktop PCs
+const shouldGlow = glowSetting === 'true' || (glowSetting === null && !isMobile);
+
+if (shouldGlow) {
     document.querySelectorAll('.btn, .cta, .redeem, .shortcut-btn, .navBtn').forEach(btn => {
         btn.addEventListener('mousemove', e => {
             const rect = btn.getBoundingClientRect();
@@ -411,10 +407,9 @@ setInterval(() => {
 // ==========================================
 function initCustomSelects() {
     document.querySelectorAll('select.pwd-input').forEach(select => {
-        // Prevent double initialization
         if (select.nextElementSibling && select.nextElementSibling.classList.contains('custom-select-wrapper')) return;
 
-        select.style.display = 'none'; // Hide the default OS dropdown
+        select.style.display = 'none';
 
         const wrapper = document.createElement('div');
         wrapper.className = 'custom-select-wrapper';
@@ -502,7 +497,6 @@ function initCustomSelects() {
                 select.value = option.value;
                 selectedText.innerText = option.text;
                 
-                // Animate close
                 optionsPanel.style.opacity = '0';
                 optionsPanel.style.transform = 'translateY(-10px)';
                 setTimeout(() => optionsPanel.style.display = 'none', 200);
@@ -511,9 +505,8 @@ function initCustomSelects() {
                 icon.style.transform = 'rotate(0deg)';
                 icon.style.color = 'rgba(255,255,255,0.7)';
                 
-                select.dispatchEvent(new Event('change')); // Retriggers your waelConfirm logic natively!
+                select.dispatchEvent(new Event('change'));
 
-                // Reset all highlights
                 Array.from(optionsPanel.children).forEach((child, idx) => {
                     if (select.options[idx].value !== select.value) {
                         child.style.background = 'transparent';
@@ -535,12 +528,11 @@ function initCustomSelects() {
             e.stopPropagation();
             const isVisible = optionsPanel.style.display === 'flex';
             
-            // THE FIX: Only close OTHER panels so we don't accidentally close ourselves!
             document.querySelectorAll('.custom-select-options').forEach(p => {
                 if (p !== optionsPanel) {
                     p.style.opacity = '0';
                     p.style.transform = 'translateY(-10px)';
-                    p.style.display = 'none'; // Instant close to prevent collision
+                    p.style.display = 'none'; 
                 }
             });
             
@@ -557,7 +549,6 @@ function initCustomSelects() {
 
             if (!isVisible) {
                 optionsPanel.style.display = 'flex';
-                // Force browser reflow to ensure the animation plays
                 void optionsPanel.offsetWidth;
                 optionsPanel.style.opacity = '1';
                 optionsPanel.style.transform = 'translateY(0)';
@@ -591,7 +582,6 @@ function initCustomSelects() {
     if (window.lucide) lucide.createIcons();
 }
 
-// Runs immediately after your about.html scripts set the saved initial values!
 window.addEventListener('load', () => {
     setTimeout(initCustomSelects, 50);
 });
