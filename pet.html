@@ -107,7 +107,6 @@
         }
         @keyframes snowFall {
             0% { background-position: 0px 0px, 0px 0px, 0px 0px; }
-            /* Exact multiples of the sizes guarantee a glitch-free loop */
             100% { background-position: 100px 100px, -60px 60px, 150px 150px; } 
         }
 
@@ -146,11 +145,9 @@
             position: fixed; object-fit: contain; z-index: 9999; cursor: grab;
             filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)); transition: transform 0.15s; 
         }
-        /* Tighten shadow when grabbed */
         .pet-entity:active { cursor: grabbing; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.7)); }
         .ghost-trail { opacity: 0.5; pointer-events: none; transition: opacity 0.5s linear; z-index: 9998; }
 
-        /* Throbbing IT Pet Glow */
         @keyframes itPulse {
             0%, 100% { filter: drop-shadow(0 0 20px #ff0000) drop-shadow(0 0 10px #ff0000) brightness(1.2); }
             50% { filter: drop-shadow(0 0 40px #ff0000) drop-shadow(0 0 20px #ff0000) brightness(1.5); }
@@ -165,7 +162,6 @@
         }
         .sugar-rush { animation: trueRGB 1.5s linear infinite !important; }
 
-        /* Springy Morphing Animation */
         @keyframes morphFlash {
             0% { filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)) brightness(1) saturate(1); transform: scale(1) rotate(0deg); }
             50% { filter: drop-shadow(0 0 50px #4ade80) brightness(2.5) saturate(3); transform: scale(0.1) rotate(180deg); }
@@ -209,7 +205,9 @@
 </head>
 <body>
     <div class="bg-left"></div><div class="bg-right"></div>
-    <div id="weather-overlay"></div> <a class="navBtn" id="dynamicBackBtn" href="index" style="transition: none;"><i data-lucide="home"></i> Home</a>
+    <div id="weather-overlay"></div>
+    
+    <a class="navBtn" id="dynamicBackBtn" href="index" style="transition: none;"><i data-lucide="home"></i> Home</a>
 
     <div class="header-card" id="solid-box">
         <h1><i data-lucide="bot"></i> Desktop Pet</h1>
@@ -294,12 +292,81 @@
         const tagBtn = document.getElementById('tagToggleBtn');
         const trashBin = document.getElementById('trashBin');
         
+        // --- MASSIVE NEW SKIN COLLECTION ---
         const GAMEMODES = [
-            { id: 'Cube', src: 'assets/gd/cube_274.png' }, { id: 'Ship', src: 'assets/gd/ship_48.png' },
-            { id: 'Ball', src: 'assets/gd/ball_91.png' }, { id: 'UFO', src: 'assets/gd/ufo_79.png' },
-            { id: 'Spider', src: 'assets/gd/spider_49.png' }, { id: 'Wave', src: 'assets/gd/wave_46.png' },
-            { id: 'Robot', src: 'assets/gd/robot_35.png' }, { id: 'Swing', src: 'assets/gd/swing_17.png' },
-            { id: 'Jetpack', src: 'assets/gd/jetpack_3.png' }
+            // Cubes
+            { id: 'Cube', src: 'assets/gd/cube_274.png' },
+            { id: 'Cube', src: 'assets/gd/cube_1 (1).png' },
+            { id: 'Cube', src: 'assets/gd/cube_1.png' },
+            { id: 'Cube', src: 'assets/gd/cube_30.png' },
+            { id: 'Cube', src: 'assets/gd/cube_342.png' },
+            { id: 'Cube', src: 'assets/gd/cube_420.png' },
+            { id: 'Cube', src: 'assets/gd/cube_485.png' },
+            { id: 'Cube', src: 'assets/gd/cube_50.png' },
+            { id: 'Cube', src: 'assets/gd/cube_59.png' },
+            { id: 'Cube', src: 'assets/gd/cube_60.png' },
+            // Ships
+            { id: 'Ship', src: 'assets/gd/ship_48.png' },
+            { id: 'Ship', src: 'assets/gd/ship_1 (2).png' },
+            { id: 'Ship', src: 'assets/gd/ship_1.png' },
+            { id: 'Ship', src: 'assets/gd/ship_10.png' },
+            { id: 'Ship', src: 'assets/gd/ship_21.png' },
+            { id: 'Ship', src: 'assets/gd/ship_22.png' },
+            { id: 'Ship', src: 'assets/gd/ship_55.png' },
+            // Balls
+            { id: 'Ball', src: 'assets/gd/ball_91.png' },
+            { id: 'Ball', src: 'assets/gd/ball_1.png' },
+            { id: 'Ball', src: 'assets/gd/ball_15.png' },
+            { id: 'Ball', src: 'assets/gd/ball_29.png' },
+            { id: 'Ball', src: 'assets/gd/ball_33.png' },
+            { id: 'Ball', src: 'assets/gd/ball_37.png' },
+            // UFOs
+            { id: 'UFO', src: 'assets/gd/ufo_79.png' },
+            { id: 'UFO', src: 'assets/gd/ufo_1.png' },
+            { id: 'UFO', src: 'assets/gd/ufo_12.png' },
+            { id: 'UFO', src: 'assets/gd/ufo_132.png' },
+            { id: 'UFO', src: 'assets/gd/ufo_18.png' },
+            { id: 'UFO', src: 'assets/gd/ufo_57.png' },
+            // Spiders
+            { id: 'Spider', src: 'assets/gd/spider_49.png' },
+            { id: 'Spider', src: 'assets/gd/spider_1 (1).png' },
+            { id: 'Spider', src: 'assets/gd/spider_1.png' },
+            { id: 'Spider', src: 'assets/gd/spider_2 (1).png' },
+            { id: 'Spider', src: 'assets/gd/spider_2.png' },
+            { id: 'Spider', src: 'assets/gd/spider_35.png' },
+            { id: 'Spider', src: 'assets/gd/spider_38.png' },
+            { id: 'Spider', src: 'assets/gd/spider_50.png' },
+            // Waves
+            { id: 'Wave', src: 'assets/gd/wave_46.png' },
+            { id: 'Wave', src: 'assets/gd/wave_17 (1).png' },
+            { id: 'Wave', src: 'assets/gd/wave_17.png' },
+            { id: 'Wave', src: 'assets/gd/wave_2.png' },
+            { id: 'Wave', src: 'assets/gd/wave_4.png' },
+            { id: 'Wave', src: 'assets/gd/wave_71.png' },
+            { id: 'Wave', src: 'assets/gd/wave_81.png' },
+            // Robots
+            { id: 'Robot', src: 'assets/gd/robot_35.png' },
+            { id: 'Robot', src: 'assets/gd/robot_1 (1).png' },
+            { id: 'Robot', src: 'assets/gd/robot_1.png' },
+            { id: 'Robot', src: 'assets/gd/robot_11.png' },
+            { id: 'Robot', src: 'assets/gd/robot_16.png' },
+            { id: 'Robot', src: 'assets/gd/robot_29.png' },
+            { id: 'Robot', src: 'assets/gd/robot_68.png' },
+            // Swings
+            { id: 'Swing', src: 'assets/gd/swing_17.png' },
+            { id: 'Swing', src: 'assets/gd/swing_1 (1).png' },
+            { id: 'Swing', src: 'assets/gd/swing_1 (2).png' },
+            { id: 'Swing', src: 'assets/gd/swing_1 (3).png' },
+            { id: 'Swing', src: 'assets/gd/swing_1.png' },
+            { id: 'Swing', src: 'assets/gd/swing_13.png' },
+            { id: 'Swing', src: 'assets/gd/swing_15.png' },
+            // Jetpacks
+            { id: 'Jetpack', src: 'assets/gd/jetpack_3.png' },
+            { id: 'Jetpack', src: 'assets/gd/jetpack_1 (1).png' },
+            { id: 'Jetpack', src: 'assets/gd/jetpack_1 (2).png' },
+            { id: 'Jetpack', src: 'assets/gd/jetpack_1 (3).png' },
+            { id: 'Jetpack', src: 'assets/gd/jetpack_1.png' },
+            { id: 'Jetpack', src: 'assets/gd/jetpack_2.png' }
         ];
 
         const DIALOGUE = [
