@@ -40,12 +40,13 @@
             justify-content: center;
             flex-wrap: wrap;
             margin-bottom: 15px;
+            align-items: center;
         }
 
         .action-btn {
             display: inline-flex; align-items: center; justify-content: center; gap: 8px;
             padding: 12px 20px; border-radius: 12px; font-weight: bold; font-size: 14px;
-            cursor: pointer; border: none; transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer; border: none; transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
             font-family: inherit;
         }
         .action-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 15px rgba(0,0,0,0.2); }
@@ -55,29 +56,42 @@
         .btn-tea { background: #4ade80; color: #0b0b0b; }
         .btn-laser { background: #34495e; color: #fff; }
         .btn-laser.active { background: #e74c3c; box-shadow: 0 0 15px rgba(231, 76, 60, 0.4); }
-        .btn-tag { background: #e67e22; color: #fff; }
-        .btn-tag.active { background: #d35400; box-shadow: 0 0 15px rgba(211, 84, 0, 0.4); }
-        .btn-spike { background: #c0392b; color: #fff; }
+
+        /* --- TOOLBOX EXPANSION MENU --- */
+        .toolbox-wrapper { position: relative; display: inline-block; }
+        .btn-more { background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.3); }
+        .btn-more.active { background: #fff; color: #000; box-shadow: 0 0 20px rgba(255,255,255,0.4); }
+        
+        .toolbox-menu {
+            position: absolute; top: calc(100% + 12px); left: 50%; transform: translateX(-50%) translateY(-10px);
+            background: rgba(20, 20, 20, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 16px;
+            padding: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.6); opacity: 0; pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); width: max-content; z-index: 100;
+        }
+        .toolbox-menu.active { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(0); }
+        
+        .toolbox-item {
+            display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 18px;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px; color: #fff; font-size: 13px; font-weight: bold;
+            cursor: pointer; transition: 0.2s; font-family: inherit; width: 100%;
+        }
+        .toolbox-item:hover { background: rgba(255,255,255,0.15); transform: translateY(-2px); }
+        .toolbox-item:active { transform: scale(0.95); }
+        
+        /* Active States for Toolbox Items */
+        .toolbox-item.tag-active { background: rgba(230, 126, 34, 0.2); border-color: #e67e22; color: #e67e22; }
+        .toolbox-item i { width: 18px; height: 18px; }
 
         /* --- TRASH BIN --- */
         #trashBin {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 65px;
-            height: 65px;
-            background: rgba(0, 0, 0, 0.6);
-            border: 2px solid rgba(255, 255, 255, 0.15);
-            border-radius: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #fff;
-            cursor: pointer;
-            z-index: 9990;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1);
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            position: fixed; bottom: 30px; right: 30px; width: 65px; height: 65px;
+            background: rgba(0, 0, 0, 0.6); border: 2px solid rgba(255, 255, 255, 0.15); border-radius: 18px;
+            display: flex; align-items: center; justify-content: center; color: #fff;
+            cursor: pointer; z-index: 9990; backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         }
         #trashBin:hover {
             background: rgba(231, 76, 60, 0.2); border-color: #e74c3c; color: #e74c3c; transform: scale(1.1) rotate(-5deg);
@@ -90,26 +104,14 @@
 
         /* --- THE PET CSS --- */
         .pet-entity {
-            position: fixed;
-            object-fit: contain;
-            z-index: 9999;
-            cursor: grab;
-            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));
-            transition: transform 0.15s; 
+            position: fixed; object-fit: contain; z-index: 9999; cursor: grab;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)); transition: transform 0.15s; 
         }
-
         .pet-entity:active { cursor: grabbing; }
+        .ghost-trail { opacity: 0.5; pointer-events: none; transition: opacity 0.5s linear; z-index: 9998; }
 
-        .ghost-trail {
-            opacity: 0.5; pointer-events: none; transition: opacity 0.5s linear; z-index: 9998;
-        }
+        .pet-it { filter: drop-shadow(0 0 25px #ff0000) drop-shadow(0 0 10px #ff0000) brightness(1.2) !important; }
 
-        /* IT Pet Glow */
-        .pet-it {
-            filter: drop-shadow(0 0 25px #ff0000) drop-shadow(0 0 10px #ff0000) brightness(1.2) !important;
-        }
-
-        /* True RGB Color Cycling */
         @keyframes trueRGB {
             0% { filter: hue-rotate(0deg) drop-shadow(0 0 20px #ff0000); }
             33% { filter: hue-rotate(120deg) drop-shadow(0 0 20px #00ff00); }
@@ -153,9 +155,7 @@
         }
         .speech-bubble-mythic::after { border-color: #000 transparent transparent transparent; }
 
-        .tea-drop, .dropped-coin, .hazard-spike {
-            position: fixed; z-index: 9998; pointer-events: none;
-        }
+        .tea-drop, .dropped-coin, .hazard-spike { position: fixed; z-index: 9998; pointer-events: none; }
         .tea-drop { font-size: 36px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5)); }
         .dropped-coin { width: 30px; height: 30px; filter: drop-shadow(0 5px 10px rgba(255,215,0,0.5)); }
         .hazard-spike { width: 45px; height: 45px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.6)); }
@@ -168,14 +168,22 @@
 
     <div class="header-card" id="solid-box">
         <h1><i data-lucide="bot"></i> Desktop Pet</h1>
-        <p>Spawn pets, drop tea, or start a Game of Tag! Watch out—dropping GD Spikes will destroy your pets if they fail to jump over them!</p>
+        <p>Spawn pets, drop tea, and keep spawning to find the rare Mythic RGB Pet! These pets interact, chat, and even evolve if they find the magic stone coin dropped by a Mythic pet.</p>
         
         <div class="controls-row">
             <button class="action-btn btn-spawn" onclick="spawnPet()"><i data-lucide="copy-plus"></i> Spawn Pet</button>
             <button class="action-btn btn-tea" onclick="dropTea()"><i data-lucide="coffee"></i> Drop Tea</button>
-            <button class="action-btn btn-spike" onclick="dropSpike()"><i data-lucide="triangle-alert"></i> Drop Spike</button>
             <button class="action-btn btn-laser" id="laserToggle" onclick="toggleLaser()"><i data-lucide="mouse-pointer-2"></i> Laser: OFF</button>
-            <button class="action-btn btn-tag" id="tagToggleBtn" onclick="toggleTag()"><i data-lucide="gamepad-2"></i> Play Tag: OFF</button>
+            
+            <div class="toolbox-wrapper">
+                <button class="action-btn btn-more" id="toolboxTrigger" onclick="toggleToolbox(event)">
+                    <i data-lucide="layout-grid"></i> Toolbox
+                </button>
+                <div class="toolbox-menu" id="toolboxMenu">
+                    <button class="toolbox-item" onclick="dropSpike()"><i data-lucide="triangle-alert" style="color: #e74c3c;"></i> Drop Spike</button>
+                    <button class="toolbox-item" id="tagToggleBtn" onclick="toggleTag()"><i data-lucide="gamepad-2"></i> Play Tag</button>
+                    </div>
+            </div>
         </div>
     </div>
 
@@ -193,6 +201,26 @@
             backBtn.innerHTML = '<i data-lucide="zap"></i> Shortcuts';
             lucide.createIcons();
         }
+
+        // ==========================================
+        // TOOLBOX UI LOGIC
+        // ==========================================
+        const toolboxMenu = document.getElementById('toolboxMenu');
+        const toolboxTrigger = document.getElementById('toolboxTrigger');
+
+        function toggleToolbox(event) {
+            event.stopPropagation();
+            toolboxMenu.classList.toggle('active');
+            toolboxTrigger.classList.toggle('active');
+        }
+
+        // Close toolbox if clicking outside
+        document.addEventListener('click', (event) => {
+            if (!toolboxMenu.contains(event.target) && event.target !== toolboxTrigger) {
+                toolboxMenu.classList.remove('active');
+                toolboxTrigger.classList.remove('active');
+            }
+        });
 
         // ==========================================
         // DESKTOP PET ENGINE
@@ -263,8 +291,8 @@
                 itPet.isIt = false;
                 itPet.el.classList.remove('pet-it');
                 itPet = null;
-                tagBtn.innerHTML = `<i data-lucide="gamepad-2"></i> Play Tag: OFF`;
-                tagBtn.classList.remove('active');
+                tagBtn.innerHTML = `<i data-lucide="gamepad-2"></i> Play Tag`;
+                tagBtn.classList.remove('tag-active');
             } else {
                 let normalPets = pets.filter(p => !p.isDeleted && !p.isMythic);
                 if (normalPets.length < 2) {
@@ -280,8 +308,8 @@
                 itPet.bubble.style.opacity = '1';
                 setTimeout(() => itPet.bubble.style.opacity = '0', 3000);
                 
-                tagBtn.innerHTML = `<i data-lucide="gamepad-2"></i> Play Tag: ON`;
-                tagBtn.classList.add('active');
+                tagBtn.innerHTML = `<i data-lucide="gamepad-2"></i> Stop Tag`;
+                tagBtn.classList.add('tag-active');
             }
             lucide.createIcons();
         }
@@ -306,10 +334,10 @@
                 el: sEl,
                 posX: Math.random() * (window.innerWidth - 45),
                 posY: -50,
-                velX: 0,
-                velY: 0,
-                size: 45
+                velX: 0, velY: 0, size: 45
             });
+            toolboxMenu.classList.remove('active'); // Auto-close toolbox on action
+            toolboxTrigger.classList.remove('active');
         }
 
         function activateMagnet() {
@@ -432,21 +460,16 @@
 
         function engineLoop(currentTime) {
             if (!currentTime) currentTime = performance.now();
-            
             let dt = (currentTime - lastTime) / (1000 / 60);
             lastTime = currentTime;
-            
             if (dt > 2) dt = 2; 
             if (dt < 0.01) dt = 0.01;
 
-            const ground = window.innerHeight; 
-            const rightWall = window.innerWidth;
+            const ground = window.innerHeight; const rightWall = window.innerWidth;
             const boxRect = solidBox.getBoundingClientRect();
             const tbRect = trashBin.getBoundingClientRect();
-            const tbX = tbRect.left + tbRect.width / 2; 
-            const tbY = tbRect.top + tbRect.height / 2;
+            const tbX = tbRect.left + tbRect.width / 2; const tbY = tbRect.top + tbRect.height / 2;
             
-            // Magnet / Gravity Logic for Hazards (Spikes)
             for (let i = spikesList.length - 1; i >= 0; i--) {
                 let s = spikesList[i];
                 if (isMagnetizing) {
@@ -456,30 +479,25 @@
                     s.posX += s.velX * dt; s.posY += s.velY * dt;
                     if (dist < 40) { s.el.remove(); spikesList.splice(i, 1); continue; }
                 } else {
-                    s.velY += 0.8 * dt;
-                    s.posY += s.velY * dt;
+                    s.velY += 0.8 * dt; s.posY += s.velY * dt;
                     if (s.posY > ground - s.size) { s.posY = ground - s.size; s.velY = 0; s.velX = 0; }
                     else if (s.velX) { s.posX += s.velX * dt; }
                 }
                 s.el.style.left = s.posX + 'px'; s.el.style.top = s.posY + 'px';
             }
 
-            // Mythic Coin Drop Physics
             for (let i = coinsList.length - 1; i >= 0; i--) {
                 let c = coinsList[i];
-                c.velY += 0.8 * dt;
-                c.posY += c.velY * dt;
+                c.velY += 0.8 * dt; c.posY += c.velY * dt;
                 if (c.posY > ground - 30) { c.posY = ground - 30; c.velY = 0; }
                 c.el.style.left = c.posX + 'px'; c.el.style.top = c.posY + 'px';
 
                 let collected = false;
                 for (let p of pets) {
                     if (!p.isDeleted && !p.isMythic && !p.isDragging) {
-                        let dx = (p.posX + p.size/2) - (c.posX + 15);
-                        let dy = (p.posY + p.size/2) - (c.posY + 15);
+                        let dx = (p.posX + p.size/2) - (c.posX + 15); let dy = (p.posY + p.size/2) - (c.posY + 15);
                         if (Math.hypot(dx, dy) < (p.size/2 + 15)) {
                             if (p === itPet) toggleTag(); 
-
                             collected = true; p.isMythic = true; p.size = 65;
                             p.el.style.width = '65px'; p.el.style.height = '65px'; p.el.classList.add('sugar-rush');
                             p.bubble.className = 'speech-bubble speech-bubble-mythic';
@@ -495,21 +513,16 @@
             if (teaItem) {
                 let mythicPet = pets.find(m => m.isMythic && !m.isDeleted);
                 if (mythicPet && !isLaserMode && !isMagnetizing) {
-                    let dx = (mythicPet.posX + mythicPet.size/2) - teaItem.posX;
-                    let dy = (mythicPet.posY + mythicPet.size/2) - teaItem.posY;
+                    let dx = (mythicPet.posX + mythicPet.size/2) - teaItem.posX; let dy = (mythicPet.posY + mythicPet.size/2) - teaItem.posY;
                     let dist = Math.hypot(dx, dy);
-                    if (dist > 30) { 
-                        teaItem.posX += (dx / dist) * 12 * dt; 
-                        teaItem.posY += (dy / dist) * 12 * dt; 
-                    } 
+                    if (dist > 30) { teaItem.posX += (dx / dist) * 12 * dt; teaItem.posY += (dy / dist) * 12 * dt; } 
                     else {
                         teaItem.el.remove(); teaItem = null;
                         mythicPet.bubble.innerText = "DATA CONSUMED."; mythicPet.bubble.style.opacity = '1';
                         setTimeout(() => mythicPet.bubble.style.opacity = '0', 2000);
                     }
                 } else {
-                    teaItem.velY += 0.8 * dt; 
-                    teaItem.posY += teaItem.velY * dt;
+                    teaItem.velY += 0.8 * dt; teaItem.posY += teaItem.velY * dt;
                     if (teaItem.posY > ground - 40) { teaItem.posY = ground - 40; teaItem.velY = 0; }
                 }
                 if (teaItem) { teaItem.el.style.left = teaItem.posX + 'px'; teaItem.el.style.top = teaItem.posY + 'px'; }
@@ -520,26 +533,22 @@
                     let p1 = pets[i]; let p2 = pets[j];
                     if (p1.isDragging || p2.isDragging || isMagnetizing || p1.isDeleted || p2.isDeleted) continue;
 
-                    let dx = (p1.posX + p1.size/2) - (p2.posX + p2.size/2);
-                    let dy = (p1.posY + p1.size/2) - (p2.posY + p2.size/2);
+                    let dx = (p1.posX + p1.size/2) - (p2.posX + p2.size/2); let dy = (p1.posY + p1.size/2) - (p2.posY + p2.size/2);
                     let dist = Math.hypot(dx, dy); let minDist = (p1.size + p2.size) / 2;
 
                     if (dist < minDist) {
                         let angle = Math.atan2(dy, dx); let pushForce = 2; 
                         p1.velX += Math.cos(angle) * pushForce; p2.velX -= Math.cos(angle) * pushForce;
 
-                        // Game of Tag Logic
                         if (itPet) {
                             if (p1.isIt && !p2.isIt && !p2.isMythic && p1.tagCooldown <= 0 && p2.tagCooldown <= 0) {
                                 p1.isIt = false; p1.el.classList.remove('pet-it'); p1.tagCooldown = 60;
-                                p2.isIt = true; p2.el.classList.add('pet-it'); p2.tagCooldown = 60;
-                                itPet = p2;
+                                p2.isIt = true; p2.el.classList.add('pet-it'); p2.tagCooldown = 60; itPet = p2;
                                 p2.bubble.innerText = "Tag! You're It!"; p2.bubble.style.opacity = '1';
                                 setTimeout(() => p2.bubble.style.opacity = '0', 2000);
                             } else if (p2.isIt && !p1.isIt && !p1.isMythic && p2.tagCooldown <= 0 && p1.tagCooldown <= 0) {
                                 p2.isIt = false; p2.el.classList.remove('pet-it'); p2.tagCooldown = 60;
-                                p1.isIt = true; p1.el.classList.add('pet-it'); p1.tagCooldown = 60;
-                                itPet = p1;
+                                p1.isIt = true; p1.el.classList.add('pet-it'); p1.tagCooldown = 60; itPet = p1;
                                 p1.bubble.innerText = "Tag! You're It!"; p1.bubble.style.opacity = '1';
                                 setTimeout(() => p1.bubble.style.opacity = '0', 2000);
                             }
@@ -568,17 +577,13 @@
                 let pCenterX = p.posX + (p.size / 2); let pCenterY = p.posY + (p.size / 2);
                 if (p.tagCooldown > 0) p.tagCooldown -= dt;
 
-                // Spike AI Evasion & Collision (Death)
                 let isGrounded = (p.posY >= ground - p.size - 5) || (p.posY >= boxRect.top - p.size - 5 && p.posY <= boxRect.top - p.size + 5 && pCenterX > boxRect.left && pCenterX < boxRect.right);
                 if (!p.isDragging && !isMagnetizing) {
                     for (let s of spikesList) {
                         let dx = s.posX - p.posX;
-                        // Jump over spike
                         if (isGrounded && ((p.velX > 0 && dx > 0 && dx < 120) || (p.velX < 0 && dx < 0 && dx > -120))) {
                             if (Math.random() < (0.1 * dt)) { p.velY = -16; } 
                         }
-                        
-                        // Die on hit
                         let distHit = Math.hypot((p.posX + p.size/2) - (s.posX + s.size/2), (p.posY + p.size/2) - (s.posY + s.size/2));
                         if (distHit < (p.size/2 + s.size/2 - 10)) {
                             p.el.style.transition = 'all 0.3s ease-in'; p.el.style.transform = 'scale(0) rotate(720deg)';
@@ -587,21 +592,17 @@
                             setTimeout(() => { p.el.remove(); p.badge.remove(); p.bubble.remove(); }, 300);
                             if (p === itPet) toggleTag();
                             p.isDeleted = true;
-                            break; // Stop checking spikes if dead
+                            break;
                         }
                     }
                 }
-
                 if (p.isDeleted) return;
 
                 if (isMagnetizing && !p.isDragging) {
                     let dx = tbX - pCenterX; let dy = tbY - pCenterY; let dist = Math.hypot(dx, dy);
-                    p.velX += (dx / dist) * 2 * dt; 
-                    p.velY += (dy / dist) * 2 * dt;
-                    p.velX *= Math.pow(0.95, dt); 
-                    p.velY *= Math.pow(0.95, dt); 
-                    p.posX += p.velX * dt; 
-                    p.posY += p.velY * dt;
+                    p.velX += (dx / dist) * 2 * dt; p.velY += (dy / dist) * 2 * dt;
+                    p.velX *= Math.pow(0.95, dt); p.velY *= Math.pow(0.95, dt); 
+                    p.posX += p.velX * dt; p.posY += p.velY * dt;
 
                     if (dist < 40) {
                         p.el.style.transition = 'all 0.3s ease-in'; p.el.style.transform = 'scale(0) rotate(720deg)';
@@ -631,10 +632,8 @@
                     if ((p.mode.id === 'Spider' || p.mode.id === 'Swing') && p.spiderFlipped) activeGravity = -0.8; 
                     if (isNearMythic) activeGravity = -0.5;
 
-                    p.velY += activeGravity * dt; 
-                    let prevY = p.posY;
-                    p.posX += p.velX * dt; 
-                    p.posY += p.velY * dt;
+                    p.velY += activeGravity * dt; let prevY = p.posY;
+                    p.posX += p.velX * dt; p.posY += p.velY * dt;
 
                     if (pCenterX > boxRect.left && pCenterX < boxRect.right && !isNearMythic) {
                         if (p.velY >= 0 && prevY + p.size <= boxRect.top + 15 && p.posY + p.size >= boxRect.top) {
@@ -662,11 +661,7 @@
                     }
                     if (p.posY < 0) {
                         p.posY = 0; 
-                        if (p.mode.id === 'Wave') p.velY *= -1; 
-                        else { 
-                            p.velY *= -0.4; 
-                            if (p.mode.id !== 'Ship' && p.mode.id !== 'Jetpack') p.velX *= Math.pow(0.8, dt); 
-                        }
+                        if (p.mode.id === 'Wave') p.velY *= -1; else { p.velY *= -0.4; if (p.mode.id !== 'Ship' && p.mode.id !== 'Jetpack') p.velX *= Math.pow(0.8, dt); }
                         if (Math.abs(p.velY) < 1) p.velY = 0; 
                     }
 
@@ -690,7 +685,6 @@
                         p.speechTimer = Math.random() * 5400 + 1800; 
                     }
 
-                    // Game of Tag AI & Pathfinding
                     if (isLaserMode) {
                         let dx = mouseX - pCenterX; let dy = mouseY - pCenterY; let dist = Math.hypot(dx, dy);
                         if (dist > 20) {
@@ -709,7 +703,6 @@
                             setTimeout(() => p.bubble.style.opacity = '0', 2000);
                         }
                     } else if (itPet && !p.isMythic && p.isIt) {
-                        // IT Pet hunts the closest healthy pet
                         let closest = null; let minD = Infinity;
                         pets.forEach(o => {
                             if (!o.isDeleted && !o.isMythic && !o.isIt) {
@@ -725,7 +718,6 @@
                             }
                         }
                     } else if (itPet && !p.isMythic && !p.isIt && Math.hypot(p.posX - itPet.posX, p.posY - itPet.posY) < 250) {
-                        // Normal pets run away in panic
                         let dx = p.posX - itPet.posX;
                         p.velX += (dx > 0 ? 0.4 : -0.4) * spdMult * dt;
                         if (Math.random() < (0.02 * dt) && p.posY >= ground - p.size - 5) {
