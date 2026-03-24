@@ -302,7 +302,9 @@
         }
 
         function spawnPet() {
-            let isMythic = Math.random() < 0.01;
+            // Check global RGB cheat in local storage for guaranteed mythic spawns
+            let isRgbCheatOn = localStorage.getItem('waelos_cheat_rgb_multiplier') === 'true';
+            let isMythic = isRgbCheatOn || Math.random() < 0.01;
 
             const petObj = {
                 el: document.createElement('img'), badge: document.createElement('div'), bubble: document.createElement('div'),
@@ -371,7 +373,7 @@
                         petObj.el.style.opacity = '0'; petObj.badge.style.opacity = '0'; petObj.bubble.style.opacity = '0';
                         setTimeout(() => { petObj.el.remove(); petObj.badge.remove(); petObj.bubble.remove(); }, 400);
                         
-                        if (petObj === itPet) toggleTag(); // Turn off tag safely if deleted
+                        if (petObj === itPet) toggleTag(); 
                         petObj.isDeleted = true;
                         trashBin.style.transform = 'scale(1.2)';
                         setTimeout(() => trashBin.style.transform = '', 200);
@@ -441,7 +443,7 @@
                         let dx = (p.posX + p.size/2) - (c.posX + 15);
                         let dy = (p.posY + p.size/2) - (c.posY + 15);
                         if (Math.hypot(dx, dy) < (p.size/2 + 15)) {
-                            if (p === itPet) toggleTag(); // Cannot be IT and Mythic
+                            if (p === itPet) toggleTag(); 
 
                             collected = true; p.isMythic = true; p.size = 65;
                             p.el.style.width = '65px'; p.el.style.height = '65px'; p.el.classList.add('sugar-rush');
@@ -599,7 +601,11 @@
                     }
                     if (p.posY < 0) {
                         p.posY = 0; 
-                        if (p.mode.id === 'Wave') p.velY *= -1; else { p.velY *= -0.4; if (p.mode.id !== 'Ship' && p.mode.id !== 'Jetpack') p.velX *= Math.pow(0.8, dt); }
+                        if (p.mode.id === 'Wave') p.velY *= -1; 
+                        else { 
+                            p.velY *= -0.4; 
+                            if (p.mode.id !== 'Ship' && p.mode.id !== 'Jetpack') p.velX *= Math.pow(0.8, dt); 
+                        }
                         if (Math.abs(p.velY) < 1) p.velY = 0; 
                     }
 
@@ -696,7 +702,6 @@
                     if (p.velX > 0 && !p.isDragging && !isLaserMode && (!teaItem || p.isMythic) && !isMagnetizing && !(itPet && p.isIt)) p.isFacingRight = true;
                     if (p.velX < 0 && !p.isDragging && !isLaserMode && (!teaItem || p.isMythic) && !isMagnetizing && !(itPet && p.isIt)) p.isFacingRight = false;
 
-                    // Force the IT pet to look in the direction it is actively hunting
                     if (itPet && p.isIt && !p.isDragging) {
                         if (p.velX > 0) p.isFacingRight = true;
                         if (p.velX < 0) p.isFacingRight = false;
