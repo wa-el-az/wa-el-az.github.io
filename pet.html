@@ -30,7 +30,7 @@
             width: 750px;
             max-width: 90vw;
             position: relative;
-            z-index: 50; /* Elevated slightly for glass wall interaction */
+            z-index: 10;
             cursor: grab; /* Indicates it's draggable */
         }
         .header-card:active { cursor: grabbing; }
@@ -88,46 +88,6 @@
         .toolbox-item.calm-active { background: rgba(52, 152, 219, 0.2); border-color: #3498db; color: #3498db; }
         .toolbox-item i { width: 18px; height: 18px; pointer-events: none; }
 
-        /* --- EXTREME SURVIVAL ELEMENTS --- */
-        .glass-wall {
-            position: fixed; 
-            width: 280px; 
-            height: 200px;
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(15px); 
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 24px; 
-            z-index: 40; 
-            cursor: move; 
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-        }
-        .pet-behind { z-index: 30 !important; }
-
-        .demon-entity {
-            position: fixed; 
-            width: 85px; 
-            height: 85px; 
-            z-index: 10000;
-            filter: drop-shadow(0 0 25px #ff0000);
-            pointer-events: none;
-        }
-
-        /* Death Animations */
-        @keyframes petCorrupt {
-            0% { filter: brightness(1) sepia(0) invert(0); transform: scale(1) rotate(0); }
-            20% { filter: brightness(0.5) sepia(1) saturate(5) hue-rotate(-50deg); transform: scale(1.1) translateX(5px); }
-            40% { filter: brightness(0) invert(1); transform: scale(1.2) translateX(-5px); }
-            100% { filter: brightness(0); transform: scale(0) rotate(180deg); opacity: 0; }
-        }
-        .death-corrupt { animation: petCorrupt 0.6s cubic-bezier(0.6, -0.28, 0.735, 0.045) forwards !important; }
-
-        @keyframes demonKill {
-            0% { transform: scale(1); filter: brightness(1); }
-            100% { transform: scale(2.5) rotate(720deg); filter: brightness(5) hue-rotate(180deg); opacity: 0; }
-        }
-        .demon-death { animation: demonKill 0.7s ease-in forwards !important; }
-
         /* --- PERFECTLY LOOPING WEATHER CSS --- */
         #weather-overlay {
             position: fixed; inset: 0; pointer-events: none; z-index: 8000;
@@ -169,6 +129,33 @@
         }
         .pet-entity:active { cursor: grabbing; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.7)); }
         .ghost-trail { opacity: 0.5; pointer-events: none; transition: opacity 0.5s linear; z-index: 9998; }
+        
+        /* POSSESSED PET RING */
+        .pet-possessed {
+            filter: drop-shadow(0 0 30px #f1c40f) drop-shadow(0 0 10px #f1c40f) brightness(1.2) !important;
+            transform: scale(1.1);
+            z-index: 10005 !important;
+        }
+
+        .demon-entity {
+            position: fixed; width: 85px; height: 85px; z-index: 10000;
+            filter: drop-shadow(0 0 25px #ff0000); pointer-events: none;
+        }
+
+        /* Death Animations */
+        @keyframes petCorrupt {
+            0% { filter: brightness(1) sepia(0) invert(0); transform: scale(1) rotate(0); }
+            20% { filter: brightness(0.5) sepia(1) saturate(5) hue-rotate(-50deg); transform: scale(1.1) translateX(5px); }
+            40% { filter: brightness(0) invert(1); transform: scale(1.2) translateX(-5px); }
+            100% { filter: brightness(0); transform: scale(0) rotate(180deg); opacity: 0; }
+        }
+        .death-corrupt { animation: petCorrupt 0.6s cubic-bezier(0.6, -0.28, 0.735, 0.045) forwards !important; }
+
+        @keyframes demonKill {
+            0% { transform: scale(1); filter: brightness(1); }
+            100% { transform: scale(2.5) rotate(720deg); filter: brightness(5) hue-rotate(180deg); opacity: 0; }
+        }
+        .demon-death { animation: demonKill 0.7s ease-in forwards !important; }
 
         @keyframes itPulse { 0%, 100% { filter: drop-shadow(0 0 20px #ff0000) drop-shadow(0 0 10px #ff0000) brightness(1.2); } 50% { filter: drop-shadow(0 0 40px #ff0000) drop-shadow(0 0 20px #ff0000) brightness(1.5); } }
         .pet-it { animation: itPulse 1s ease-in-out infinite !important; }
@@ -225,7 +212,7 @@
                 <div class="toolbox-menu" id="toolboxMenu">
                     <button class="toolbox-item" onclick="dropSpike()"><i data-lucide="triangle-alert" style="color: #e74c3c;"></i> Drop Spike</button>
                     <button class="toolbox-item" onclick="spawnDemon()"><i data-lucide="skull" style="color: #ff0000;"></i> Demon AI</button>
-                    <button class="toolbox-item" onclick="spawnGlassWall()"><i data-lucide="square" style="color: #3498db;"></i> Glass Wall</button>
+                    <button class="toolbox-item" id="possessToggleBtn" onclick="togglePossess()"><i data-lucide="user" style="color: #f1c40f;"></i> Control Pet</button>
                     <button class="toolbox-item" id="tagToggleBtn" onclick="toggleTag()"><i data-lucide="gamepad-2"></i> Play Tag</button>
                     <button class="toolbox-item" id="calmToggleBtn" onclick="toggleCalm()"><i data-lucide="moon" style="color: #3498db;"></i> Calm: OFF</button>
                     <button class="toolbox-item" id="weatherToggleBtn" onclick="cycleWeather()"><i data-lucide="cloud-sun"></i> Weather: Clear</button>
@@ -326,7 +313,7 @@
         });
 
         // ==========================================
-        // DESKTOP PET ENGINE DATA
+        // DESKTOP PET ENGINE
         // ==========================================
         const laserBtn = document.getElementById('laserToggle');
         const tagBtn = document.getElementById('tagToggleBtn');
@@ -387,7 +374,6 @@
         let pets = [];
         let coinsList = [];
         let spikesList = [];
-        let glassWalls = [];
         let demon = null;
         let teaItem = null;
         let thiefPet = null;
@@ -398,7 +384,51 @@
         let mouseY = window.innerHeight / 2;
         let activeBubblesQueue = [];
 
-        // GLOBAL MOUSE EVENTS (Optimized for performance)
+        // WASD Possession Variables
+        let isPossessMode = false;
+        let possessedPet = null;
+        // z, q, s, d for AZERTY; w, a, s, d for QWERTY
+        const keys = { w: false, a: false, s: false, d: false, z: false, q: false, arrowup: false, arrowdown: false, arrowleft: false, arrowright: false };
+
+        window.addEventListener('keydown', (e) => {
+            let k = e.key.toLowerCase();
+            if (keys.hasOwnProperty(k)) keys[k] = true;
+            if (e.key === 'Escape') unpossess();
+        });
+
+        window.addEventListener('keyup', (e) => {
+            let k = e.key.toLowerCase();
+            if (keys.hasOwnProperty(k)) keys[k] = false;
+        });
+
+        function togglePossess() {
+            isPossessMode = !isPossessMode;
+            const btn = document.getElementById('possessToggleBtn');
+            if (isPossessMode) {
+                btn.innerHTML = `<i data-lucide="user-x"></i> Cancel Control`;
+                btn.style.background = 'rgba(241, 196, 15, 0.2)';
+                btn.style.borderColor = '#f1c40f';
+                btn.style.color = '#f1c40f';
+            } else {
+                btn.innerHTML = `<i data-lucide="user" style="color: #f1c40f;"></i> Control Pet`;
+                btn.style.background = '';
+                btn.style.borderColor = '';
+                btn.style.color = '';
+                unpossess();
+            }
+            lucide.createIcons();
+            toolboxMenu.classList.remove('active'); 
+            toolboxTrigger.classList.remove('active');
+        }
+
+        function unpossess() {
+            if (possessedPet) {
+                possessedPet.el.classList.remove('pet-possessed');
+                possessedPet = null;
+            }
+        }
+
+        // GLOBAL MOUSE EVENTS
         window.addEventListener('mousemove', (e) => {
             mouseX = e.clientX; mouseY = e.clientY;
             
@@ -416,19 +446,10 @@
                     if (p.velX < 0) p.isFacingRight = false;
                 }
             });
-
-            glassWalls.forEach(g => {
-                if (g.isDragging) {
-                    g.posX = e.clientX - g.offsetX; g.posY = e.clientY - g.offsetY;
-                    g.el.style.left = g.posX + 'px'; g.el.style.top = g.posY + 'px';
-                }
-            });
         });
 
         window.addEventListener('mouseup', () => {
             if (isDraggingBox) isDraggingBox = false;
-
-            glassWalls.forEach(g => g.isDragging = false);
 
             pets.forEach(p => {
                 if (p.isDragging) {
@@ -453,70 +474,6 @@
                 }
             });
         });
-
-        // TOOL FUNCTIONS
-        function spawnGlassWall() {
-            const g = { 
-                el: document.createElement('div'), 
-                posX: Math.random() * (window.innerWidth - 300), 
-                posY: Math.random() * (window.innerHeight - 300), 
-                isDragging: false,
-                offsetX: 0,
-                offsetY: 0
-            };
-            g.el.className = 'glass-wall';
-            g.el.onmousedown = (e) => { 
-                g.isDragging = true; 
-                g.offsetX = e.clientX - g.posX; 
-                g.offsetY = e.clientY - g.posY; 
-            };
-            document.body.appendChild(g.el);
-            glassWalls.push(g);
-            toolboxMenu.classList.remove('active'); 
-            toolboxTrigger.classList.remove('active');
-        }
-
-        function spawnDemon() {
-            if (demon) return;
-            demon = { 
-                el: document.createElement('img'), 
-                posX: -100, 
-                posY: 300, 
-                velX: 0, 
-                velY: 0, 
-                isDeleted: false 
-            };
-            demon.el.src = 'https://static.wikia.nocookie.net/geometry-dash/images/9/97/ExtremeDemon.png';
-            demon.el.className = 'demon-entity';
-            document.body.appendChild(demon.el);
-            toolboxMenu.classList.remove('active'); 
-            toolboxTrigger.classList.remove('active');
-        }
-
-        function triggerDeath(p) {
-            p.el.classList.add('death-corrupt'); 
-            p.isDeleted = true;
-            setTimeout(() => { 
-                p.el.remove(); 
-                p.badge.remove(); 
-                p.bubble.remove(); 
-            }, 600);
-        }
-
-        function handleSpeech(p, text) {
-            if (activeBubblesQueue.length >= 5) {
-                let oldest = activeBubblesQueue.shift();
-                oldest.style.opacity = '0';
-            }
-            p.bubble.innerText = text;
-            p.bubble.style.opacity = '1';
-            activeBubblesQueue.push(p.bubble);
-            
-            setTimeout(() => { 
-                if (!p.isDeleted) p.bubble.style.opacity = '0'; 
-                activeBubblesQueue = activeBubblesQueue.filter(b => b !== p.bubble); 
-            }, 3000);
-        }
 
         function toggleLaser() {
             isLaserMode = !isLaserMode;
@@ -584,6 +541,36 @@
             trashBin.classList.add('magnet-active');
         }
 
+        function spawnDemon() {
+            if (demon) return;
+            demon = { el: document.createElement('img'), posX: -100, posY: 300, velX: 0, velY: 0, isDeleted: false };
+            demon.el.src = 'https://static.wikia.nocookie.net/geometry-dash/images/9/97/ExtremeDemon.png';
+            demon.el.className = 'demon-entity';
+            document.body.appendChild(demon.el);
+            toolboxMenu.classList.remove('active'); toolboxTrigger.classList.remove('active');
+        }
+
+        function triggerDeath(p) {
+            p.el.classList.add('death-corrupt'); 
+            p.isDeleted = true;
+            setTimeout(() => { p.el.remove(); p.badge.remove(); p.bubble.remove(); }, 600);
+        }
+
+        function handleSpeech(p, text) {
+            if (activeBubblesQueue.length >= 5) {
+                let oldest = activeBubblesQueue.shift();
+                oldest.style.opacity = '0';
+            }
+            p.bubble.innerText = text;
+            p.bubble.style.opacity = '1';
+            activeBubblesQueue.push(p.bubble);
+            
+            setTimeout(() => { 
+                if (!p.isDeleted) p.bubble.style.opacity = '0'; 
+                activeBubblesQueue = activeBubblesQueue.filter(b => b !== p.bubble); 
+            }, 3000);
+        }
+
         // ==========================================
         // PET INITIALIZATION & PERSISTENCE
         // ==========================================
@@ -604,6 +591,15 @@
             document.body.appendChild(petObj.bubble);
 
             petObj.el.addEventListener('mousedown', (e) => {
+                if (isPossessMode) {
+                    e.stopPropagation();
+                    if (possessedPet) unpossess();
+                    possessedPet = petObj;
+                    petObj.el.classList.add('pet-possessed');
+                    handleSpeech(petObj, "Player 1 Ready!");
+                    return; // Prevent dragging when clicking to possess
+                }
+
                 if (isMagnetizing) return;
                 petObj.isDragging = true;
                 petObj.offsetX = e.clientX - petObj.posX; petObj.offsetY = e.clientY - petObj.posY;
@@ -634,6 +630,7 @@
                 isFacingRight: customData && customData.isFacingRight !== undefined ? customData.isFacingRight : true, 
                 roamTimer: 60, transformTimer: Math.random() * 3600 + 600, speechTimer: Math.random() * 5400 + 1800,
                 spawnTimer: customData && customData.spawnTimer !== undefined ? customData.spawnTimer : Math.random() * 3600 + 1200, 
+                spiderFlipCooldown: 0,
                 spiderFlipped: false, rotation: 0, sugarRush: customData && customData.sugarRush ? customData.sugarRush : 0, isDragging: false,
                 offsetX: 0, offsetY: 0, lastX: 0, lastY: 0, isMythic: isMythic, size: isMythic ? 65 : 50, 
                 isDeleted: false, isIt: customData && customData.isIt ? customData.isIt : false, tagCooldown: customData && customData.tagCooldown ? customData.tagCooldown : 0
@@ -652,7 +649,7 @@
             }
         }
 
-        // Persistence System (Save/Load)
+        // Persistence System
         function savePets() {
             const activePets = pets.filter(p => !p.isDeleted);
             const petData = activePets.map(p => ({
@@ -661,7 +658,7 @@
             }));
             localStorage.setItem('waelos_saved_pets', JSON.stringify(petData));
         }
-        setInterval(savePets, 1000); // Auto-save every second
+        setInterval(savePets, 1000); 
 
         function loadPets() {
             const saved = localStorage.getItem('waelos_saved_pets');
@@ -864,15 +861,6 @@
                 let pCenterX = p.posX + (p.size / 2); let pCenterY = p.posY + (p.size / 2);
                 if (p.tagCooldown > 0) p.tagCooldown -= dt;
 
-                // Glass Wall Depth Physics
-                let behind = false;
-                glassWalls.forEach(g => {
-                    if (pCenterX > g.posX && pCenterX < g.posX + 280 && pCenterY > g.posY && pCenterY < g.posY + 200) {
-                        behind = true;
-                    }
-                });
-                if (behind) p.el.classList.add('pet-behind'); else p.el.classList.remove('pet-behind');
-
                 let isGrounded = (p.posY >= ground - p.size - 5) || (p.posY >= boxRect.top - p.size - 5 && p.posY <= boxRect.top - p.size + 5 && pCenterX > boxRect.left && pCenterX < boxRect.right);
                 if (!p.isDragging && !isMagnetizing) {
                     for (let s of spikesList) {
@@ -958,6 +946,149 @@
 
                     if (weatherMode === 2 && !isCalmMode) p.velX += 1.5 * dt;
 
+                    // AI / WASD Controller Switch
+                    if (p === possessedPet) {
+                        // USER CONTROLS (WASD + ZQSD + ARROWS)
+                        let controlSpeed = isCalmMode ? 1 : 2;
+                        if (keys.a || keys.q || keys.arrowleft) p.velX -= controlSpeed * dt;
+                        if (keys.d || keys.arrowright) p.velX += controlSpeed * dt;
+                        
+                        if (keys.w || keys.z || keys.arrowup) {
+                            if (p.mode.id === 'Ship' || p.mode.id === 'Jetpack' || p.mode.id === 'UFO') {
+                                p.velY -= 2 * dt;
+                            } else if (p.mode.id === 'Wave') {
+                                p.velY = -8;
+                            } else if (isGrounded) {
+                                p.velY = p.spiderFlipped ? 15 : -15;
+                            }
+                        }
+                        
+                        if (keys.s || keys.arrowdown) {
+                            if (p.mode.id === 'Wave') {
+                                p.velY = 8;
+                            } else if (!isGrounded && p.mode.id !== 'Spider' && p.mode.id !== 'Swing') {
+                                p.velY += 2 * dt;
+                            } else if (p.mode.id === 'Spider' || p.mode.id === 'Swing') {
+                                if (p.spiderFlipCooldown <= 0) {
+                                    p.spiderFlipped = !p.spiderFlipped;
+                                    p.spiderFlipCooldown = 30; // Cooldown so it doesn't spasm
+                                }
+                            }
+                        }
+                        if (p.spiderFlipCooldown > 0) p.spiderFlipCooldown -= dt;
+
+                    } else {
+                        // NORMAL AI
+                        if (!p.isMythic && demon && !demon.isDeleted) {
+                            let dToDemon = Math.hypot(p.posX - demon.posX, p.posY - demon.posY);
+                            if(dToDemon < 300) { 
+                                let angle = Math.atan2(p.posY - demon.posY, p.posX - demon.posX);
+                                p.velX += Math.cos(angle) * 1.2 * dt; 
+                                p.velY = -6;
+                            }
+                        } else if (teaItem && !p.isMythic) {
+                            let dx = teaItem.posX - pCenterX;
+                            if (Math.abs(dx) > 10) p.velX += (dx > 0 ? 0.3 : -0.3) * spdMult * dt;
+                            if (Math.hypot(dx, teaItem.posY - pCenterY) < 50) {
+                                teaItem.el.remove(); teaItem = null; p.sugarRush = 600; 
+                                handleSpeech(p, "YUM!");
+                            }
+                        } else if (isLaserMode) {
+                            let dx = mouseX - pCenterX; 
+                            let dy = mouseY - pCenterY; 
+                            let dist = Math.hypot(dx, dy);
+                            if (dist > 20) {
+                                p.velX += (dx / dist) * 0.5 * spdMult * dt;
+                                if (p.mode.id === 'Ship' || p.mode.id === 'Jetpack') p.velY += (dy / dist) * 0.5 * spdMult * dt;
+                                else if (p.posY >= ground - p.size || p.posY <= 0 || (p.posY === boxRect.top - p.size) || p.posY === boxRect.bottom) {
+                                    if (dy < -50 && Math.random() < (0.1 * dt)) p.velY = p.spiderFlipped ? 15 : -15; 
+                                }
+                            }
+                        } else if (itPet && !p.isMythic && p.isIt) {
+                            let normalPetsCount = pets.filter(o => !o.isDeleted && !o.isMythic).length;
+                            if (normalPetsCount < 2) {
+                                toggleTag();
+                            } else {
+                                let closest = null; let minD = Infinity;
+                                pets.forEach(o => {
+                                    if (!o.isDeleted && !o.isMythic && !o.isIt) {
+                                        let d = Math.hypot(p.posX - o.posX, p.posY - o.posY);
+                                        if (d < minD) { minD = d; closest = o; }
+                                    }
+                                });
+                                if (closest) {
+                                    let dx = closest.posX - p.posX;
+                                    p.velX += (dx > 0 ? 0.3 : -0.3) * spdMult * dt;
+                                    if (closest.posY < p.posY - 40 && p.posY >= ground - p.size - 5 && Math.random() < (0.05 * dt)) {
+                                        p.velY = p.spiderFlipped ? (isCalmMode ? 5 : 15) : (isCalmMode ? -5 : -15);
+                                    }
+                                }
+                            }
+                        } else if (itPet && !p.isMythic && !p.isIt && Math.hypot(p.posX - itPet.posX, p.posY - itPet.posY) < 250) {
+                            let dx = p.posX - itPet.posX;
+                            p.velX += (dx > 0 ? 0.4 : -0.4) * spdMult * dt;
+                            if (Math.random() < (0.02 * dt) && p.posY >= ground - p.size - 5) {
+                                p.velY = p.spiderFlipped ? 15 : -15;
+                            }
+                        } else if (p.roamTimer <= 0) {
+                            const action = Math.random();
+                            
+                            if (p.mode.id === 'Ship' || p.mode.id === 'Jetpack') {
+                                p.velX = (Math.random() - 0.5) * 12 * spdMult; 
+                                p.velY = (Math.random() - 0.5) * 12 * spdMult; 
+                                p.roamTimer = isCalmMode ? 180 : 60;
+                            } else if (p.mode.id === 'Wave') {
+                                p.velX = (Math.random() > 0.5 ? 6 : -6) * spdMult; 
+                                p.velY = (Math.random() > 0.5 ? 6 : -6) * spdMult; 
+                                p.roamTimer = isCalmMode ? 200 : 100;
+                            } else if (Math.abs(p.velY) < 1 || p.mode.id === 'Swing') {
+                                if (isCalmMode && action < 0.8) {
+                                    if (weatherMode !== 1) p.velX = 0; 
+                                    p.roamTimer = Math.random() * 200 + 100;
+                                } else if (p.isMythic && (p.mode.id === 'Cube' || p.mode.id === 'Robot') && action < 0.15 && !isCalmMode) {
+                                    let ghost = document.createElement('img'); 
+                                    ghost.src = p.mode.src; 
+                                    ghost.className = 'pet-entity ghost-trail';
+                                    ghost.style.width = p.size + 'px'; 
+                                    ghost.style.height = p.size + 'px'; 
+                                    ghost.style.left = p.posX + 'px'; 
+                                    ghost.style.top = p.posY + 'px'; 
+                                    ghost.style.transform = p.el.style.transform;
+                                    document.body.appendChild(ghost); 
+                                    
+                                    setTimeout(() => { 
+                                        ghost.style.opacity = '0'; 
+                                        setTimeout(() => ghost.remove(), 500); 
+                                    }, 50);
+                                    
+                                    p.posX += p.isFacingRight ? 200 : -200; 
+                                    p.roamTimer = 30;
+                                } else if (action < 0.3) { 
+                                    p.velX = -3 * spdMult; 
+                                    p.isFacingRight = false; 
+                                    p.roamTimer = isCalmMode ? Math.random() * 200 + 100 : Math.random() * 100 + 50; 
+                                } else if (action < 0.6) { 
+                                    p.velX = 3 * spdMult; 
+                                    p.isFacingRight = true; 
+                                    p.roamTimer = isCalmMode ? Math.random() * 200 + 100 : Math.random() * 100 + 50; 
+                                } else if (action < 0.8) {
+                                    if (p.mode.id === 'Cube' || p.mode.id === 'Ball') p.velY = p.spiderFlipped ? (isCalmMode ? 5 : 15) : (isCalmMode ? -5 : -15);
+                                    else if (p.mode.id === 'Robot') p.velY = p.spiderFlipped ? (isCalmMode ? 7 : 20) : (isCalmMode ? -7 : -20); 
+                                    else if (p.mode.id === 'UFO') p.velY = p.spiderFlipped ? (isCalmMode ? 4 : 10) : (isCalmMode ? -4 : -10);
+                                    else if (p.mode.id === 'Spider' || p.mode.id === 'Swing') p.spiderFlipped = !p.spiderFlipped; 
+                                    
+                                    p.roamTimer = isCalmMode ? 120 : 40;
+                                } else { 
+                                    if (weatherMode !== 1) p.velX = 0; 
+                                    p.roamTimer = isCalmMode ? Math.random() * 200 + 150 : Math.random() * 100 + 50; 
+                                }
+                            } else if (p.mode.id === 'UFO' && action < 0.05) { 
+                                p.velY = p.spiderFlipped ? (isCalmMode ? 4 : 10) : (isCalmMode ? -4 : -10); 
+                            }
+                        }
+                    }
+
+                    // Physics Apply (Gravity, Bounds, and Friction)
                     let isNearMythic = !p.isMythic && pets.some(m => m.isMythic && !m.isDeleted && Math.hypot(m.posX - p.posX, m.posY - p.posY) < 150);
                     let activeGravity = 0.8;
                     if (p.mode.id === 'Ship' || p.mode.id === 'Jetpack' || p.mode.id === 'Wave') activeGravity = 0; 
@@ -967,6 +1098,10 @@
                     p.velY += activeGravity * dt; let prevY = p.posY;
                     p.posX += p.velX * dt; p.posY += p.velY * dt;
 
+                    // Friction
+                    p.velX *= 0.95;
+
+                    // Obstacle Collisions
                     if (pCenterX > boxRect.left && pCenterX < boxRect.right && !isNearMythic) {
                         if (p.velY >= 0 && prevY + p.size <= boxRect.top + 15 && p.posY + p.size >= boxRect.top) {
                             p.posY = boxRect.top - p.size;
@@ -988,6 +1123,7 @@
                         }
                     }
 
+                    // Screen Edge Collisions
                     if (p.isMythic) {
                         if (p.posX < -p.size) p.posX = rightWall;
                         if (p.posX > rightWall) p.posX = -p.size;
@@ -1021,138 +1157,57 @@
                         if (Math.abs(p.velY) < 1) p.velY = 0; 
                     }
 
-                    if (!thiefPet && !isLaserMode && Math.random() < (0.01 * dt) && !p.isMythic && !isCalmMode) {
-                        let btnRect = backBtn.getBoundingClientRect();
-                        if (Math.hypot(p.posX - btnRect.left, p.posY - btnRect.top) < 150) thiefPet = p;
-                    }
-                    if (thiefPet === p) {
-                        backBtn.style.position = 'fixed'; backBtn.style.left = (p.posX + 10) + 'px'; backBtn.style.top = (p.posY - 30) + 'px';
+                    // Direction & Display Updates
+                    if (p !== possessedPet) {
+                        if (p.velX > 0.5 && !p.isDragging) p.isFacingRight = true;
+                        if (p.velX < -0.5 && !p.isDragging) p.isFacingRight = false;
+                    } else {
+                        if (keys.d || keys.arrowright) p.isFacingRight = true;
+                        if (keys.a || keys.q || keys.arrowleft) p.isFacingRight = false;
                     }
 
-                    p.transformTimer -= dt; p.roamTimer -= dt; p.speechTimer -= dt;
-
-                    if (p.transformTimer <= 0) { morphPet(p); p.transformTimer = Math.random() * 3600 + 600; }
+                    p.el.style.left = p.posX + 'px'; 
+                    p.el.style.top = p.posY + 'px';
+                    p.badge.style.left = p.posX + 'px'; 
+                    p.badge.style.top = (p.posY - 20) + 'px';
+                    p.bubble.style.left = p.posX + 'px'; 
+                    p.bubble.style.top = (p.posY - 45) + 'px';
                     
-                    if (p.speechTimer <= 0 && !p.isIt) {
-                        let dialogList = p.isMythic ? MYTHIC_DIALOGUE : DIALOGUE;
-                        handleSpeech(p, dialogList[Math.floor(Math.random() * dialogList.length)]);
-                        p.speechTimer = isCalmMode ? Math.random() * 10000 + 5000 : Math.random() * 5400 + 1800; 
-                    }
-
-                    if (isLaserMode) {
-                        let dx = mouseX - pCenterX; let dy = mouseY - pCenterY; let dist = Math.hypot(dx, dy);
-                        if (dist > 20) {
-                            p.velX += (dx / dist) * 0.5 * spdMult * dt;
-                            if (p.mode.id === 'Ship' || p.mode.id === 'Jetpack') p.velY += (dy / dist) * 0.5 * spdMult * dt;
-                            else if (p.posY >= ground - p.size || p.posY <= 0 || (p.posY === boxRect.top - p.size) || p.posY === boxRect.bottom) {
-                                if (dy < -50 && Math.random() < (0.1 * dt)) p.velY = p.spiderFlipped ? 15 : -15; 
-                            }
-                        }
-                    } else if (!p.isMythic && demon && !demon.isDeleted) {
-                        // Normal pets run away from Demon!
-                        let dToDemon = Math.hypot(p.posX - demon.posX, p.posY - demon.posY);
-                        if(dToDemon < 300) { 
-                            let angle = Math.atan2(p.posY - demon.posY, p.posX - demon.posX);
-                            p.velX += Math.cos(angle) * 1.2 * dt; 
-                            p.velY = -6;
-                        }
-                    } else if (teaItem && !p.isMythic) {
-                        let dx = teaItem.posX - pCenterX;
-                        if (Math.abs(dx) > 10) p.velX += (dx > 0 ? 0.3 : -0.3) * spdMult * dt;
-                        if (Math.hypot(dx, teaItem.posY - pCenterY) < 50) {
-                            teaItem.el.remove(); teaItem = null; p.sugarRush = 600; 
-                            handleSpeech(p, "YUM!");
-                        }
-                    } else if (itPet && !p.isMythic && p.isIt) {
-                        let normalPetsCount = pets.filter(o => !o.isDeleted && !o.isMythic).length;
-                        if (normalPetsCount < 2) {
-                            toggleTag();
-                        } else {
-                            let closest = null; let minD = Infinity;
-                            pets.forEach(o => {
-                                if (!o.isDeleted && !o.isMythic && !o.isIt) {
-                                    let d = Math.hypot(p.posX - o.posX, p.posY - o.posY);
-                                    if (d < minD) { minD = d; closest = o; }
-                                }
-                            });
-                            if (closest) {
-                                let dx = closest.posX - p.posX;
-                                p.velX += (dx > 0 ? 0.3 : -0.3) * spdMult * dt;
-                                if (closest.posY < p.posY - 40 && p.posY >= ground - p.size - 5 && Math.random() < (0.05 * dt)) {
-                                    p.velY = p.spiderFlipped ? (isCalmMode ? 5 : 15) : (isCalmMode ? -5 : -15);
-                                }
-                            }
-                        }
-                    } else if (itPet && !p.isMythic && !p.isIt && Math.hypot(p.posX - itPet.posX, p.posY - itPet.posY) < 250) {
-                        let dx = p.posX - itPet.posX;
-                        p.velX += (dx > 0 ? 0.4 : -0.4) * spdMult * dt;
-                        if (Math.random() < (0.02 * dt) && p.posY >= ground - p.size - 5) {
-                            p.velY = p.spiderFlipped ? 15 : -15;
-                        }
-                    } else if (p.roamTimer <= 0) {
-                        const action = Math.random();
-                        if (p.mode.id === 'Ship' || p.mode.id === 'Jetpack') {
-                            p.velX = (Math.random() - 0.5) * 12 * spdMult; p.velY = (Math.random() - 0.5) * 12 * spdMult; p.roamTimer = isCalmMode ? 180 : 60;
-                        } else if (p.mode.id === 'Wave') {
-                            p.velX = (Math.random() > 0.5 ? 6 : -6) * spdMult; p.velY = (Math.random() > 0.5 ? 6 : -6) * spdMult; p.roamTimer = isCalmMode ? 200 : 100;
-                        } else if (Math.abs(p.velY) < 1 || p.mode.id === 'Swing') {
-                            if (isCalmMode && action < 0.8) {
-                                if (weatherMode !== 1) p.velX = 0; p.roamTimer = Math.random() * 200 + 100;
-                            }
-                            else if (p.isMythic && (p.mode.id === 'Cube' || p.mode.id === 'Robot') && action < 0.15 && !isCalmMode) {
-                                let ghost = document.createElement('img'); ghost.src = p.mode.src; ghost.className = 'pet-entity ghost-trail';
-                                ghost.style.width = p.size + 'px'; ghost.style.height = p.size + 'px'; ghost.style.left = p.posX + 'px'; ghost.style.top = p.posY + 'px'; ghost.style.transform = p.el.style.transform;
-                                document.body.appendChild(ghost); setTimeout(() => { ghost.style.opacity = '0'; setTimeout(() => ghost.remove(), 500); }, 50);
-                                p.posX += p.isFacingRight ? 200 : -200; p.roamTimer = 30;
-                            } 
-                            else if (action < 0.3) { p.velX = -3 * spdMult; p.isFacingRight = false; p.roamTimer = isCalmMode ? Math.random() * 200 + 100 : Math.random() * 100 + 50; }
-                            else if (action < 0.6) { p.velX = 3 * spdMult; p.isFacingRight = true; p.roamTimer = isCalmMode ? Math.random() * 200 + 100 : Math.random() * 100 + 50; }
-                            else if (action < 0.8) {
-                                if (p.mode.id === 'Cube' || p.mode.id === 'Ball') p.velY = p.spiderFlipped ? (isCalmMode ? 5 : 15) : (isCalmMode ? -5 : -15);
-                                else if (p.mode.id === 'Robot') p.velY = p.spiderFlipped ? (isCalmMode ? 7 : 20) : (isCalmMode ? -7 : -20); 
-                                else if (p.mode.id === 'UFO') p.velY = p.spiderFlipped ? (isCalmMode ? 4 : 10) : (isCalmMode ? -4 : -10);
-                                else if (p.mode.id === 'Spider' || p.mode.id === 'Swing') p.spiderFlipped = !p.spiderFlipped; 
-                                p.roamTimer = isCalmMode ? 120 : 40;
-                            } else { 
-                                if (weatherMode !== 1) p.velX = 0; p.roamTimer = isCalmMode ? Math.random() * 200 + 150 : Math.random() * 100 + 50; 
-                            }
-                        } else if (p.mode.id === 'UFO' && action < 0.05) { p.velY = p.spiderFlipped ? (isCalmMode ? 4 : 10) : (isCalmMode ? -4 : -10); }
-                    }
-                }
-
-                if (!p.isDeleted) {
-                    if (p.velX > 0 && !p.isDragging && !isLaserMode && (!teaItem || p.isMythic) && !isMagnetizing && !(itPet && p.isIt)) p.isFacingRight = true;
-                    if (p.velX < 0 && !p.isDragging && !isLaserMode && (!teaItem || p.isMythic) && !isMagnetizing && !(itPet && p.isIt)) p.isFacingRight = false;
-
-                    if (itPet && p.isIt && !p.isDragging) {
-                        if (p.velX > 0) p.isFacingRight = true;
-                        if (p.velX < 0) p.isFacingRight = false;
-                    }
-
-                    p.el.style.left = p.posX + 'px'; p.el.style.top = p.posY + 'px';
+                    let flipScale = p.isFacingRight ? 'scaleX(1)' : 'scaleX(-1)';
+                    let spiderScale = p.spiderFlipped ? ' scaleY(-1)' : '';
                     
-                    if(!isMagnetizing) {
-                        p.badge.style.left = (p.posX - 10) + 'px'; p.badge.style.top = (p.posY - 35) + 'px';
-                        p.bubble.style.left = (p.posX - (75 - p.size/2)) + 'px'; p.bubble.style.top = (p.posY - 50) + 'px';
+                    if (p.mode.id === 'Ball' && Math.abs(p.velX) > 0.5 && !p.isDragging) {
+                        p.rotation += p.velX * 3 * dt; 
+                        p.el.style.transform = `rotate(${p.rotation}deg)`;
+                    } else if (p.mode.id === 'Ship' || p.mode.id === 'Jetpack') {
+                        let tilt = p.velY * 2; 
+                        if (!p.isFacingRight) tilt *= -1; 
+                        p.el.style.transform = `${flipScale} rotate(${tilt}deg)`;
+                    } else if (p.mode.id === 'Wave') {
+                        let tilt = p.velY > 0 ? 35 : -35; 
+                        if (!p.isFacingRight) tilt *= -1; 
+                        p.el.style.transform = `${flipScale} rotate(${tilt}deg)`;
+                    } else {
+                        p.el.style.transform = flipScale + spiderScale;
+                    }
 
-                        let flipScale = p.isFacingRight ? 'scaleX(1)' : 'scaleX(-1)';
-                        let spiderScale = p.spiderFlipped ? ' scaleY(-1)' : '';
-                        
-                        if (p.mode.id === 'Ball' && Math.abs(p.velX) > 0.5 && !p.isDragging) {
-                            p.rotation += p.velX * 3 * dt; p.el.style.transform = `rotate(${p.rotation}deg)`;
-                        } else if (p.mode.id === 'Ship' || p.mode.id === 'Jetpack') {
-                            let tilt = p.velY * 2; if (!p.isFacingRight) tilt *= -1; p.el.style.transform = `${flipScale} rotate(${tilt}deg)`;
-                        } else if (p.mode.id === 'Wave') {
-                            let tilt = p.velY > 0 ? 35 : -35; if (!p.isFacingRight) tilt *= -1; p.el.style.transform = `${flipScale} rotate(${tilt}deg)`;
-                        } else {
-                            p.el.style.transform = flipScale + spiderScale;
+                    // Occasional Speech (Avoids doing it for possessed player)
+                    if (p !== possessedPet) {
+                        p.speechTimer -= dt;
+                        if (p.speechTimer <= 0 && !p.isIt) {
+                            let dialogList = p.isMythic ? MYTHIC_DIALOGUE : DIALOGUE;
+                            handleSpeech(p, dialogList[Math.floor(Math.random() * dialogList.length)]);
+                            p.speechTimer = isCalmMode ? Math.random() * 10000 + 5000 : Math.random() * 5400 + 1800;
                         }
                     }
                 }
             });
 
             pets = pets.filter(p => !p.isDeleted);
-            if (isMagnetizing && pets.length === 0 && spikesList.length === 0) { isMagnetizing = false; trashBin.classList.remove('magnet-active'); }
+            if (isMagnetizing && pets.length === 0 && spikesList.length === 0) { 
+                isMagnetizing = false; 
+                trashBin.classList.remove('magnet-active'); 
+            }
 
             requestAnimationFrame(engineLoop);
         }
