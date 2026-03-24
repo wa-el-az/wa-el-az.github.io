@@ -105,7 +105,7 @@ if (localStorage.getItem('waelos_feature_spotlight') !== 'false') {
         { name: "Home", url: "index", icon: "home" },
         { name: "Projects", url: "projects", icon: "layers" },
         { name: "Shortcuts", url: "shortcuts", icon: "zap" },
-        { name: "Desktop Pet", url: "pet", icon: "bot" }, // Added Desktop Pet!
+        { name: "Desktop Pet", url: "pet", icon: "bot" }, 
         { name: "Tea Clicker", url: "tea", icon: "coffee" },
         { name: "Geometry Dash", url: "gd", icon: "play" },
         { name: "Music Player", url: "music", icon: "music" },
@@ -115,7 +115,7 @@ if (localStorage.getItem('waelos_feature_spotlight') !== 'false') {
         { name: "Windows Vault", url: "windows", icon: "monitor" },
         { name: "My PC", url: "mypc", icon: "hard-drive" },
         { name: "About Website", url: "about", icon: "info" },
-        { name: "System Settings", url: "about", icon: "settings" }
+        { name: "System Settings", url: "admin/hub", icon: "settings" }
     ];
 
     const spotlightHTML = `
