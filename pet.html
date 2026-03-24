@@ -101,28 +101,28 @@
             opacity: 0.5; pointer-events: none; transition: opacity 0.5s linear; z-index: 9998;
         }
 
-        /* True RGB Color Cycling */
         @keyframes trueRGB {
             0% { filter: hue-rotate(0deg) drop-shadow(0 0 20px #ff0000); }
             33% { filter: hue-rotate(120deg) drop-shadow(0 0 20px #00ff00); }
             66% { filter: hue-rotate(240deg) drop-shadow(0 0 20px #0000ff); }
             100% { filter: hue-rotate(360deg) drop-shadow(0 0 20px #ff0000); }
         }
-        .sugar-rush { animation: trueRGB(1.5s) linear infinite !important; }
+        .sugar-rush { animation: trueRGB 1.5s linear infinite !important; }
 
         @keyframes morphFlash {
             0% { filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)) brightness(1) saturate(1); transform: scale(1) rotate(0deg); }
             50% { filter: drop-shadow(0 0 40px #4ade80) brightness(2) saturate(3); transform: scale(0.3) rotate(180deg); }
             100% { filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)) brightness(1) saturate(1); transform: scale(1) rotate(360deg); }
         }
-        .morphing { animation: morphFlash 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
+        /* Added !important to guarantee flashes override the RGB loop */
+        .morphing { animation: morphFlash 0.6s cubic-bezier(0.25, 1, 0.5, 1) !important; }
 
         @keyframes morphFlashMythic {
             0% { filter: drop-shadow(0 0 20px #ff0000); transform: scale(1) rotate(0deg); }
             50% { filter: drop-shadow(0 0 60px #ffd700) brightness(2) saturate(3); transform: scale(0.3) rotate(180deg); }
             100% { filter: drop-shadow(0 0 20px #ff0000); transform: scale(1) rotate(360deg); }
         }
-        .morphing-mythic { animation: morphFlashMythic 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
+        .morphing-mythic { animation: morphFlashMythic 0.6s cubic-bezier(0.25, 1, 0.5, 1) !important; }
         
         .mode-badge {
             position: fixed; background: rgba(0,0,0,0.6); color: #4ade80; padding: 4px 10px;
@@ -262,7 +262,8 @@
         }
 
         function spawnPet() {
-            let isMythic = Math.random() < 0.05;
+            // Rarity exactly 1%
+            let isMythic = Math.random() < 0.01;
 
             const petObj = {
                 el: document.createElement('img'), badge: document.createElement('div'), bubble: document.createElement('div'),
@@ -365,16 +366,32 @@
             }, 600);
         }
 
-        function engineLoop() {
-            const ground = window.innerHeight; const rightWall = window.innerWidth;
+        // ==========================================
+        // DYNAMIC PHYSICS ENGINE (DELTA-TIME)
+        // ==========================================
+        let lastTime = performance.now();
+
+        function engineLoop(currentTime) {
+            if (!currentTime) currentTime = performance.now();
+            
+            // Delta-time setup for 60hz, 144hz, 240hz compatibility
+            let dt = (currentTime - lastTime) / (1000 / 60);
+            lastTime = currentTime;
+            
+            if (dt > 2) dt = 2; // Cap large spikes if tab is inactive
+            if (dt < 0.01) dt = 0.01;
+
+            const ground = window.innerHeight; 
+            const rightWall = window.innerWidth;
             const boxRect = solidBox.getBoundingClientRect();
             const tbRect = trashBin.getBoundingClientRect();
-            const tbX = tbRect.left + tbRect.width / 2; const tbY = tbRect.top + tbRect.height / 2;
+            const tbX = tbRect.left + tbRect.width / 2; 
+            const tbY = tbRect.top + tbRect.height / 2;
             
             for (let i = coinsList.length - 1; i >= 0; i--) {
                 let c = coinsList[i];
-                c.velY += 0.8;
-                c.posY += c.velY;
+                c.velY += 0.8 * dt;
+                c.posY += c.velY * dt;
                 if (c.posY > ground - 30) { c.posY = ground - 30; c.velY = 0; }
                 c.el.style.left = c.posX + 'px'; c.el.style.top = c.posY + 'px';
 
@@ -402,14 +419,18 @@
                     let dx = (mythicPet.posX + mythicPet.size/2) - teaItem.posX;
                     let dy = (mythicPet.posY + mythicPet.size/2) - teaItem.posY;
                     let dist = Math.hypot(dx, dy);
-                    if (dist > 30) { teaItem.posX += (dx / dist) * 12; teaItem.posY += (dy / dist) * 12; } 
+                    if (dist > 30) { 
+                        teaItem.posX += (dx / dist) * 12 * dt; 
+                        teaItem.posY += (dy / dist) * 12 * dt; 
+                    } 
                     else {
                         teaItem.el.remove(); teaItem = null;
                         mythicPet.bubble.innerText = "DATA CONSUMED."; mythicPet.bubble.style.opacity = '1';
                         setTimeout(() => mythicPet.bubble.style.opacity = '0', 2000);
                     }
                 } else {
-                    teaItem.velY += 0.8; teaItem.posY += teaItem.velY;
+                    teaItem.velY += 0.8 * dt; 
+                    teaItem.posY += teaItem.velY * dt;
                     if (teaItem.posY > ground - 40) { teaItem.posY = ground - 40; teaItem.velY = 0; }
                 }
                 if (teaItem) { teaItem.el.style.left = teaItem.posX + 'px'; teaItem.el.style.top = teaItem.posY + 'px'; }
@@ -435,7 +456,7 @@
                             p1.velY = -15; p2.bubble.innerText = "Move."; p2.bubble.style.opacity = '1';
                             setTimeout(() => p2.bubble.style.opacity = '0', 2000);
                         } 
-                        else if (Math.random() < 0.05 && p1.speechTimer > 200 && p2.speechTimer > 200) {
+                        else if (Math.random() < (0.05 * dt) && p1.speechTimer > 200 && p2.speechTimer > 200) {
                             p1.bubble.innerText = "Watch out!"; p2.bubble.innerText = "Oops!";
                             p1.bubble.style.opacity = '1'; p2.bubble.style.opacity = '1';
                             setTimeout(() => p1.bubble.style.opacity = '0', 2000); setTimeout(() => p2.bubble.style.opacity = '0', 2000);
@@ -452,8 +473,12 @@
 
                 if (isMagnetizing && !p.isDragging) {
                     let dx = tbX - pCenterX; let dy = tbY - pCenterY; let dist = Math.hypot(dx, dy);
-                    p.velX += (dx / dist) * 2; p.velY += (dy / dist) * 2;
-                    p.velX *= 0.95; p.velY *= 0.95; p.posX += p.velX; p.posY += p.velY;
+                    p.velX += (dx / dist) * 2 * dt; 
+                    p.velY += (dy / dist) * 2 * dt;
+                    p.velX *= Math.pow(0.95, dt); 
+                    p.velY *= Math.pow(0.95, dt); 
+                    p.posX += p.velX * dt; 
+                    p.posY += p.velY * dt;
 
                     if (dist < 40) {
                         p.el.style.transition = 'all 0.3s ease-in'; p.el.style.transform = 'scale(0) rotate(720deg)';
@@ -465,11 +490,12 @@
                 else if (!p.isDragging) {
                     let spdMult = (p.sugarRush > 0 || p.isMythic) ? 2 : 1;
                     
-                    if (p.sugarRush > 0) p.sugarRush--;
+                    if (p.sugarRush > 0) p.sugarRush -= dt;
                     if (p.sugarRush > 0 && !p.isMythic) p.el.classList.add('sugar-rush');
                     else if (!p.isMythic) p.el.classList.remove('sugar-rush');
 
-                    if (p.isMythic && Math.random() < 0.002) {
+                    // Coin Drop Rate (Extremely Rare)
+                    if (p.isMythic && Math.random() < (0.0002 * dt)) {
                         let cEl = document.createElement('img');
                         cEl.src = 'https://static.wikia.nocookie.net/geometry-dash-fan-ideas/images/4/4d/Stone_coin.png';
                         cEl.className = 'dropped-coin'; document.body.appendChild(cEl);
@@ -482,20 +508,24 @@
                     if ((p.mode.id === 'Spider' || p.mode.id === 'Swing') && p.spiderFlipped) activeGravity = -0.8; 
                     if (isNearMythic) activeGravity = -0.5;
 
-                    p.velY += activeGravity; let prevY = p.posY;
-                    p.posX += p.velX; p.posY += p.velY;
+                    p.velY += activeGravity * dt; 
+                    let prevY = p.posY;
+                    p.posX += p.velX * dt; 
+                    p.posY += p.velY * dt;
 
+                    // Solid Box Collision
                     if (pCenterX > boxRect.left && pCenterX < boxRect.right && !isNearMythic) {
-                        if (p.velY >= 0 && prevY + p.size <= boxRect.top + 10 && p.posY + p.size >= boxRect.top) {
+                        if (p.velY >= 0 && prevY + p.size <= boxRect.top + 15 && p.posY + p.size >= boxRect.top) {
                             p.posY = boxRect.top - p.size;
-                            if (p.mode.id === 'Wave') p.velY *= -1; else { p.velY *= -0.4; p.velX *= 0.8; }
+                            if (p.mode.id === 'Wave') p.velY *= -1; else { p.velY *= -0.4; p.velX *= Math.pow(0.8, dt); }
                         }
-                        if (p.velY <= 0 && prevY >= boxRect.bottom - 10 && p.posY <= boxRect.bottom) {
+                        if (p.velY <= 0 && prevY >= boxRect.bottom - 15 && p.posY <= boxRect.bottom) {
                             p.posY = boxRect.bottom;
-                            if (p.mode.id === 'Wave') p.velY *= -1; else { p.velY *= -0.4; p.velX *= 0.8; }
+                            if (p.mode.id === 'Wave') p.velY *= -1; else { p.velY *= -0.4; p.velX *= Math.pow(0.8, dt); }
                         }
                     }
 
+                    // Screen Bounds
                     if (p.isMythic) {
                         if (p.posX < -p.size) p.posX = rightWall;
                         if (p.posX > rightWall) p.posX = -p.size;
@@ -506,15 +536,22 @@
 
                     if (p.posY > ground - p.size) {
                         p.posY = ground - p.size; 
-                        if (p.mode.id === 'Wave') p.velY *= -1; else { p.velY *= -0.4; if (p.mode.id !== 'Ship' && p.mode.id !== 'Jetpack') p.velX *= 0.8; }
+                        if (p.mode.id === 'Wave') p.velY *= -1; else { p.velY *= -0.4; if (p.mode.id !== 'Ship' && p.mode.id !== 'Jetpack') p.velX *= Math.pow(0.8, dt); }
                         if (Math.abs(p.velY) < 1) p.velY = 0; 
                     }
+                    
+                    // Fixed Ceiling Collision Logic for Spiders
                     if (p.posY < 0) {
                         p.posY = 0; 
-                        if (p.mode.id === 'Wave') p.velY *= -1; else { p.velY = Math.abs(p.velY) * 0.5; if (p.mode.id !== 'Ship' && p.mode.id !== 'Jetpack') p.velX *= 0.8; }
+                        if (p.mode.id === 'Wave') p.velY *= -1; 
+                        else { 
+                            p.velY *= -0.4; 
+                            if (p.mode.id !== 'Ship' && p.mode.id !== 'Jetpack') p.velX *= Math.pow(0.8, dt); 
+                        }
+                        if (Math.abs(p.velY) < 1) p.velY = 0; // Stabilize ceiling walking
                     }
 
-                    if (!thiefPet && !isLaserMode && Math.random() < 0.01 && !p.isMythic) {
+                    if (!thiefPet && !isLaserMode && Math.random() < (0.01 * dt) && !p.isMythic) {
                         let btnRect = backBtn.getBoundingClientRect();
                         if (Math.hypot(p.posX - btnRect.left, p.posY - btnRect.top) < 150) thiefPet = p;
                     }
@@ -522,7 +559,7 @@
                         backBtn.style.position = 'fixed'; backBtn.style.left = (p.posX + 10) + 'px'; backBtn.style.top = (p.posY - 30) + 'px';
                     }
 
-                    p.transformTimer--; p.roamTimer--; p.speechTimer--;
+                    p.transformTimer -= dt; p.roamTimer -= dt; p.speechTimer -= dt;
 
                     if (p.transformTimer <= 0) { morphPet(p); p.transformTimer = Math.random() * 3600 + 600; }
                     
@@ -537,15 +574,15 @@
                     if (isLaserMode) {
                         let dx = mouseX - pCenterX; let dy = mouseY - pCenterY; let dist = Math.hypot(dx, dy);
                         if (dist > 20) {
-                            p.velX += (dx / dist) * 0.5 * spdMult;
-                            if (p.mode.id === 'Ship' || p.mode.id === 'Jetpack') p.velY += (dy / dist) * 0.5 * spdMult;
-                            else if (p.posY >= ground - p.size || p.posY <= 0 || (p.posY === boxRect.top - p.size)) {
-                                if (dy < -50 && Math.random() < 0.1) p.velY = p.spiderFlipped ? 15 : -15; 
+                            p.velX += (dx / dist) * 0.5 * spdMult * dt;
+                            if (p.mode.id === 'Ship' || p.mode.id === 'Jetpack') p.velY += (dy / dist) * 0.5 * spdMult * dt;
+                            else if (p.posY >= ground - p.size || p.posY <= 0 || (p.posY === boxRect.top - p.size) || p.posY === boxRect.bottom) {
+                                if (dy < -50 && Math.random() < (0.1 * dt)) p.velY = p.spiderFlipped ? 15 : -15; 
                             }
                         }
                     } else if (teaItem && !p.isMythic) {
                         let dx = teaItem.posX - pCenterX;
-                        if (Math.abs(dx) > 10) p.velX += (dx > 0 ? 0.3 : -0.3) * spdMult;
+                        if (Math.abs(dx) > 10) p.velX += (dx > 0 ? 0.3 : -0.3) * spdMult * dt;
                         if (Math.hypot(dx, teaItem.posY - pCenterY) < 50) {
                             teaItem.el.remove(); teaItem = null; p.sugarRush = 600; 
                             p.bubble.innerText = "YUM!"; p.bubble.style.opacity = '1';
@@ -593,7 +630,7 @@
                         let spiderScale = p.spiderFlipped ? ' scaleY(-1)' : '';
                         
                         if (p.mode.id === 'Ball' && Math.abs(p.velX) > 0.5 && !p.isDragging) {
-                            p.rotation += p.velX * 3; p.el.style.transform = `rotate(${p.rotation}deg)`;
+                            p.rotation += p.velX * 3 * dt; p.el.style.transform = `rotate(${p.rotation}deg)`;
                         } else if (p.mode.id === 'Ship' || p.mode.id === 'Jetpack') {
                             let tilt = p.velY * 2; if (!p.isFacingRight) tilt *= -1; p.el.style.transform = `${flipScale} rotate(${tilt}deg)`;
                         } else if (p.mode.id === 'Wave') {
@@ -612,7 +649,7 @@
         }
 
         spawnPet();
-        engineLoop();
+        requestAnimationFrame(engineLoop);
     </script>
     <script src="js/context-menu.js"></script>
     <script src="js/core.js"></script>
