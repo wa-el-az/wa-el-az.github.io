@@ -52,10 +52,18 @@
         .action-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 15px rgba(0,0,0,0.2); }
         .action-btn:active { transform: scale(0.95); }
 
-        .btn-spawn { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
-        .btn-tea { background: #4ade80; color: #0b0b0b; }
-        .btn-laser { background: #34495e; color: #fff; }
-        .btn-laser.active { background: #e74c3c; box-shadow: 0 0 15px rgba(231, 76, 60, 0.4); }
+        /* Unified Transparent Style for Main Buttons */
+        .btn-spawn, .btn-tea, .btn-laser { 
+            background: rgba(255,255,255,0.1); 
+            color: #fff; 
+            border: 1px solid rgba(255,255,255,0.2); 
+        }
+        
+        .btn-laser.active { 
+            background: rgba(231, 76, 60, 0.3); /* Subtle red glow when active */
+            border-color: #e74c3c;
+            box-shadow: 0 0 15px rgba(231, 76, 60, 0.4); 
+        }
 
         /* --- TOOLBOX EXPANSION MENU --- */
         .toolbox-wrapper { position: relative; display: inline-block; }
@@ -81,9 +89,37 @@
         .toolbox-item:hover { background: rgba(255,255,255,0.15); transform: translateY(-2px); }
         .toolbox-item:active { transform: scale(0.95); }
         
-        /* Active States for Toolbox Items */
         .toolbox-item.tag-active { background: rgba(230, 126, 34, 0.2); border-color: #e67e22; color: #e67e22; }
         .toolbox-item i { width: 18px; height: 18px; }
+
+        /* --- DYNAMIC WEATHER CSS --- */
+        #weather-overlay {
+            position: fixed; inset: 0; pointer-events: none; z-index: 8000;
+            transition: opacity 1s ease; opacity: 0;
+        }
+        #weather-overlay.snowing {
+            opacity: 1;
+            background-image: 
+                radial-gradient(circle at 50% 50%, rgba(255,255,255,0.8) 2px, transparent 3px),
+                radial-gradient(circle at 20% 30%, rgba(255,255,255,0.6) 1px, transparent 2px),
+                radial-gradient(circle at 80% 80%, rgba(255,255,255,0.9) 3px, transparent 4px);
+            background-size: 100px 100px, 60px 60px, 150px 150px;
+            animation: snowFall 3s linear infinite;
+        }
+        @keyframes snowFall {
+            0% { background-position: 0px 0px, 0px 0px, 0px 0px; }
+            100% { background-position: 20px 100px, -20px 60px, 50px 150px; }
+        }
+        #weather-overlay.windy {
+            opacity: 1;
+            background-image: repeating-linear-gradient(90deg, transparent, transparent 100px, rgba(255,255,255,0.05) 100px, rgba(255,255,255,0.05) 250px);
+            background-size: 300px 100%;
+            animation: windBlow 0.5s linear infinite;
+        }
+        @keyframes windBlow {
+            0% { background-position: 0 0; }
+            100% { background-position: 300px 0; }
+        }
 
         /* --- TRASH BIN --- */
         #trashBin {
@@ -163,12 +199,11 @@
 </head>
 <body>
     <div class="bg-left"></div><div class="bg-right"></div>
-    
-    <a class="navBtn" id="dynamicBackBtn" href="index" style="transition: none;"><i data-lucide="home"></i> Home</a>
+    <div id="weather-overlay"></div> <a class="navBtn" id="dynamicBackBtn" href="index" style="transition: none;"><i data-lucide="home"></i> Home</a>
 
     <div class="header-card" id="solid-box">
         <h1><i data-lucide="bot"></i> Desktop Pet</h1>
-        <p>Spawn pets, drop tea, and keep spawning to find the rare Mythic RGB Pet! These pets interact, chat, and even evolve if they find the magic stone coin dropped by a Mythic pet.</p>
+        <p>Spawn pets, drop tea, or open the Toolbox to change the weather to Snow or Wind to mess with their physics! Can you find the rare Mythic RGB Pet?</p>
         
         <div class="controls-row">
             <button class="action-btn btn-spawn" onclick="spawnPet()"><i data-lucide="copy-plus"></i> Spawn Pet</button>
@@ -182,7 +217,8 @@
                 <div class="toolbox-menu" id="toolboxMenu">
                     <button class="toolbox-item" onclick="dropSpike()"><i data-lucide="triangle-alert" style="color: #e74c3c;"></i> Drop Spike</button>
                     <button class="toolbox-item" id="tagToggleBtn" onclick="toggleTag()"><i data-lucide="gamepad-2"></i> Play Tag</button>
-                    </div>
+                    <button class="toolbox-item" id="weatherToggleBtn" onclick="cycleWeather()" style="grid-column: span 2;"><i data-lucide="cloud-sun"></i> Weather: Clear</button>
+                </div>
             </div>
         </div>
     </div>
@@ -203,7 +239,7 @@
         }
 
         // ==========================================
-        // TOOLBOX UI LOGIC
+        // TOOLBOX UI & WEATHER LOGIC
         // ==========================================
         const toolboxMenu = document.getElementById('toolboxMenu');
         const toolboxTrigger = document.getElementById('toolboxTrigger');
@@ -214,13 +250,31 @@
             toolboxTrigger.classList.toggle('active');
         }
 
-        // Close toolbox if clicking outside
         document.addEventListener('click', (event) => {
             if (!toolboxMenu.contains(event.target) && event.target !== toolboxTrigger) {
                 toolboxMenu.classList.remove('active');
                 toolboxTrigger.classList.remove('active');
             }
         });
+
+        let weatherMode = 0; // 0 = Clear, 1 = Snow, 2 = Wind
+        const weatherNames = ["Clear", "Snow", "Wind"];
+        const weatherIcons = ["cloud-sun", "snowflake", "wind"];
+        
+        function cycleWeather() {
+            weatherMode = (weatherMode + 1) % 3;
+            const btn = document.getElementById('weatherToggleBtn');
+            btn.innerHTML = `<i data-lucide="${weatherIcons[weatherMode]}"></i> Weather: ${weatherNames[weatherMode]}`;
+            
+            const overlay = document.getElementById('weather-overlay');
+            overlay.className = '';
+            if (weatherMode === 1) overlay.classList.add('snowing');
+            if (weatherMode === 2) overlay.classList.add('windy');
+            
+            lucide.createIcons();
+            toolboxMenu.classList.remove('active');
+            toolboxTrigger.classList.remove('active');
+        }
 
         // ==========================================
         // DESKTOP PET ENGINE
@@ -312,6 +366,8 @@
                 tagBtn.classList.add('tag-active');
             }
             lucide.createIcons();
+            toolboxMenu.classList.remove('active');
+            toolboxTrigger.classList.remove('active');
         }
 
         function dropTea() {
@@ -336,7 +392,7 @@
                 posY: -50,
                 velX: 0, velY: 0, size: 45
             });
-            toolboxMenu.classList.remove('active'); // Auto-close toolbox on action
+            toolboxMenu.classList.remove('active');
             toolboxTrigger.classList.remove('active');
         }
 
@@ -454,7 +510,7 @@
         }
 
         // ==========================================
-        // DYNAMIC PHYSICS ENGINE (DELTA-TIME)
+        // DYNAMIC PHYSICS ENGINE (DELTA-TIME & WEATHER)
         // ==========================================
         let lastTime = performance.now();
 
@@ -462,6 +518,7 @@
             if (!currentTime) currentTime = performance.now();
             let dt = (currentTime - lastTime) / (1000 / 60);
             lastTime = currentTime;
+            
             if (dt > 2) dt = 2; 
             if (dt < 0.01) dt = 0.01;
 
@@ -480,8 +537,18 @@
                     if (dist < 40) { s.el.remove(); spikesList.splice(i, 1); continue; }
                 } else {
                     s.velY += 0.8 * dt; s.posY += s.velY * dt;
-                    if (s.posY > ground - s.size) { s.posY = ground - s.size; s.velY = 0; s.velX = 0; }
-                    else if (s.velX) { s.posX += s.velX * dt; }
+                    
+                    // Wind affects spikes slightly
+                    if (weatherMode === 2) s.velX += 0.5 * dt;
+
+                    if (s.posY > ground - s.size) { 
+                        s.posY = ground - s.size; 
+                        s.velY = 0; 
+                        // Slippery spikes on snow
+                        if (weatherMode === 1) s.velX *= Math.pow(0.95, dt);
+                        else s.velX = 0; 
+                    }
+                    if (Math.abs(s.velX) > 0) { s.posX += s.velX * dt; }
                 }
                 s.el.style.left = s.posX + 'px'; s.el.style.top = s.posY + 'px';
             }
@@ -489,6 +556,10 @@
             for (let i = coinsList.length - 1; i >= 0; i--) {
                 let c = coinsList[i];
                 c.velY += 0.8 * dt; c.posY += c.velY * dt;
+                
+                // Wind affects coins
+                if (weatherMode === 2) c.posX += 1.5 * dt;
+
                 if (c.posY > ground - 30) { c.posY = ground - 30; c.velY = 0; }
                 c.el.style.left = c.posX + 'px'; c.el.style.top = c.posY + 'px';
 
@@ -513,16 +584,22 @@
             if (teaItem) {
                 let mythicPet = pets.find(m => m.isMythic && !m.isDeleted);
                 if (mythicPet && !isLaserMode && !isMagnetizing) {
-                    let dx = (mythicPet.posX + mythicPet.size/2) - teaItem.posX; let dy = (mythicPet.posY + mythicPet.size/2) - teaItem.posY;
+                    let dx = (mythicPet.posX + mythicPet.size/2) - teaItem.posX;
+                    let dy = (mythicPet.posY + mythicPet.size/2) - teaItem.posY;
                     let dist = Math.hypot(dx, dy);
-                    if (dist > 30) { teaItem.posX += (dx / dist) * 12 * dt; teaItem.posY += (dy / dist) * 12 * dt; } 
+                    if (dist > 30) { 
+                        teaItem.posX += (dx / dist) * 12 * dt; 
+                        teaItem.posY += (dy / dist) * 12 * dt; 
+                    } 
                     else {
                         teaItem.el.remove(); teaItem = null;
                         mythicPet.bubble.innerText = "DATA CONSUMED."; mythicPet.bubble.style.opacity = '1';
                         setTimeout(() => mythicPet.bubble.style.opacity = '0', 2000);
                     }
                 } else {
-                    teaItem.velY += 0.8 * dt; teaItem.posY += teaItem.velY * dt;
+                    teaItem.velY += 0.8 * dt; 
+                    teaItem.posY += teaItem.velY * dt;
+                    if (weatherMode === 2) teaItem.posX += 1.5 * dt; // Wind blows tea
                     if (teaItem.posY > ground - 40) { teaItem.posY = ground - 40; teaItem.velY = 0; }
                 }
                 if (teaItem) { teaItem.el.style.left = teaItem.posX + 'px'; teaItem.el.style.top = teaItem.posY + 'px'; }
@@ -533,7 +610,8 @@
                     let p1 = pets[i]; let p2 = pets[j];
                     if (p1.isDragging || p2.isDragging || isMagnetizing || p1.isDeleted || p2.isDeleted) continue;
 
-                    let dx = (p1.posX + p1.size/2) - (p2.posX + p2.size/2); let dy = (p1.posY + p1.size/2) - (p2.posY + p2.size/2);
+                    let dx = (p1.posX + p1.size/2) - (p2.posX + p2.size/2);
+                    let dy = (p1.posY + p1.size/2) - (p2.posY + p2.size/2);
                     let dist = Math.hypot(dx, dy); let minDist = (p1.size + p2.size) / 2;
 
                     if (dist < minDist) {
@@ -626,6 +704,9 @@
                         coinsList.push({ el: cEl, posX: p.posX + p.size/2 - 15, posY: p.posY, velY: -6 });
                     }
 
+                    // WEATHER WIND APPLIED GLOBALLY
+                    if (weatherMode === 2) p.velX += 1.5 * dt;
+
                     let isNearMythic = !p.isMythic && pets.some(m => m.isMythic && !m.isDeleted && Math.hypot(m.posX - p.posX, m.posY - p.posY) < 150);
                     let activeGravity = 0.8;
                     if (p.mode.id === 'Ship' || p.mode.id === 'Jetpack' || p.mode.id === 'Wave') activeGravity = 0; 
@@ -638,11 +719,23 @@
                     if (pCenterX > boxRect.left && pCenterX < boxRect.right && !isNearMythic) {
                         if (p.velY >= 0 && prevY + p.size <= boxRect.top + 15 && p.posY + p.size >= boxRect.top) {
                             p.posY = boxRect.top - p.size;
-                            if (p.mode.id === 'Wave') p.velY *= -1; else { p.velY *= -0.4; p.velX *= Math.pow(0.8, dt); }
+                            if (p.mode.id === 'Wave') p.velY *= -1; 
+                            else { 
+                                p.velY *= -0.4; 
+                                // ICE FRICTION
+                                if (weatherMode === 1) p.velX *= Math.pow(0.98, dt);
+                                else p.velX *= Math.pow(0.8, dt); 
+                            }
                         }
                         if (p.velY <= 0 && prevY >= boxRect.bottom - 15 && p.posY <= boxRect.bottom) {
                             p.posY = boxRect.bottom;
-                            if (p.mode.id === 'Wave') p.velY *= -1; else { p.velY *= -0.4; p.velX *= Math.pow(0.8, dt); }
+                            if (p.mode.id === 'Wave') p.velY *= -1; 
+                            else { 
+                                p.velY *= -0.4; 
+                                // ICE FRICTION
+                                if (weatherMode === 1) p.velX *= Math.pow(0.98, dt);
+                                else p.velX *= Math.pow(0.8, dt); 
+                            }
                         }
                     }
 
@@ -656,12 +749,28 @@
 
                     if (p.posY > ground - p.size) {
                         p.posY = ground - p.size; 
-                        if (p.mode.id === 'Wave') p.velY *= -1; else { p.velY *= -0.4; if (p.mode.id !== 'Ship' && p.mode.id !== 'Jetpack') p.velX *= Math.pow(0.8, dt); }
+                        if (p.mode.id === 'Wave') p.velY *= -1; 
+                        else { 
+                            p.velY *= -0.4; 
+                            if (p.mode.id !== 'Ship' && p.mode.id !== 'Jetpack') {
+                                // ICE FRICTION
+                                if (weatherMode === 1) p.velX *= Math.pow(0.98, dt);
+                                else p.velX *= Math.pow(0.8, dt); 
+                            }
+                        }
                         if (Math.abs(p.velY) < 1) p.velY = 0; 
                     }
                     if (p.posY < 0) {
                         p.posY = 0; 
-                        if (p.mode.id === 'Wave') p.velY *= -1; else { p.velY *= -0.4; if (p.mode.id !== 'Ship' && p.mode.id !== 'Jetpack') p.velX *= Math.pow(0.8, dt); }
+                        if (p.mode.id === 'Wave') p.velY *= -1; 
+                        else { 
+                            p.velY *= -0.4; 
+                            if (p.mode.id !== 'Ship' && p.mode.id !== 'Jetpack') {
+                                // ICE FRICTION
+                                if (weatherMode === 1) p.velX *= Math.pow(0.98, dt);
+                                else p.velX *= Math.pow(0.8, dt); 
+                            }
+                        }
                         if (Math.abs(p.velY) < 1) p.velY = 0; 
                     }
 
@@ -746,7 +855,11 @@
                                 else if (p.mode.id === 'UFO') p.velY = p.spiderFlipped ? 10 : -10;
                                 else if (p.mode.id === 'Spider' || p.mode.id === 'Swing') p.spiderFlipped = !p.spiderFlipped; 
                                 p.roamTimer = 40;
-                            } else { p.velX = 0; p.roamTimer = Math.random() * 100 + 50; }
+                            } else { 
+                                // On ice, do not force stop! Let them slide.
+                                if (weatherMode !== 1) p.velX = 0; 
+                                p.roamTimer = Math.random() * 100 + 50; 
+                            }
                         } else if (p.mode.id === 'UFO' && action < 0.05) { p.velY = p.spiderFlipped ? 10 : -10; }
                     }
                 }
