@@ -26,7 +26,7 @@
             backdrop-filter: blur(14px);
             box-shadow: 0 25px 50px rgba(0,0,0,0.4);
             text-align: center;
-            max-width: 700px;
+            max-width: 750px;
             position: relative;
             z-index: 10;
         }
@@ -55,6 +55,8 @@
         .btn-tea { background: #4ade80; color: #0b0b0b; }
         .btn-laser { background: #34495e; color: #fff; }
         .btn-laser.active { background: #e74c3c; box-shadow: 0 0 15px rgba(231, 76, 60, 0.4); }
+        .btn-tag { background: #e67e22; color: #fff; }
+        .btn-tag.active { background: #d35400; box-shadow: 0 0 15px rgba(211, 84, 0, 0.4); }
 
         /* --- TRASH BIN --- */
         #trashBin {
@@ -101,6 +103,12 @@
             opacity: 0.5; pointer-events: none; transition: opacity 0.5s linear; z-index: 9998;
         }
 
+        /* IT Pet Glow */
+        .pet-it {
+            filter: drop-shadow(0 0 25px #ff0000) drop-shadow(0 0 10px #ff0000) brightness(1.2) !important;
+        }
+
+        /* True RGB Color Cycling */
         @keyframes trueRGB {
             0% { filter: hue-rotate(0deg) drop-shadow(0 0 20px #ff0000); }
             33% { filter: hue-rotate(120deg) drop-shadow(0 0 20px #00ff00); }
@@ -114,7 +122,6 @@
             50% { filter: drop-shadow(0 0 40px #4ade80) brightness(2) saturate(3); transform: scale(0.3) rotate(180deg); }
             100% { filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)) brightness(1) saturate(1); transform: scale(1) rotate(360deg); }
         }
-        /* Added !important to guarantee flashes override the RGB loop */
         .morphing { animation: morphFlash 0.6s cubic-bezier(0.25, 1, 0.5, 1) !important; }
 
         @keyframes morphFlashMythic {
@@ -159,12 +166,13 @@
 
     <div class="header-card" id="solid-box">
         <h1><i data-lucide="bot"></i> Desktop Pet</h1>
-        <p>Spawn pets, drop tea, and keep spawning to find the rare Mythic RGB Pet! These pets interact, chat, and even evolve if they find the magic stone coin dropped by a Mythic pet.</p>
+        <p>Spawn pets, drop tea, or start a Game of Tag! Normal pets will actively run away from the glowing red "IT" pet. Can you find the rare Mythic RGB Pet?</p>
         
         <div class="controls-row">
             <button class="action-btn btn-spawn" onclick="spawnPet()"><i data-lucide="copy-plus"></i> Spawn Pet</button>
             <button class="action-btn btn-tea" onclick="dropTea()"><i data-lucide="coffee"></i> Drop Tea</button>
             <button class="action-btn btn-laser" id="laserToggle" onclick="toggleLaser()"><i data-lucide="mouse-pointer-2"></i> Laser: OFF</button>
+            <button class="action-btn btn-tag" id="tagToggleBtn" onclick="toggleTag()"><i data-lucide="gamepad-2"></i> Play Tag: OFF</button>
         </div>
     </div>
 
@@ -188,6 +196,7 @@
         // ==========================================
         const solidBox = document.getElementById('solid-box');
         const laserBtn = document.getElementById('laserToggle');
+        const tagBtn = document.getElementById('tagToggleBtn');
         const trashBin = document.getElementById('trashBin');
         
         const GAMEMODES = [
@@ -223,6 +232,7 @@
         let coinsList = [];
         let teaItem = null;
         let thiefPet = null;
+        let itPet = null;
         let isLaserMode = false;
         let isMagnetizing = false;
         let mouseX = window.innerWidth / 2;
@@ -240,6 +250,36 @@
             } else {
                 laserBtn.innerHTML = `<i data-lucide="mouse-pointer-2"></i> Laser: OFF`;
                 laserBtn.classList.remove('active');
+            }
+            lucide.createIcons();
+        }
+
+        function toggleTag() {
+            if (itPet) {
+                // Turn OFF Game of Tag
+                itPet.isIt = false;
+                itPet.el.classList.remove('pet-it');
+                itPet = null;
+                tagBtn.innerHTML = `<i data-lucide="gamepad-2"></i> Play Tag: OFF`;
+                tagBtn.classList.remove('active');
+            } else {
+                // Turn ON Game of Tag
+                let normalPets = pets.filter(p => !p.isDeleted && !p.isMythic);
+                if (normalPets.length < 2) {
+                    alert("You need at least 2 normal pets to play a Game of Tag!");
+                    return;
+                }
+                itPet = normalPets[Math.floor(Math.random() * normalPets.length)];
+                itPet.isIt = true;
+                itPet.tagCooldown = 60; 
+                itPet.el.classList.add('pet-it');
+                
+                itPet.bubble.innerText = "I'm IT!";
+                itPet.bubble.style.opacity = '1';
+                setTimeout(() => itPet.bubble.style.opacity = '0', 3000);
+                
+                tagBtn.innerHTML = `<i data-lucide="gamepad-2"></i> Play Tag: ON`;
+                tagBtn.classList.add('active');
             }
             lucide.createIcons();
         }
@@ -262,7 +302,6 @@
         }
 
         function spawnPet() {
-            // Rarity exactly 1%
             let isMythic = Math.random() < 0.01;
 
             const petObj = {
@@ -271,7 +310,8 @@
                 posX: window.innerWidth / 2 + (Math.random() * 100 - 50), posY: 100, velX: 0, velY: 0,
                 isFacingRight: true, roamTimer: 60, transformTimer: Math.random() * 3600 + 600, speechTimer: Math.random() * 5400 + 1800,
                 spiderFlipped: false, rotation: 0, sugarRush: 0, isDragging: false,
-                offsetX: 0, offsetY: 0, lastX: 0, lastY: 0, isMythic: isMythic, size: isMythic ? 65 : 50, isDeleted: false
+                offsetX: 0, offsetY: 0, lastX: 0, lastY: 0, isMythic: isMythic, size: isMythic ? 65 : 50, 
+                isDeleted: false, isIt: false, tagCooldown: 0
             };
 
             petObj.el.className = 'pet-entity';
@@ -331,6 +371,7 @@
                         petObj.el.style.opacity = '0'; petObj.badge.style.opacity = '0'; petObj.bubble.style.opacity = '0';
                         setTimeout(() => { petObj.el.remove(); petObj.badge.remove(); petObj.bubble.remove(); }, 400);
                         
+                        if (petObj === itPet) toggleTag(); // Turn off tag safely if deleted
                         petObj.isDeleted = true;
                         trashBin.style.transform = 'scale(1.2)';
                         setTimeout(() => trashBin.style.transform = '', 200);
@@ -374,11 +415,10 @@
         function engineLoop(currentTime) {
             if (!currentTime) currentTime = performance.now();
             
-            // Delta-time setup for 60hz, 144hz, 240hz compatibility
             let dt = (currentTime - lastTime) / (1000 / 60);
             lastTime = currentTime;
             
-            if (dt > 2) dt = 2; // Cap large spikes if tab is inactive
+            if (dt > 2) dt = 2; 
             if (dt < 0.01) dt = 0.01;
 
             const ground = window.innerHeight; 
@@ -401,6 +441,8 @@
                         let dx = (p.posX + p.size/2) - (c.posX + 15);
                         let dy = (p.posY + p.size/2) - (c.posY + 15);
                         if (Math.hypot(dx, dy) < (p.size/2 + 15)) {
+                            if (p === itPet) toggleTag(); // Cannot be IT and Mythic
+
                             collected = true; p.isMythic = true; p.size = 65;
                             p.el.style.width = '65px'; p.el.style.height = '65px'; p.el.classList.add('sugar-rush');
                             p.bubble.className = 'speech-bubble speech-bubble-mythic';
@@ -449,6 +491,23 @@
                         let angle = Math.atan2(dy, dx); let pushForce = 2; 
                         p1.velX += Math.cos(angle) * pushForce; p2.velX -= Math.cos(angle) * pushForce;
 
+                        // Game of Tag Logic
+                        if (itPet) {
+                            if (p1.isIt && !p2.isIt && !p2.isMythic && p1.tagCooldown <= 0 && p2.tagCooldown <= 0) {
+                                p1.isIt = false; p1.el.classList.remove('pet-it'); p1.tagCooldown = 60;
+                                p2.isIt = true; p2.el.classList.add('pet-it'); p2.tagCooldown = 60;
+                                itPet = p2;
+                                p2.bubble.innerText = "Tag! You're It!"; p2.bubble.style.opacity = '1';
+                                setTimeout(() => p2.bubble.style.opacity = '0', 2000);
+                            } else if (p2.isIt && !p1.isIt && !p1.isMythic && p2.tagCooldown <= 0 && p1.tagCooldown <= 0) {
+                                p2.isIt = false; p2.el.classList.remove('pet-it'); p2.tagCooldown = 60;
+                                p1.isIt = true; p1.el.classList.add('pet-it'); p1.tagCooldown = 60;
+                                itPet = p1;
+                                p1.bubble.innerText = "Tag! You're It!"; p1.bubble.style.opacity = '1';
+                                setTimeout(() => p1.bubble.style.opacity = '0', 2000);
+                            }
+                        }
+
                         if (p1.isMythic && !p2.isMythic) {
                             p2.velY = -15; p1.bubble.innerText = "Move."; p1.bubble.style.opacity = '1';
                             setTimeout(() => p1.bubble.style.opacity = '0', 2000);
@@ -456,7 +515,7 @@
                             p1.velY = -15; p2.bubble.innerText = "Move."; p2.bubble.style.opacity = '1';
                             setTimeout(() => p2.bubble.style.opacity = '0', 2000);
                         } 
-                        else if (Math.random() < (0.05 * dt) && p1.speechTimer > 200 && p2.speechTimer > 200) {
+                        else if (Math.random() < (0.05 * dt) && p1.speechTimer > 200 && p2.speechTimer > 200 && !p1.isIt && !p2.isIt) {
                             p1.bubble.innerText = "Watch out!"; p2.bubble.innerText = "Oops!";
                             p1.bubble.style.opacity = '1'; p2.bubble.style.opacity = '1';
                             setTimeout(() => p1.bubble.style.opacity = '0', 2000); setTimeout(() => p2.bubble.style.opacity = '0', 2000);
@@ -470,6 +529,7 @@
                 if (p.isDeleted) return;
 
                 let pCenterX = p.posX + (p.size / 2); let pCenterY = p.posY + (p.size / 2);
+                if (p.tagCooldown > 0) p.tagCooldown -= dt;
 
                 if (isMagnetizing && !p.isDragging) {
                     let dx = tbX - pCenterX; let dy = tbY - pCenterY; let dist = Math.hypot(dx, dy);
@@ -484,6 +544,7 @@
                         p.el.style.transition = 'all 0.3s ease-in'; p.el.style.transform = 'scale(0) rotate(720deg)';
                         p.el.style.opacity = '0'; p.badge.style.opacity = '0'; p.bubble.style.opacity = '0';
                         setTimeout(() => { p.el.remove(); p.badge.remove(); p.bubble.remove(); }, 300);
+                        if (p === itPet) toggleTag();
                         p.isDeleted = true;
                     }
                 } 
@@ -494,7 +555,6 @@
                     if (p.sugarRush > 0 && !p.isMythic) p.el.classList.add('sugar-rush');
                     else if (!p.isMythic) p.el.classList.remove('sugar-rush');
 
-                    // Coin Drop Rate (Extremely Rare)
                     if (p.isMythic && Math.random() < (0.0002 * dt)) {
                         let cEl = document.createElement('img');
                         cEl.src = 'https://static.wikia.nocookie.net/geometry-dash-fan-ideas/images/4/4d/Stone_coin.png';
@@ -513,7 +573,6 @@
                     p.posX += p.velX * dt; 
                     p.posY += p.velY * dt;
 
-                    // Solid Box Collision
                     if (pCenterX > boxRect.left && pCenterX < boxRect.right && !isNearMythic) {
                         if (p.velY >= 0 && prevY + p.size <= boxRect.top + 15 && p.posY + p.size >= boxRect.top) {
                             p.posY = boxRect.top - p.size;
@@ -525,7 +584,6 @@
                         }
                     }
 
-                    // Screen Bounds
                     if (p.isMythic) {
                         if (p.posX < -p.size) p.posX = rightWall;
                         if (p.posX > rightWall) p.posX = -p.size;
@@ -539,16 +597,10 @@
                         if (p.mode.id === 'Wave') p.velY *= -1; else { p.velY *= -0.4; if (p.mode.id !== 'Ship' && p.mode.id !== 'Jetpack') p.velX *= Math.pow(0.8, dt); }
                         if (Math.abs(p.velY) < 1) p.velY = 0; 
                     }
-                    
-                    // Fixed Ceiling Collision Logic for Spiders
                     if (p.posY < 0) {
                         p.posY = 0; 
-                        if (p.mode.id === 'Wave') p.velY *= -1; 
-                        else { 
-                            p.velY *= -0.4; 
-                            if (p.mode.id !== 'Ship' && p.mode.id !== 'Jetpack') p.velX *= Math.pow(0.8, dt); 
-                        }
-                        if (Math.abs(p.velY) < 1) p.velY = 0; // Stabilize ceiling walking
+                        if (p.mode.id === 'Wave') p.velY *= -1; else { p.velY *= -0.4; if (p.mode.id !== 'Ship' && p.mode.id !== 'Jetpack') p.velX *= Math.pow(0.8, dt); }
+                        if (Math.abs(p.velY) < 1) p.velY = 0; 
                     }
 
                     if (!thiefPet && !isLaserMode && Math.random() < (0.01 * dt) && !p.isMythic) {
@@ -563,7 +615,7 @@
 
                     if (p.transformTimer <= 0) { morphPet(p); p.transformTimer = Math.random() * 3600 + 600; }
                     
-                    if (p.speechTimer <= 0) {
+                    if (p.speechTimer <= 0 && !p.isIt) {
                         let dialogList = p.isMythic ? MYTHIC_DIALOGUE : DIALOGUE;
                         p.bubble.innerText = dialogList[Math.floor(Math.random() * dialogList.length)];
                         p.bubble.style.opacity = '1';
@@ -571,6 +623,7 @@
                         p.speechTimer = Math.random() * 5400 + 1800; 
                     }
 
+                    // Game of Tag AI & Pathfinding
                     if (isLaserMode) {
                         let dx = mouseX - pCenterX; let dy = mouseY - pCenterY; let dist = Math.hypot(dx, dy);
                         if (dist > 20) {
@@ -587,6 +640,29 @@
                             teaItem.el.remove(); teaItem = null; p.sugarRush = 600; 
                             p.bubble.innerText = "YUM!"; p.bubble.style.opacity = '1';
                             setTimeout(() => p.bubble.style.opacity = '0', 2000);
+                        }
+                    } else if (itPet && !p.isMythic && p.isIt) {
+                        // IT Pet hunts the closest healthy pet
+                        let closest = null; let minD = Infinity;
+                        pets.forEach(o => {
+                            if (!o.isDeleted && !o.isMythic && !o.isIt) {
+                                let d = Math.hypot(p.posX - o.posX, p.posY - o.posY);
+                                if (d < minD) { minD = d; closest = o; }
+                            }
+                        });
+                        if (closest) {
+                            let dx = closest.posX - p.posX;
+                            p.velX += (dx > 0 ? 0.3 : -0.3) * spdMult * dt;
+                            if (closest.posY < p.posY - 40 && p.posY >= ground - p.size - 5 && Math.random() < (0.05 * dt)) {
+                                p.velY = p.spiderFlipped ? 15 : -15;
+                            }
+                        }
+                    } else if (itPet && !p.isMythic && !p.isIt && Math.hypot(p.posX - itPet.posX, p.posY - itPet.posY) < 250) {
+                        // Normal pets run away in panic
+                        let dx = p.posX - itPet.posX;
+                        p.velX += (dx > 0 ? 0.4 : -0.4) * spdMult * dt;
+                        if (Math.random() < (0.02 * dt) && p.posY >= ground - p.size - 5) {
+                            p.velY = p.spiderFlipped ? 15 : -15;
                         }
                     } else if (p.roamTimer <= 0) {
                         const action = Math.random();
@@ -617,8 +693,14 @@
                 }
 
                 if (!p.isDeleted) {
-                    if (p.velX > 0 && !p.isDragging && !isLaserMode && (!teaItem || p.isMythic) && !isMagnetizing) p.isFacingRight = true;
-                    if (p.velX < 0 && !p.isDragging && !isLaserMode && (!teaItem || p.isMythic) && !isMagnetizing) p.isFacingRight = false;
+                    if (p.velX > 0 && !p.isDragging && !isLaserMode && (!teaItem || p.isMythic) && !isMagnetizing && !(itPet && p.isIt)) p.isFacingRight = true;
+                    if (p.velX < 0 && !p.isDragging && !isLaserMode && (!teaItem || p.isMythic) && !isMagnetizing && !(itPet && p.isIt)) p.isFacingRight = false;
+
+                    // Force the IT pet to look in the direction it is actively hunting
+                    if (itPet && p.isIt && !p.isDragging) {
+                        if (p.velX > 0) p.isFacingRight = true;
+                        if (p.velX < 0) p.isFacingRight = false;
+                    }
 
                     p.el.style.left = p.posX + 'px'; p.el.style.top = p.posY + 'px';
                     
