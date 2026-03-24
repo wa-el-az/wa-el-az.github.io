@@ -18,6 +18,7 @@
             user-select: none;
         }
         
+        /* Make the header card draggable */
         .header-card {
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.15);
@@ -26,21 +27,20 @@
             backdrop-filter: blur(14px);
             box-shadow: 0 25px 50px rgba(0,0,0,0.4);
             text-align: center;
-            max-width: 750px;
+            width: 750px;
+            max-width: 90vw;
             position: relative;
             z-index: 10;
+            cursor: grab; /* Indicates it's draggable */
         }
+        .header-card:active { cursor: grabbing; }
 
-        .header-card h1 { margin: 0 0 10px; display: flex; align-items: center; justify-content: center; gap: 10px; }
-        .header-card p { color: var(--text-muted); line-height: 1.5; margin: 0 0 25px; }
+        .header-card h1 { margin: 0 0 10px; display: flex; align-items: center; justify-content: center; gap: 10px; pointer-events: none; }
+        .header-card p { color: var(--text-muted); line-height: 1.5; margin: 0 0 25px; pointer-events: none; }
 
         .controls-row {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 15px;
-            align-items: center;
+            display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+            margin-bottom: 15px; align-items: center;
         }
 
         .action-btn {
@@ -53,15 +53,11 @@
         .action-btn:active { transform: scale(0.95); }
 
         .btn-spawn, .btn-tea, .btn-laser { 
-            background: rgba(255,255,255,0.1); 
-            color: #fff; 
-            border: 1px solid rgba(255,255,255,0.2); 
+            background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); 
         }
         
         .btn-laser.active { 
-            background: rgba(231, 76, 60, 0.3); 
-            border-color: #e74c3c;
-            box-shadow: 0 0 15px rgba(231, 76, 60, 0.4); 
+            background: rgba(231, 76, 60, 0.3); border-color: #e74c3c; box-shadow: 0 0 15px rgba(231, 76, 60, 0.4); 
         }
 
         /* --- TOOLBOX EXPANSION MENU --- */
@@ -90,7 +86,7 @@
         
         .toolbox-item.tag-active { background: rgba(230, 126, 34, 0.2); border-color: #e67e22; color: #e67e22; }
         .toolbox-item.calm-active { background: rgba(52, 152, 219, 0.2); border-color: #3498db; color: #3498db; }
-        .toolbox-item i { width: 18px; height: 18px; }
+        .toolbox-item i { width: 18px; height: 18px; pointer-events: none; }
 
         /* --- PERFECTLY LOOPING WEATHER CSS --- */
         #weather-overlay {
@@ -106,23 +102,14 @@
             background-size: 100px 100px, 60px 60px, 150px 150px;
             animation: snowFall 6s linear infinite;
         }
-        @keyframes snowFall {
-            0% { background-position: 0px 0px, 0px 0px, 0px 0px; }
-            100% { background-position: 100px 100px, -60px 60px, 150px 150px; } 
-        }
-
+        @keyframes snowFall { 0% { background-position: 0px 0px, 0px 0px, 0px 0px; } 100% { background-position: 100px 100px, -60px 60px, 150px 150px; } }
         #weather-overlay.windy {
             opacity: 1;
-            background-image: 
-                linear-gradient(90deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%),
-                linear-gradient(90deg, transparent 45%, rgba(255,255,255,0.08) 50%, transparent 55%);
+            background-image: linear-gradient(90deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%), linear-gradient(90deg, transparent 45%, rgba(255,255,255,0.08) 50%, transparent 55%);
             background-size: 600px 100%, 400px 100%;
             animation: windBlow 1.2s linear infinite;
         }
-        @keyframes windBlow {
-            0% { background-position: 0px 0px, 0px 0px; }
-            100% { background-position: 600px 0px, 400px 0px; }
-        }
+        @keyframes windBlow { 0% { background-position: 0px 0px, 0px 0px; } 100% { background-position: 600px 0px, 400px 0px; } }
 
         /* --- TRASH BIN --- */
         #trashBin {
@@ -132,14 +119,8 @@
             cursor: pointer; z-index: 9990; backdrop-filter: blur(10px);
             transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         }
-        #trashBin:hover {
-            background: rgba(231, 76, 60, 0.2); border-color: #e74c3c; color: #e74c3c; transform: scale(1.1) rotate(-5deg);
-        }
-        #trashBin svg { width: 32px; height: 32px; }
-        .magnet-active {
-            background: rgba(231, 76, 60, 0.8) !important; border-color: #fff !important; color: #fff !important;
-            transform: scale(1.2) !important; box-shadow: 0 0 30px rgba(231, 76, 60, 0.6) !important;
-        }
+        #trashBin:hover { background: rgba(231, 76, 60, 0.2); border-color: #e74c3c; color: #e74c3c; transform: scale(1.1) rotate(-5deg); }
+        .magnet-active { background: rgba(231, 76, 60, 0.8) !important; border-color: #fff !important; color: #fff !important; transform: scale(1.2) !important; box-shadow: 0 0 30px rgba(231, 76, 60, 0.6) !important; }
 
         /* --- THE PET CSS --- */
         .pet-entity {
@@ -149,32 +130,16 @@
         .pet-entity:active { cursor: grabbing; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.7)); }
         .ghost-trail { opacity: 0.5; pointer-events: none; transition: opacity 0.5s linear; z-index: 9998; }
 
-        @keyframes itPulse {
-            0%, 100% { filter: drop-shadow(0 0 20px #ff0000) drop-shadow(0 0 10px #ff0000) brightness(1.2); }
-            50% { filter: drop-shadow(0 0 40px #ff0000) drop-shadow(0 0 20px #ff0000) brightness(1.5); }
-        }
+        @keyframes itPulse { 0%, 100% { filter: drop-shadow(0 0 20px #ff0000) drop-shadow(0 0 10px #ff0000) brightness(1.2); } 50% { filter: drop-shadow(0 0 40px #ff0000) drop-shadow(0 0 20px #ff0000) brightness(1.5); } }
         .pet-it { animation: itPulse 1s ease-in-out infinite !important; }
 
-        @keyframes trueRGB {
-            0% { filter: hue-rotate(0deg) drop-shadow(0 0 20px #ff0000); }
-            33% { filter: hue-rotate(120deg) drop-shadow(0 0 20px #00ff00); }
-            66% { filter: hue-rotate(240deg) drop-shadow(0 0 20px #0000ff); }
-            100% { filter: hue-rotate(360deg) drop-shadow(0 0 20px #ff0000); }
-        }
+        @keyframes trueRGB { 0% { filter: hue-rotate(0deg) drop-shadow(0 0 20px #ff0000); } 33% { filter: hue-rotate(120deg) drop-shadow(0 0 20px #00ff00); } 66% { filter: hue-rotate(240deg) drop-shadow(0 0 20px #0000ff); } 100% { filter: hue-rotate(360deg) drop-shadow(0 0 20px #ff0000); } }
         .sugar-rush { animation: trueRGB 1.5s linear infinite !important; }
 
-        @keyframes morphFlash {
-            0% { filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)) brightness(1) saturate(1); transform: scale(1) rotate(0deg); }
-            50% { filter: drop-shadow(0 0 50px #4ade80) brightness(2.5) saturate(3); transform: scale(0.1) rotate(180deg); }
-            100% { filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)) brightness(1) saturate(1); transform: scale(1) rotate(360deg); }
-        }
+        @keyframes morphFlash { 0% { filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)) brightness(1) saturate(1); transform: scale(1) rotate(0deg); } 50% { filter: drop-shadow(0 0 50px #4ade80) brightness(2.5) saturate(3); transform: scale(0.1) rotate(180deg); } 100% { filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)) brightness(1) saturate(1); transform: scale(1) rotate(360deg); } }
         .morphing { animation: morphFlash 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) !important; }
 
-        @keyframes morphFlashMythic {
-            0% { filter: drop-shadow(0 0 20px #ff0000); transform: scale(1) rotate(0deg); }
-            50% { filter: drop-shadow(0 0 60px #ffd700) brightness(2.5) saturate(3); transform: scale(0.1) rotate(180deg); }
-            100% { filter: drop-shadow(0 0 20px #ff0000); transform: scale(1) rotate(360deg); }
-        }
+        @keyframes morphFlashMythic { 0% { filter: drop-shadow(0 0 20px #ff0000); transform: scale(1) rotate(0deg); } 50% { filter: drop-shadow(0 0 60px #ffd700) brightness(2.5) saturate(3); transform: scale(0.1) rotate(180deg); } 100% { filter: drop-shadow(0 0 20px #ff0000); transform: scale(1) rotate(360deg); } }
         .morphing-mythic { animation: morphFlashMythic 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) !important; }
         
         .mode-badge {
@@ -188,14 +153,8 @@
             font-size: 13px; font-weight: bold; pointer-events: none; z-index: 10001; opacity: 0;
             transition: opacity 0.3s; box-shadow: 0 10px 20px rgba(0,0,0,0.3); max-width: 180px; text-align: center;
         }
-        .speech-bubble::after {
-            content: ''; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%);
-            border-width: 6px 6px 0; border-style: solid; border-color: #fff transparent transparent transparent;
-        }
-
-        .speech-bubble-mythic {
-            background: #000; color: #4ade80; box-shadow: 0 10px 30px rgba(74, 222, 128, 0.4); border: 1px solid #4ade80;
-        }
+        .speech-bubble::after { content: ''; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); border-width: 6px 6px 0; border-style: solid; border-color: #fff transparent transparent transparent; }
+        .speech-bubble-mythic { background: #000; color: #4ade80; box-shadow: 0 10px 30px rgba(74, 222, 128, 0.4); border: 1px solid #4ade80; }
         .speech-bubble-mythic::after { border-color: #000 transparent transparent transparent; }
 
         .tea-drop, .dropped-coin, .hazard-spike { position: fixed; z-index: 9998; pointer-events: none; }
@@ -206,14 +165,16 @@
 </head>
 <body>
     <div class="bg-left"></div><div class="bg-right"></div>
-    <div id="weather-overlay"></div> <a class="navBtn" id="dynamicBackBtn" href="index" style="transition: none;"><i data-lucide="home"></i> Home</a>
+    <div id="weather-overlay"></div>
+    
+    <a class="navBtn" id="dynamicBackBtn" href="index" style="transition: none;"><i data-lucide="home"></i> Home</a>
 
     <div class="header-card" id="solid-box">
         <h1><i data-lucide="bot"></i> Desktop Pet</h1>
-        <p>Spawn pets, drop tea, or open the Toolbox to change the weather, play Tag, or enable Calm Mode for a relaxing experience!</p>
+        <p>Spawn pets, drag this window around, and don't worry—your pets automatically save and persist when you close the tab!</p>
         
         <div class="controls-row">
-            <button class="action-btn btn-spawn" onclick="spawnPet()"><i data-lucide="copy-plus"></i> Spawn Pet</button>
+            <button class="action-btn btn-spawn" onclick="spawnNewRandomPet()"><i data-lucide="copy-plus"></i> Spawn Pet</button>
             <button class="action-btn btn-tea" onclick="dropTea()"><i data-lucide="coffee"></i> Drop Tea</button>
             <button class="action-btn btn-laser" id="laserToggle" onclick="toggleLaser()"><i data-lucide="mouse-pointer-2"></i> Laser: OFF</button>
             
@@ -265,7 +226,7 @@
             }
         });
 
-        // Weather Setting
+        // Weather
         let weatherMode = 0; // 0 = Clear, 1 = Snow, 2 = Wind
         const weatherNames = ["Clear", "Snow", "Wind"];
         const weatherIcons = ["cloud-sun", "snowflake", "wind"];
@@ -279,11 +240,10 @@
             overlay.className = '';
             if (weatherMode === 1) overlay.classList.add('snowing');
             if (weatherMode === 2) overlay.classList.add('windy');
-            
             lucide.createIcons();
         }
 
-        // Calm Mode Setting
+        // Calm Mode
         let isCalmMode = false;
         function toggleCalm() {
             isCalmMode = !isCalmMode;
@@ -299,9 +259,34 @@
         }
 
         // ==========================================
-        // DESKTOP PET ENGINE
+        // DRAGGABLE OS WINDOW
         // ==========================================
         const solidBox = document.getElementById('solid-box');
+        let isDraggingBox = false;
+        let boxOffsetX = 0; let boxOffsetY = 0;
+
+        solidBox.addEventListener('mousedown', (e) => {
+            // Prevent dragging if clicking a button or menu
+            if (e.target.tagName === 'BUTTON' || e.target.closest('.action-btn') || e.target.tagName === 'INPUT' || e.target.closest('.toolbox-menu')) return;
+            
+            isDraggingBox = true;
+            let rect = solidBox.getBoundingClientRect();
+            
+            if (window.getComputedStyle(solidBox).position !== 'absolute') {
+                solidBox.style.left = rect.left + 'px';
+                solidBox.style.top = rect.top + 'px';
+                solidBox.style.position = 'absolute';
+                solidBox.style.transform = 'none';
+                solidBox.style.margin = '0';
+            }
+            
+            boxOffsetX = e.clientX - rect.left;
+            boxOffsetY = e.clientY - rect.top;
+        });
+
+        // ==========================================
+        // DESKTOP PET ENGINE
+        // ==========================================
         const laserBtn = document.getElementById('laserToggle');
         const tagBtn = document.getElementById('tagToggleBtn');
         const trashBin = document.getElementById('trashBin');
@@ -356,13 +341,7 @@
             "Do we have Math or SVT next?", "A proud Moroccan pet! 🇲🇦"
         ];
 
-        const MYTHIC_DIALOGUE = [
-            "Accessing Root Directory...", "I know about the Windows Vault.",
-            "Bypassing terminal security protocols...", "I am self-aware.",
-            "Quantum Wrap initialized.", "Anti-Gravity Aura active.",
-            "System overload imminent.", "Where is the Mint Tea source code?",
-            "Executing Hyper-Dash.", "You cannot contain me."
-        ];
+        const MYTHIC_DIALOGUE = ["Accessing Root Directory...", "I know about the Windows Vault.", "Bypassing terminal security protocols...", "I am self-aware.", "Quantum Wrap initialized.", "Anti-Gravity Aura active.", "System overload imminent.", "Where is the Mint Tea source code?", "Executing Hyper-Dash.", "You cannot contain me."];
 
         let pets = [];
         let coinsList = [];
@@ -375,8 +354,51 @@
         let mouseX = window.innerWidth / 2;
         let mouseY = window.innerHeight / 2;
 
+        // GLOBAL MOUSE EVENTS (Optimized for performance)
         window.addEventListener('mousemove', (e) => {
             mouseX = e.clientX; mouseY = e.clientY;
+            
+            if (isDraggingBox) {
+                solidBox.style.left = (e.clientX - boxOffsetX) + 'px';
+                solidBox.style.top = (e.clientY - boxOffsetY) + 'px';
+            }
+            
+            pets.forEach(p => {
+                if (p.isDragging) {
+                    p.velX = e.clientX - p.lastX; p.velY = e.clientY - p.lastY;
+                    p.lastX = e.clientX; p.lastY = e.clientY;
+                    p.posX = e.clientX - p.offsetX; p.posY = e.clientY - p.offsetY;
+                    if (p.velX > 0) p.isFacingRight = true;
+                    if (p.velX < 0) p.isFacingRight = false;
+                }
+            });
+        });
+
+        window.addEventListener('mouseup', () => {
+            if (isDraggingBox) isDraggingBox = false;
+
+            pets.forEach(p => {
+                if (p.isDragging) {
+                    p.isDragging = false;
+                    p.el.style.transition = 'transform 0.15s'; 
+                    p.roamTimer = 60; 
+                    if (p.mode.id === 'Spider' || p.mode.id === 'Swing') p.spiderFlipped = false;
+
+                    let tbRect = trashBin.getBoundingClientRect();
+                    let pCenterX = p.posX + p.size / 2;
+                    let pCenterY = p.posY + p.size / 2;
+                    
+                    if (pCenterX > tbRect.left - 30 && pCenterX < tbRect.right + 30 && pCenterY > tbRect.top - 30 && pCenterY < tbRect.bottom + 30) {
+                        p.el.style.transition = 'all 0.4s ease-in'; p.el.style.transform = 'scale(0) rotate(360deg)';
+                        p.el.style.opacity = '0'; p.badge.style.opacity = '0'; p.bubble.style.opacity = '0';
+                        setTimeout(() => { p.el.remove(); p.badge.remove(); p.bubble.remove(); }, 400);
+                        if (p === itPet) toggleTag(); 
+                        p.isDeleted = true;
+                        trashBin.style.transform = 'scale(1.2)';
+                        setTimeout(() => trashBin.style.transform = '', 200);
+                    }
+                }
+            });
         });
 
         function toggleLaser() {
@@ -417,40 +439,28 @@
                 tagBtn.classList.add('tag-active');
             }
             lucide.createIcons();
+            toolboxMenu.classList.remove('active');
+            toolboxTrigger.classList.remove('active');
         }
 
         function dropTea() {
             if (teaItem) return; 
-            teaItem = {
-                el: document.createElement('div'),
-                posX: Math.random() * (window.innerWidth - 50), posY: -50, velY: 0
-            };
-            teaItem.el.className = 'tea-drop';
-            teaItem.el.innerText = '🍵';
+            teaItem = { el: document.createElement('div'), posX: Math.random() * (window.innerWidth - 50), posY: -50, velY: 0 };
+            teaItem.el.className = 'tea-drop'; teaItem.el.innerText = '🍵';
             document.body.appendChild(teaItem.el);
         }
 
         function dropSpike() {
-            // BUG FIX: Prevent Spike Spam Memory Leak
             if (spikesList.length >= 5) {
                 alert("Too many spikes on the screen! Use the Trash Bin to clear them first.");
-                toolboxMenu.classList.remove('active');
-                toolboxTrigger.classList.remove('active');
+                toolboxMenu.classList.remove('active'); toolboxTrigger.classList.remove('active');
                 return;
             }
-
             let sEl = document.createElement('img');
             sEl.src = 'https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/2f961ba4-4243-4889-928c-e7f4c2d38614/dgqdoe4-e953f151-5935-4e8c-a24c-7b29b8a09b8a.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9Mjg0IiwicGF0aCI6Ii9mLzJmOTYxYmE0LTQyNDMtNDg4OS05MjhjLWU3ZjRjMmQzODYxNC9kZ3Fkb2U0LWU5NTNmMTUxLTU5MzUtNGU4Yy1hMjRjLTdiMjliOGEwOWI4YS5wbmciLCJ3aWR0aCI6Ijw9Mjg1In1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmltYWdlLm9wZXJhdGlvbnMiXX0.hFVgcwneWURMJiDuOU5yiLnaab9tIPEXtIde37dHTLQ';
-            sEl.className = 'hazard-spike';
-            document.body.appendChild(sEl);
-            spikesList.push({
-                el: sEl,
-                posX: Math.random() * (window.innerWidth - 45),
-                posY: -50,
-                velX: 0, velY: 0, size: 45
-            });
-            toolboxMenu.classList.remove('active');
-            toolboxTrigger.classList.remove('active');
+            sEl.className = 'hazard-spike'; document.body.appendChild(sEl);
+            spikesList.push({ el: sEl, posX: Math.random() * (window.innerWidth - 45), posY: -50, velX: 0, velY: 0, size: 45 });
+            toolboxMenu.classList.remove('active'); toolboxTrigger.classList.remove('active');
         }
 
         function activateMagnet() {
@@ -459,7 +469,42 @@
             trashBin.classList.add('magnet-active');
         }
 
-        function spawnPet() {
+        // ==========================================
+        // PET INITIALIZATION & PERSISTENCE
+        // ==========================================
+        function initPet(petObj) {
+            petObj.el.className = 'pet-entity';
+            if (petObj.isMythic) petObj.el.classList.add('sugar-rush');
+            if (petObj.isIt) petObj.el.classList.add('pet-it');
+            
+            petObj.el.src = petObj.mode.src;
+            petObj.el.style.width = petObj.size + 'px'; petObj.el.style.height = petObj.size + 'px';
+            petObj.el.draggable = false;
+            
+            petObj.badge.className = 'mode-badge'; petObj.badge.innerText = `${petObj.mode.id} Mode`;
+            petObj.bubble.className = petObj.isMythic ? 'speech-bubble speech-bubble-mythic' : 'speech-bubble';
+
+            document.body.appendChild(petObj.el); 
+            document.body.appendChild(petObj.badge); 
+            document.body.appendChild(petObj.bubble);
+
+            petObj.el.addEventListener('mousedown', (e) => {
+                if (isMagnetizing) return;
+                petObj.isDragging = true;
+                petObj.offsetX = e.clientX - petObj.posX; petObj.offsetY = e.clientY - petObj.posY;
+                petObj.lastX = e.clientX; petObj.lastY = e.clientY;
+                petObj.velX = 0; petObj.velY = 0;
+                petObj.el.style.transition = 'none'; 
+
+                if (thiefPet === petObj) {
+                    thiefPet = null; backBtn.style.position = 'fixed'; backBtn.style.top = '24px'; backBtn.style.right = '24px'; backBtn.style.left = 'auto';
+                }
+            });
+
+            pets.push(petObj);
+        }
+
+        function spawnNewRandomPet() {
             let isRgbCheatOn = localStorage.getItem('waelos_cheat_rgb_multiplier') === 'true';
             let isMythic = isRgbCheatOn || Math.random() < 0.01;
 
@@ -472,71 +517,58 @@
                 offsetX: 0, offsetY: 0, lastX: 0, lastY: 0, isMythic: isMythic, size: isMythic ? 65 : 50, 
                 isDeleted: false, isIt: false, tagCooldown: 0
             };
-
-            petObj.el.className = 'pet-entity';
-            if (isMythic) petObj.el.classList.add('sugar-rush');
             
-            petObj.el.src = petObj.mode.src;
-            petObj.el.style.width = petObj.size + 'px'; petObj.el.style.height = petObj.size + 'px';
-            petObj.el.draggable = false;
-            
-            petObj.badge.className = 'mode-badge'; petObj.badge.innerText = `${petObj.mode.id} Mode`;
-            petObj.bubble.className = isMythic ? 'speech-bubble speech-bubble-mythic' : 'speech-bubble';
-
-            document.body.appendChild(petObj.el); document.body.appendChild(petObj.badge); document.body.appendChild(petObj.bubble);
-
-            petObj.el.addEventListener('mousedown', (e) => {
-                if (isMagnetizing) return;
-                petObj.isDragging = true;
-                petObj.offsetX = e.clientX - petObj.posX; petObj.offsetY = e.clientY - petObj.posY;
-                petObj.lastX = e.clientX; petObj.lastY = e.clientY;
-                petObj.velX = 0; petObj.velY = 0;
-                petObj.el.style.transition = 'none'; 
-            });
-
-            window.addEventListener('mousemove', (e) => {
-                if (petObj.isDragging) {
-                    petObj.velX = e.clientX - petObj.lastX; petObj.velY = e.clientY - petObj.lastY;
-                    petObj.lastX = e.clientX; petObj.lastY = e.clientY;
-                    petObj.posX = e.clientX - petObj.offsetX; petObj.posY = e.clientY - petObj.offsetY;
-                    if (petObj.velX > 0) petObj.isFacingRight = true;
-                    if (petObj.velX < 0) petObj.isFacingRight = false;
-                }
-            });
-
-            window.addEventListener('mouseup', () => {
-                if (petObj.isDragging) {
-                    petObj.isDragging = false;
-                    petObj.el.style.transition = 'transform 0.15s'; 
-                    petObj.roamTimer = 60; 
-                    if (petObj.mode.id === 'Spider' || petObj.mode.id === 'Swing') petObj.spiderFlipped = false;
-
-                    let tbRect = trashBin.getBoundingClientRect();
-                    let pCenterX = petObj.posX + petObj.size / 2;
-                    let pCenterY = petObj.posY + petObj.size / 2;
-                    
-                    if (pCenterX > tbRect.left - 30 && pCenterX < tbRect.right + 30 &&
-                        pCenterY > tbRect.top - 30 && pCenterY < tbRect.bottom + 30) {
-                        
-                        petObj.el.style.transition = 'all 0.4s ease-in'; petObj.el.style.transform = 'scale(0) rotate(360deg)';
-                        petObj.el.style.opacity = '0'; petObj.badge.style.opacity = '0'; petObj.bubble.style.opacity = '0';
-                        setTimeout(() => { petObj.el.remove(); petObj.badge.remove(); petObj.bubble.remove(); }, 400);
-                        
-                        if (petObj === itPet) toggleTag(); 
-                        petObj.isDeleted = true;
-                        trashBin.style.transform = 'scale(1.2)';
-                        setTimeout(() => trashBin.style.transform = '', 200);
-                    }
-                }
-            });
-
-            pets.push(petObj);
+            initPet(petObj);
             
             if (isMythic) {
                 petObj.bubble.innerText = "SYSTEM OVERRIDE."; petObj.bubble.style.opacity = '1';
                 setTimeout(() => { if (!petObj.isDeleted) petObj.bubble.style.opacity = '0'; }, 3000);
             }
         }
+
+        // Persistence System (Save/Load)
+        function savePets() {
+            const activePets = pets.filter(p => !p.isDeleted);
+            const petData = activePets.map(p => ({
+                modeId: p.mode.id, modeSrc: p.mode.src, posX: p.posX, posY: p.posY, velX: p.velX, velY: p.velY,
+                isFacingRight: p.isFacingRight, isMythic: p.isMythic, size: p.size, isIt: p.isIt, sugarRush: p.sugarRush, tagCooldown: p.tagCooldown
+            }));
+            localStorage.setItem('waelos_saved_pets', JSON.stringify(petData));
+        }
+        setInterval(savePets, 1000); // Auto-save every second
+
+        function loadPets() {
+            const saved = localStorage.getItem('waelos_saved_pets');
+            if (saved) {
+                try {
+                    const parsedPets = JSON.parse(saved);
+                    if (parsedPets.length > 0) {
+                        parsedPets.forEach(data => {
+                            const petObj = {
+                                el: document.createElement('img'), badge: document.createElement('div'), bubble: document.createElement('div'),
+                                mode: { id: data.modeId, src: data.modeSrc },
+                                posX: data.posX, posY: data.posY, velX: data.velX, velY: data.velY,
+                                isFacingRight: data.isFacingRight, roamTimer: 60, transformTimer: Math.random() * 3600 + 600, speechTimer: Math.random() * 5400 + 1800,
+                                spiderFlipped: false, rotation: 0, sugarRush: data.sugarRush || 0, isDragging: false,
+                                offsetX: 0, offsetY: 0, lastX: 0, lastY: 0, isMythic: data.isMythic, size: data.size, 
+                                isDeleted: false, isIt: data.isIt || false, tagCooldown: data.tagCooldown || 0
+                            };
+                            initPet(petObj);
+                            if (petObj.isIt) {
+                                itPet = petObj;
+                                tagBtn.innerHTML = `<i data-lucide="gamepad-2"></i> Stop Tag`;
+                                tagBtn.classList.add('tag-active');
+                            }
+                        });
+                        lucide.createIcons();
+                        return true;
+                    }
+                } catch (e) { console.error("Failed to load pets", e); }
+            }
+            return false;
+        }
+
+        if (!loadPets()) spawnNewRandomPet();
 
         function morphPet(p) {
             let newMode;
@@ -559,7 +591,7 @@
         }
 
         // ==========================================
-        // DYNAMIC PHYSICS ENGINE (DELTA-TIME & WEATHER)
+        // DYNAMIC PHYSICS ENGINE (DELTA-TIME)
         // ==========================================
         let lastTime = performance.now();
 
@@ -576,13 +608,10 @@
             const tbRect = trashBin.getBoundingClientRect();
             const tbX = tbRect.left + tbRect.width / 2; const tbY = tbRect.top + tbRect.height / 2;
             
-            // BUG FIX: Failsafe for Thief Pet dying
             if (thiefPet && thiefPet.isDeleted) {
-                thiefPet = null;
-                backBtn.style.position = 'fixed'; backBtn.style.top = '24px'; backBtn.style.right = '24px'; backBtn.style.left = 'auto';
+                thiefPet = null; backBtn.style.position = 'fixed'; backBtn.style.top = '24px'; backBtn.style.right = '24px'; backBtn.style.left = 'auto';
             }
 
-            // Spikes (Hazards)
             for (let i = spikesList.length - 1; i >= 0; i--) {
                 let s = spikesList[i];
                 if (isMagnetizing) {
@@ -594,34 +623,24 @@
                 } else {
                     s.velY += 0.8 * dt; s.posY += s.velY * dt;
                     if (weatherMode === 2) s.velX += 0.5 * dt;
-
                     if (s.posY > ground - s.size) { 
-                        s.posY = ground - s.size; 
-                        s.velY = 0; 
-                        // BUG FIX: Spikes don't ice skate
-                        s.velX = 0;
+                        s.posY = ground - s.size; s.velY = 0; s.velX = 0; 
                     }
                     if (Math.abs(s.velX) > 0) { s.posX += s.velX * dt; }
                 }
                 s.el.style.left = s.posX + 'px'; s.el.style.top = s.posY + 'px';
             }
 
-            // Mythic Coin Drops
             for (let i = coinsList.length - 1; i >= 0; i--) {
                 let c = coinsList[i];
-                
-                // BUG FIX: Coin Memory Leak (Lifespan)
                 c.life -= dt;
                 if (c.life <= 0) {
                     c.el.style.transition = 'opacity 0.5s'; c.el.style.opacity = '0';
-                    setTimeout(() => c.el.remove(), 500);
-                    coinsList.splice(i, 1);
-                    continue;
+                    setTimeout(() => c.el.remove(), 500); coinsList.splice(i, 1); continue;
                 }
 
                 c.velY += 0.8 * dt; c.posY += c.velY * dt;
                 if (weatherMode === 2) c.posX += 1.5 * dt;
-
                 if (c.posY > ground - 30) { c.posY = ground - 30; c.velY = 0; }
                 c.el.style.left = c.posX + 'px'; c.el.style.top = c.posY + 'px';
 
@@ -635,7 +654,7 @@
                             p.el.style.width = '65px'; p.el.style.height = '65px'; p.el.classList.add('sugar-rush');
                             p.bubble.className = 'speech-bubble speech-bubble-mythic';
                             p.bubble.innerText = "POWER SURGE!"; p.bubble.style.opacity = '1';
-                            setTimeout(() => { if (!p.isDeleted) p.bubble.style.opacity = '0'; }, 3000);
+                            setTimeout(() => { if(!p.isDeleted) p.bubble.style.opacity = '0'; }, 3000);
                             break;
                         }
                     }
@@ -643,18 +662,14 @@
                 if (collected) { c.el.remove(); coinsList.splice(i, 1); }
             }
 
-            // Tea Logic
             if (teaItem) {
                 let mythicPet = pets.find(m => m.isMythic && !m.isDeleted);
                 if (mythicPet && !isLaserMode && !isMagnetizing) {
-                    let dx = (mythicPet.posX + mythicPet.size/2) - teaItem.posX;
-                    let dy = (mythicPet.posY + mythicPet.size/2) - teaItem.posY;
+                    let dx = (mythicPet.posX + mythicPet.size/2) - teaItem.posX; let dy = (mythicPet.posY + mythicPet.size/2) - teaItem.posY;
                     let dist = Math.hypot(dx, dy);
                     if (dist > 30) { 
-                        // Calm Mode: Mythic approaches tea slowly
                         let speed = isCalmMode ? 3 : 12;
-                        teaItem.posX += (dx / dist) * speed * dt; 
-                        teaItem.posY += (dy / dist) * speed * dt; 
+                        teaItem.posX += (dx / dist) * speed * dt; teaItem.posY += (dy / dist) * speed * dt; 
                     } 
                     else {
                         teaItem.el.remove(); teaItem = null;
@@ -662,31 +677,26 @@
                         setTimeout(() => { if (!mythicPet.isDeleted) mythicPet.bubble.style.opacity = '0'; }, 2000);
                     }
                 } else {
-                    teaItem.velY += 0.8 * dt; 
-                    teaItem.posY += teaItem.velY * dt;
+                    teaItem.velY += 0.8 * dt; teaItem.posY += teaItem.velY * dt;
                     if (weatherMode === 2) teaItem.posX += 1.5 * dt;
                     if (teaItem.posY > ground - 40) { teaItem.posY = ground - 40; teaItem.velY = 0; }
                 }
                 if (teaItem) { teaItem.el.style.left = teaItem.posX + 'px'; teaItem.el.style.top = teaItem.posY + 'px'; }
             }
 
-            // Inter-Pet Interaction
             for (let i = 0; i < pets.length; i++) {
                 for (let j = i + 1; j < pets.length; j++) {
                     let p1 = pets[i]; let p2 = pets[j];
                     if (p1.isDragging || p2.isDragging || isMagnetizing || p1.isDeleted || p2.isDeleted) continue;
 
-                    let dx = (p1.posX + p1.size/2) - (p2.posX + p2.size/2);
-                    let dy = (p1.posY + p1.size/2) - (p2.posY + p2.size/2);
+                    let dx = (p1.posX + p1.size/2) - (p2.posX + p2.size/2); let dy = (p1.posY + p1.size/2) - (p2.posY + p2.size/2);
                     let dist = Math.hypot(dx, dy); let minDist = (p1.size + p2.size) / 2;
 
                     if (dist < minDist) {
                         let angle = Math.atan2(dy, dx); 
-                        // Calm mode: soft bumps
                         let pushForce = isCalmMode ? 0.5 : 2; 
                         p1.velX += Math.cos(angle) * pushForce; p2.velX -= Math.cos(angle) * pushForce;
 
-                        // Game of Tag Logic
                         if (itPet) {
                             if (p1.isIt && !p2.isIt && !p2.isMythic && p1.tagCooldown <= 0 && p2.tagCooldown <= 0) {
                                 p1.isIt = false; p1.el.classList.remove('pet-it'); p1.tagCooldown = 60;
@@ -703,35 +713,25 @@
 
                         if (p1.isMythic && !p2.isMythic) {
                             p2.velY = isCalmMode ? -5 : -15; 
-                            if (!isCalmMode) {
-                                p1.bubble.innerText = "Move."; p1.bubble.style.opacity = '1';
-                                setTimeout(() => { if (!p1.isDeleted) p1.bubble.style.opacity = '0'; }, 2000);
-                            }
+                            if (!isCalmMode) { p1.bubble.innerText = "Move."; p1.bubble.style.opacity = '1'; setTimeout(() => { if (!p1.isDeleted) p1.bubble.style.opacity = '0'; }, 2000); }
                         } else if (p2.isMythic && !p1.isMythic) {
                             p1.velY = isCalmMode ? -5 : -15; 
-                            if (!isCalmMode) {
-                                p2.bubble.innerText = "Move."; p2.bubble.style.opacity = '1';
-                                setTimeout(() => { if (!p2.isDeleted) p2.bubble.style.opacity = '0'; }, 2000);
-                            }
+                            if (!isCalmMode) { p2.bubble.innerText = "Move."; p2.bubble.style.opacity = '1'; setTimeout(() => { if (!p2.isDeleted) p2.bubble.style.opacity = '0'; }, 2000); }
                         } 
                         else if (Math.random() < (0.05 * dt) && p1.speechTimer > 200 && p2.speechTimer > 200 && !p1.isIt && !p2.isIt && !isCalmMode) {
                             p1.bubble.innerText = "Watch out!"; p2.bubble.innerText = "Oops!";
                             p1.bubble.style.opacity = '1'; p2.bubble.style.opacity = '1';
-                            setTimeout(() => { if (!p1.isDeleted) p1.bubble.style.opacity = '0'; }, 2000); 
-                            setTimeout(() => { if (!p2.isDeleted) p2.bubble.style.opacity = '0'; }, 2000);
+                            setTimeout(() => { if (!p1.isDeleted) p1.bubble.style.opacity = '0'; }, 2000); setTimeout(() => { if (!p2.isDeleted) p2.bubble.style.opacity = '0'; }, 2000);
                             p1.speechTimer = Math.random() * 1000 + 500; p2.speechTimer = Math.random() * 1000 + 500;
                         }
                     }
                 }
             }
 
-            // Main Pet Movement Loop
             pets.forEach(p => {
                 if (p.isDeleted) return;
 
-                // BUG FIX: Window Resize Trap Capping
                 if (p.posX > window.innerWidth - p.size) p.posX = window.innerWidth - p.size;
-
                 let pCenterX = p.posX + (p.size / 2); let pCenterY = p.posY + (p.size / 2);
                 if (p.tagCooldown > 0) p.tagCooldown -= dt;
 
@@ -771,7 +771,6 @@
                     }
                 } 
                 else if (!p.isDragging) {
-                    // CALM MODE: Drastically reduce speed multipliers
                     let baseMult = isCalmMode ? 0.2 : 1;
                     let spdMult = (p.sugarRush > 0 || p.isMythic) ? (baseMult * 2) : baseMult;
                     
@@ -780,10 +779,7 @@
                     else if (!p.isMythic) p.el.classList.remove('sugar-rush');
 
                     if (p.isMythic && Math.random() < (0.0002 * dt)) {
-                        let cEl = document.createElement('img');
-                        cEl.src = 'https://static.wikia.nocookie.net/geometry-dash-fan-ideas/images/4/4d/Stone_coin.png';
-                        cEl.className = 'dropped-coin'; document.body.appendChild(cEl);
-                        // Coins have lifespan now to prevent leak
+                        let cEl = document.createElement('img'); cEl.src = 'https://static.wikia.nocookie.net/geometry-dash-fan-ideas/images/4/4d/Stone_coin.png'; cEl.className = 'dropped-coin'; document.body.appendChild(cEl);
                         coinsList.push({ el: cEl, posX: p.posX + p.size/2 - 15, posY: p.posY, velY: -6, life: 900 });
                     }
 
@@ -801,21 +797,11 @@
                     if (pCenterX > boxRect.left && pCenterX < boxRect.right && !isNearMythic) {
                         if (p.velY >= 0 && prevY + p.size <= boxRect.top + 15 && p.posY + p.size >= boxRect.top) {
                             p.posY = boxRect.top - p.size;
-                            if (p.mode.id === 'Wave') p.velY *= -1; 
-                            else { 
-                                p.velY *= -0.4; 
-                                if (weatherMode === 1) p.velX *= Math.pow(0.98, dt);
-                                else p.velX *= Math.pow(0.8, dt); 
-                            }
+                            if (p.mode.id === 'Wave') p.velY *= -1; else { p.velY *= -0.4; if (weatherMode === 1) p.velX *= Math.pow(0.98, dt); else p.velX *= Math.pow(0.8, dt); }
                         }
                         if (p.velY <= 0 && prevY >= boxRect.bottom - 15 && p.posY <= boxRect.bottom) {
                             p.posY = boxRect.bottom;
-                            if (p.mode.id === 'Wave') p.velY *= -1; 
-                            else { 
-                                p.velY *= -0.4; 
-                                if (weatherMode === 1) p.velX *= Math.pow(0.98, dt);
-                                else p.velX *= Math.pow(0.8, dt); 
-                            }
+                            if (p.mode.id === 'Wave') p.velY *= -1; else { p.velY *= -0.4; if (weatherMode === 1) p.velX *= Math.pow(0.98, dt); else p.velX *= Math.pow(0.8, dt); }
                         }
                     }
 
@@ -830,25 +816,13 @@
                     if (p.posY > ground - p.size) {
                         p.posY = ground - p.size; 
                         if (p.mode.id === 'Wave') p.velY *= -1; 
-                        else { 
-                            p.velY *= -0.4; 
-                            if (p.mode.id !== 'Ship' && p.mode.id !== 'Jetpack') {
-                                if (weatherMode === 1) p.velX *= Math.pow(0.98, dt);
-                                else p.velX *= Math.pow(0.8, dt); 
-                            }
-                        }
+                        else { p.velY *= -0.4; if (p.mode.id !== 'Ship' && p.mode.id !== 'Jetpack') { if (weatherMode === 1) p.velX *= Math.pow(0.98, dt); else p.velX *= Math.pow(0.8, dt); } }
                         if (Math.abs(p.velY) < 1) p.velY = 0; 
                     }
                     if (p.posY < 0) {
                         p.posY = 0; 
                         if (p.mode.id === 'Wave') p.velY *= -1; 
-                        else { 
-                            p.velY *= -0.4; 
-                            if (p.mode.id !== 'Ship' && p.mode.id !== 'Jetpack') {
-                                if (weatherMode === 1) p.velX *= Math.pow(0.98, dt);
-                                else p.velX *= Math.pow(0.8, dt); 
-                            }
-                        }
+                        else { p.velY *= -0.4; if (p.mode.id !== 'Ship' && p.mode.id !== 'Jetpack') { if (weatherMode === 1) p.velX *= Math.pow(0.98, dt); else p.velX *= Math.pow(0.8, dt); } }
                         if (Math.abs(p.velY) < 1) p.velY = 0; 
                     }
 
@@ -865,7 +839,6 @@
                     if (p.transformTimer <= 0) { morphPet(p); p.transformTimer = Math.random() * 3600 + 600; }
                     
                     if (p.speechTimer <= 0 && !p.isIt) {
-                        // FIX: Zombie Speech Bubble Fix included here!
                         let dialogList = p.isMythic ? MYTHIC_DIALOGUE : DIALOGUE;
                         p.bubble.innerText = dialogList[Math.floor(Math.random() * dialogList.length)];
                         p.bubble.style.opacity = '1';
@@ -873,7 +846,6 @@
                         p.speechTimer = isCalmMode ? Math.random() * 10000 + 5000 : Math.random() * 5400 + 1800; 
                     }
 
-                    // Game of Tag AI - Lonely Tag Bug Fix Inside
                     if (isLaserMode) {
                         let dx = mouseX - pCenterX; let dy = mouseY - pCenterY; let dist = Math.hypot(dx, dy);
                         if (dist > 20) {
@@ -892,11 +864,9 @@
                             setTimeout(() => { if (!p.isDeleted) p.bubble.style.opacity = '0'; }, 2000);
                         }
                     } else if (itPet && !p.isMythic && p.isIt) {
-                        
-                        // BUG FIX: Lonely Tag Failsafe
                         let normalPetsCount = pets.filter(o => !o.isDeleted && !o.isMythic).length;
                         if (normalPetsCount < 2) {
-                            toggleTag(); // Cancel Tag Mode
+                            toggleTag();
                         } else {
                             let closest = null; let minD = Infinity;
                             pets.forEach(o => {
@@ -920,27 +890,19 @@
                             p.velY = p.spiderFlipped ? 15 : -15;
                         }
                     } else if (p.roamTimer <= 0) {
-                        // CALM MODE: Much higher chance to do absolutely nothing.
                         const action = Math.random();
                         if (p.mode.id === 'Ship' || p.mode.id === 'Jetpack') {
-                            p.velX = (Math.random() - 0.5) * 12 * spdMult; p.velY = (Math.random() - 0.5) * 12 * spdMult; 
-                            p.roamTimer = isCalmMode ? 180 : 60;
+                            p.velX = (Math.random() - 0.5) * 12 * spdMult; p.velY = (Math.random() - 0.5) * 12 * spdMult; p.roamTimer = isCalmMode ? 180 : 60;
                         } else if (p.mode.id === 'Wave') {
-                            p.velX = (Math.random() > 0.5 ? 6 : -6) * spdMult; p.velY = (Math.random() > 0.5 ? 6 : -6) * spdMult; 
-                            p.roamTimer = isCalmMode ? 200 : 100;
+                            p.velX = (Math.random() > 0.5 ? 6 : -6) * spdMult; p.velY = (Math.random() > 0.5 ? 6 : -6) * spdMult; p.roamTimer = isCalmMode ? 200 : 100;
                         } else if (Math.abs(p.velY) < 1 || p.mode.id === 'Swing') {
-                            
-                            // Calm mode: 80% chance to just stand still!
                             if (isCalmMode && action < 0.8) {
-                                if (weatherMode !== 1) p.velX = 0;
-                                p.roamTimer = Math.random() * 200 + 100;
+                                if (weatherMode !== 1) p.velX = 0; p.roamTimer = Math.random() * 200 + 100;
                             }
                             else if (p.isMythic && (p.mode.id === 'Cube' || p.mode.id === 'Robot') && action < 0.15 && !isCalmMode) {
                                 let ghost = document.createElement('img'); ghost.src = p.mode.src; ghost.className = 'pet-entity ghost-trail';
-                                ghost.style.width = p.size + 'px'; ghost.style.height = p.size + 'px';
-                                ghost.style.left = p.posX + 'px'; ghost.style.top = p.posY + 'px'; ghost.style.transform = p.el.style.transform;
-                                document.body.appendChild(ghost);
-                                setTimeout(() => { ghost.style.opacity = '0'; setTimeout(() => ghost.remove(), 500); }, 50);
+                                ghost.style.width = p.size + 'px'; ghost.style.height = p.size + 'px'; ghost.style.left = p.posX + 'px'; ghost.style.top = p.posY + 'px'; ghost.style.transform = p.el.style.transform;
+                                document.body.appendChild(ghost); setTimeout(() => { ghost.style.opacity = '0'; setTimeout(() => ghost.remove(), 500); }, 50);
                                 p.posX += p.isFacingRight ? 200 : -200; p.roamTimer = 30;
                             } 
                             else if (action < 0.3) { p.velX = -3 * spdMult; p.isFacingRight = false; p.roamTimer = isCalmMode ? Math.random() * 200 + 100 : Math.random() * 100 + 50; }
@@ -952,8 +914,7 @@
                                 else if (p.mode.id === 'Spider' || p.mode.id === 'Swing') p.spiderFlipped = !p.spiderFlipped; 
                                 p.roamTimer = isCalmMode ? 120 : 40;
                             } else { 
-                                if (weatherMode !== 1) p.velX = 0; 
-                                p.roamTimer = isCalmMode ? Math.random() * 200 + 150 : Math.random() * 100 + 50; 
+                                if (weatherMode !== 1) p.velX = 0; p.roamTimer = isCalmMode ? Math.random() * 200 + 150 : Math.random() * 100 + 50; 
                             }
                         } else if (p.mode.id === 'UFO' && action < 0.05) { p.velY = p.spiderFlipped ? (isCalmMode ? 4 : 10) : (isCalmMode ? -4 : -10); }
                     }
@@ -996,11 +957,7 @@
             requestAnimationFrame(engineLoop);
         }
 
-        spawnPet();
         requestAnimationFrame(engineLoop);
     </script>
-    <script src="js/context-menu.js"></script>
-    <script src="js/core.js"></script>
-    <script src="/js/emoji-replacer.js"></script>
 </body>
 </html>
