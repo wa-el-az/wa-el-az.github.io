@@ -57,6 +57,7 @@
         .btn-laser.active { background: #e74c3c; box-shadow: 0 0 15px rgba(231, 76, 60, 0.4); }
         .btn-tag { background: #e67e22; color: #fff; }
         .btn-tag.active { background: #d35400; box-shadow: 0 0 15px rgba(211, 84, 0, 0.4); }
+        .btn-spike { background: #c0392b; color: #fff; }
 
         /* --- TRASH BIN --- */
         #trashBin {
@@ -152,11 +153,12 @@
         }
         .speech-bubble-mythic::after { border-color: #000 transparent transparent transparent; }
 
-        .tea-drop, .dropped-coin {
+        .tea-drop, .dropped-coin, .hazard-spike {
             position: fixed; z-index: 9998; pointer-events: none;
         }
         .tea-drop { font-size: 36px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5)); }
         .dropped-coin { width: 30px; height: 30px; filter: drop-shadow(0 5px 10px rgba(255,215,0,0.5)); }
+        .hazard-spike { width: 45px; height: 45px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.6)); }
     </style>
 </head>
 <body>
@@ -166,11 +168,12 @@
 
     <div class="header-card" id="solid-box">
         <h1><i data-lucide="bot"></i> Desktop Pet</h1>
-        <p>Spawn pets, drop tea, or start a Game of Tag! Normal pets will actively run away from the glowing red "IT" pet. Can you find the rare Mythic RGB Pet?</p>
+        <p>Spawn pets, drop tea, or start a Game of Tag! Watch out—dropping GD Spikes will destroy your pets if they fail to jump over them!</p>
         
         <div class="controls-row">
             <button class="action-btn btn-spawn" onclick="spawnPet()"><i data-lucide="copy-plus"></i> Spawn Pet</button>
             <button class="action-btn btn-tea" onclick="dropTea()"><i data-lucide="coffee"></i> Drop Tea</button>
+            <button class="action-btn btn-spike" onclick="dropSpike()"><i data-lucide="triangle-alert"></i> Drop Spike</button>
             <button class="action-btn btn-laser" id="laserToggle" onclick="toggleLaser()"><i data-lucide="mouse-pointer-2"></i> Laser: OFF</button>
             <button class="action-btn btn-tag" id="tagToggleBtn" onclick="toggleTag()"><i data-lucide="gamepad-2"></i> Play Tag: OFF</button>
         </div>
@@ -230,6 +233,7 @@
 
         let pets = [];
         let coinsList = [];
+        let spikesList = [];
         let teaItem = null;
         let thiefPet = null;
         let itPet = null;
@@ -256,14 +260,12 @@
 
         function toggleTag() {
             if (itPet) {
-                // Turn OFF Game of Tag
                 itPet.isIt = false;
                 itPet.el.classList.remove('pet-it');
                 itPet = null;
                 tagBtn.innerHTML = `<i data-lucide="gamepad-2"></i> Play Tag: OFF`;
                 tagBtn.classList.remove('active');
             } else {
-                // Turn ON Game of Tag
                 let normalPets = pets.filter(p => !p.isDeleted && !p.isMythic);
                 if (normalPets.length < 2) {
                     alert("You need at least 2 normal pets to play a Game of Tag!");
@@ -295,14 +297,28 @@
             document.body.appendChild(teaItem.el);
         }
 
+        function dropSpike() {
+            let sEl = document.createElement('img');
+            sEl.src = 'https://images-wixmp-ed30a86b8c4ca887773594c2.wixmp.com/f/2f961ba4-4243-4889-928c-e7f4c2d38614/dgqdoe4-e953f151-5935-4e8c-a24c-7b29b8a09b8a.png?token=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1cm46YXBwOjdlMGQxODg5ODIyNjQzNzNhNWYwZDQxNWVhMGQyNmUwIiwiaXNzIjoidXJuOmFwcDo3ZTBkMTg4OTgyMjY0MzczYTVmMGQ0MTVlYTBkMjZlMCIsIm9iaiI6W1t7ImhlaWdodCI6Ijw9Mjg0IiwicGF0aCI6Ii9mLzJmOTYxYmE0LTQyNDMtNDg4OS05MjhjLWU3ZjRjMmQzODYxNC9kZ3Fkb2U0LWU5NTNmMTUxLTU5MzUtNGU4Yy1hMjRjLTdiMjliOGEwOWI4YS5wbmciLCJ3aWR0aCI6Ijw9Mjg1In1dXSwiYXVkIjpbInVybjpzZXJ2aWNlOmltYWdlLm9wZXJhdGlvbnMiXX0.hFVgcwneWURMJiDuOU5yiLnaab9tIPEXtIde37dHTLQ';
+            sEl.className = 'hazard-spike';
+            document.body.appendChild(sEl);
+            spikesList.push({
+                el: sEl,
+                posX: Math.random() * (window.innerWidth - 45),
+                posY: -50,
+                velX: 0,
+                velY: 0,
+                size: 45
+            });
+        }
+
         function activateMagnet() {
-            if (pets.length === 0) return;
+            if (pets.length === 0 && spikesList.length === 0) return;
             isMagnetizing = true;
             trashBin.classList.add('magnet-active');
         }
 
         function spawnPet() {
-            // Check global RGB cheat in local storage for guaranteed mythic spawns
             let isRgbCheatOn = localStorage.getItem('waelos_cheat_rgb_multiplier') === 'true';
             let isMythic = isRgbCheatOn || Math.random() < 0.01;
 
@@ -430,6 +446,25 @@
             const tbX = tbRect.left + tbRect.width / 2; 
             const tbY = tbRect.top + tbRect.height / 2;
             
+            // Magnet / Gravity Logic for Hazards (Spikes)
+            for (let i = spikesList.length - 1; i >= 0; i--) {
+                let s = spikesList[i];
+                if (isMagnetizing) {
+                    let dx = tbX - (s.posX + s.size/2); let dy = tbY - (s.posY + s.size/2); let dist = Math.hypot(dx, dy);
+                    s.velX += (dx / dist) * 2 * dt; s.velY += (dy / dist) * 2 * dt;
+                    s.velX *= Math.pow(0.95, dt); s.velY *= Math.pow(0.95, dt);
+                    s.posX += s.velX * dt; s.posY += s.velY * dt;
+                    if (dist < 40) { s.el.remove(); spikesList.splice(i, 1); continue; }
+                } else {
+                    s.velY += 0.8 * dt;
+                    s.posY += s.velY * dt;
+                    if (s.posY > ground - s.size) { s.posY = ground - s.size; s.velY = 0; s.velX = 0; }
+                    else if (s.velX) { s.posX += s.velX * dt; }
+                }
+                s.el.style.left = s.posX + 'px'; s.el.style.top = s.posY + 'px';
+            }
+
+            // Mythic Coin Drop Physics
             for (let i = coinsList.length - 1; i >= 0; i--) {
                 let c = coinsList[i];
                 c.velY += 0.8 * dt;
@@ -532,6 +567,32 @@
 
                 let pCenterX = p.posX + (p.size / 2); let pCenterY = p.posY + (p.size / 2);
                 if (p.tagCooldown > 0) p.tagCooldown -= dt;
+
+                // Spike AI Evasion & Collision (Death)
+                let isGrounded = (p.posY >= ground - p.size - 5) || (p.posY >= boxRect.top - p.size - 5 && p.posY <= boxRect.top - p.size + 5 && pCenterX > boxRect.left && pCenterX < boxRect.right);
+                if (!p.isDragging && !isMagnetizing) {
+                    for (let s of spikesList) {
+                        let dx = s.posX - p.posX;
+                        // Jump over spike
+                        if (isGrounded && ((p.velX > 0 && dx > 0 && dx < 120) || (p.velX < 0 && dx < 0 && dx > -120))) {
+                            if (Math.random() < (0.1 * dt)) { p.velY = -16; } 
+                        }
+                        
+                        // Die on hit
+                        let distHit = Math.hypot((p.posX + p.size/2) - (s.posX + s.size/2), (p.posY + p.size/2) - (s.posY + s.size/2));
+                        if (distHit < (p.size/2 + s.size/2 - 10)) {
+                            p.el.style.transition = 'all 0.3s ease-in'; p.el.style.transform = 'scale(0) rotate(720deg)';
+                            p.el.style.filter = 'drop-shadow(0 0 30px #e74c3c)'; p.el.style.opacity = '0';
+                            p.badge.style.opacity = '0'; p.bubble.style.opacity = '0';
+                            setTimeout(() => { p.el.remove(); p.badge.remove(); p.bubble.remove(); }, 300);
+                            if (p === itPet) toggleTag();
+                            p.isDeleted = true;
+                            break; // Stop checking spikes if dead
+                        }
+                    }
+                }
+
+                if (p.isDeleted) return;
 
                 if (isMagnetizing && !p.isDragging) {
                     let dx = tbX - pCenterX; let dy = tbY - pCenterY; let dist = Math.hypot(dx, dy);
@@ -730,7 +791,7 @@
             });
 
             pets = pets.filter(p => !p.isDeleted);
-            if (isMagnetizing && pets.length === 0) { isMagnetizing = false; trashBin.classList.remove('magnet-active'); }
+            if (isMagnetizing && pets.length === 0 && spikesList.length === 0) { isMagnetizing = false; trashBin.classList.remove('magnet-active'); }
 
             requestAnimationFrame(engineLoop);
         }
