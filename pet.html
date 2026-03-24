@@ -266,7 +266,6 @@
         let boxOffsetX = 0; let boxOffsetY = 0;
 
         solidBox.addEventListener('mousedown', (e) => {
-            // Prevent dragging if clicking a button or menu
             if (e.target.tagName === 'BUTTON' || e.target.closest('.action-btn') || e.target.tagName === 'INPUT' || e.target.closest('.toolbox-menu')) return;
             
             isDraggingBox = true;
@@ -797,11 +796,21 @@
                     if (pCenterX > boxRect.left && pCenterX < boxRect.right && !isNearMythic) {
                         if (p.velY >= 0 && prevY + p.size <= boxRect.top + 15 && p.posY + p.size >= boxRect.top) {
                             p.posY = boxRect.top - p.size;
-                            if (p.mode.id === 'Wave') p.velY *= -1; else { p.velY *= -0.4; if (weatherMode === 1) p.velX *= Math.pow(0.98, dt); else p.velX *= Math.pow(0.8, dt); }
+                            if (p.mode.id === 'Wave') p.velY *= -1; 
+                            else { 
+                                p.velY *= -0.4; 
+                                if (weatherMode === 1) p.velX *= Math.pow(0.98, dt);
+                                else p.velX *= Math.pow(0.8, dt); 
+                            }
                         }
                         if (p.velY <= 0 && prevY >= boxRect.bottom - 15 && p.posY <= boxRect.bottom) {
                             p.posY = boxRect.bottom;
-                            if (p.mode.id === 'Wave') p.velY *= -1; else { p.velY *= -0.4; if (weatherMode === 1) p.velX *= Math.pow(0.98, dt); else p.velX *= Math.pow(0.8, dt); }
+                            if (p.mode.id === 'Wave') p.velY *= -1; 
+                            else { 
+                                p.velY *= -0.4; 
+                                if (weatherMode === 1) p.velX *= Math.pow(0.98, dt);
+                                else p.velX *= Math.pow(0.8, dt); 
+                            }
                         }
                     }
 
@@ -816,13 +825,25 @@
                     if (p.posY > ground - p.size) {
                         p.posY = ground - p.size; 
                         if (p.mode.id === 'Wave') p.velY *= -1; 
-                        else { p.velY *= -0.4; if (p.mode.id !== 'Ship' && p.mode.id !== 'Jetpack') { if (weatherMode === 1) p.velX *= Math.pow(0.98, dt); else p.velX *= Math.pow(0.8, dt); } }
+                        else { 
+                            p.velY *= -0.4; 
+                            if (p.mode.id !== 'Ship' && p.mode.id !== 'Jetpack') {
+                                if (weatherMode === 1) p.velX *= Math.pow(0.98, dt);
+                                else p.velX *= Math.pow(0.8, dt); 
+                            }
+                        }
                         if (Math.abs(p.velY) < 1) p.velY = 0; 
                     }
                     if (p.posY < 0) {
                         p.posY = 0; 
                         if (p.mode.id === 'Wave') p.velY *= -1; 
-                        else { p.velY *= -0.4; if (p.mode.id !== 'Ship' && p.mode.id !== 'Jetpack') { if (weatherMode === 1) p.velX *= Math.pow(0.98, dt); else p.velX *= Math.pow(0.8, dt); } }
+                        else { 
+                            p.velY *= -0.4; 
+                            if (p.mode.id !== 'Ship' && p.mode.id !== 'Jetpack') {
+                                if (weatherMode === 1) p.velX *= Math.pow(0.98, dt);
+                                else p.velX *= Math.pow(0.8, dt); 
+                            }
+                        }
                         if (Math.abs(p.velY) < 1) p.velY = 0; 
                     }
 
@@ -959,5 +980,8 @@
 
         requestAnimationFrame(engineLoop);
     </script>
+    <script src="js/context-menu.js"></script>
+    <script src="js/core.js"></script>
+    <script src="/js/emoji-replacer.js"></script>
 </body>
 </html>
