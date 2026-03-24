@@ -52,7 +52,6 @@
         .action-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 15px rgba(0,0,0,0.2); }
         .action-btn:active { transform: scale(0.95); }
 
-        /* Unified Transparent Style for Main Buttons */
         .btn-spawn, .btn-tea, .btn-laser { 
             background: rgba(255,255,255,0.1); 
             color: #fff; 
@@ -60,7 +59,7 @@
         }
         
         .btn-laser.active { 
-            background: rgba(231, 76, 60, 0.3); /* Subtle red glow when active */
+            background: rgba(231, 76, 60, 0.3); 
             border-color: #e74c3c;
             box-shadow: 0 0 15px rgba(231, 76, 60, 0.4); 
         }
@@ -92,7 +91,7 @@
         .toolbox-item.tag-active { background: rgba(230, 126, 34, 0.2); border-color: #e67e22; color: #e67e22; }
         .toolbox-item i { width: 18px; height: 18px; }
 
-        /* --- DYNAMIC WEATHER CSS --- */
+        /* --- PERFECTLY LOOPING WEATHER CSS --- */
         #weather-overlay {
             position: fixed; inset: 0; pointer-events: none; z-index: 8000;
             transition: opacity 1s ease; opacity: 0;
@@ -104,21 +103,25 @@
                 radial-gradient(circle at 20% 30%, rgba(255,255,255,0.6) 1px, transparent 2px),
                 radial-gradient(circle at 80% 80%, rgba(255,255,255,0.9) 3px, transparent 4px);
             background-size: 100px 100px, 60px 60px, 150px 150px;
-            animation: snowFall 3s linear infinite;
+            animation: snowFall 6s linear infinite;
         }
         @keyframes snowFall {
             0% { background-position: 0px 0px, 0px 0px, 0px 0px; }
-            100% { background-position: 20px 100px, -20px 60px, 50px 150px; }
+            /* Exact multiples of the sizes guarantee a glitch-free loop */
+            100% { background-position: 100px 100px, -60px 60px, 150px 150px; } 
         }
+
         #weather-overlay.windy {
             opacity: 1;
-            background-image: repeating-linear-gradient(90deg, transparent, transparent 100px, rgba(255,255,255,0.05) 100px, rgba(255,255,255,0.05) 250px);
-            background-size: 300px 100%;
-            animation: windBlow 0.5s linear infinite;
+            background-image: 
+                linear-gradient(90deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%),
+                linear-gradient(90deg, transparent 45%, rgba(255,255,255,0.08) 50%, transparent 55%);
+            background-size: 600px 100%, 400px 100%;
+            animation: windBlow 1.2s linear infinite;
         }
         @keyframes windBlow {
-            0% { background-position: 0 0; }
-            100% { background-position: 300px 0; }
+            0% { background-position: 0px 0px, 0px 0px; }
+            100% { background-position: 600px 0px, 400px 0px; }
         }
 
         /* --- TRASH BIN --- */
@@ -143,10 +146,16 @@
             position: fixed; object-fit: contain; z-index: 9999; cursor: grab;
             filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)); transition: transform 0.15s; 
         }
-        .pet-entity:active { cursor: grabbing; }
+        /* Tighten shadow when grabbed */
+        .pet-entity:active { cursor: grabbing; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.7)); }
         .ghost-trail { opacity: 0.5; pointer-events: none; transition: opacity 0.5s linear; z-index: 9998; }
 
-        .pet-it { filter: drop-shadow(0 0 25px #ff0000) drop-shadow(0 0 10px #ff0000) brightness(1.2) !important; }
+        /* Throbbing IT Pet Glow */
+        @keyframes itPulse {
+            0%, 100% { filter: drop-shadow(0 0 20px #ff0000) drop-shadow(0 0 10px #ff0000) brightness(1.2); }
+            50% { filter: drop-shadow(0 0 40px #ff0000) drop-shadow(0 0 20px #ff0000) brightness(1.5); }
+        }
+        .pet-it { animation: itPulse 1s ease-in-out infinite !important; }
 
         @keyframes trueRGB {
             0% { filter: hue-rotate(0deg) drop-shadow(0 0 20px #ff0000); }
@@ -156,19 +165,20 @@
         }
         .sugar-rush { animation: trueRGB 1.5s linear infinite !important; }
 
+        /* Springy Morphing Animation */
         @keyframes morphFlash {
             0% { filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)) brightness(1) saturate(1); transform: scale(1) rotate(0deg); }
-            50% { filter: drop-shadow(0 0 40px #4ade80) brightness(2) saturate(3); transform: scale(0.3) rotate(180deg); }
+            50% { filter: drop-shadow(0 0 50px #4ade80) brightness(2.5) saturate(3); transform: scale(0.1) rotate(180deg); }
             100% { filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)) brightness(1) saturate(1); transform: scale(1) rotate(360deg); }
         }
-        .morphing { animation: morphFlash 0.6s cubic-bezier(0.25, 1, 0.5, 1) !important; }
+        .morphing { animation: morphFlash 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) !important; }
 
         @keyframes morphFlashMythic {
             0% { filter: drop-shadow(0 0 20px #ff0000); transform: scale(1) rotate(0deg); }
-            50% { filter: drop-shadow(0 0 60px #ffd700) brightness(2) saturate(3); transform: scale(0.3) rotate(180deg); }
+            50% { filter: drop-shadow(0 0 60px #ffd700) brightness(2.5) saturate(3); transform: scale(0.1) rotate(180deg); }
             100% { filter: drop-shadow(0 0 20px #ff0000); transform: scale(1) rotate(360deg); }
         }
-        .morphing-mythic { animation: morphFlashMythic 0.6s cubic-bezier(0.25, 1, 0.5, 1) !important; }
+        .morphing-mythic { animation: morphFlashMythic 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) !important; }
         
         .mode-badge {
             position: fixed; background: rgba(0,0,0,0.6); color: #4ade80; padding: 4px 10px;
@@ -538,13 +548,11 @@
                 } else {
                     s.velY += 0.8 * dt; s.posY += s.velY * dt;
                     
-                    // Wind affects spikes slightly
                     if (weatherMode === 2) s.velX += 0.5 * dt;
 
                     if (s.posY > ground - s.size) { 
                         s.posY = ground - s.size; 
                         s.velY = 0; 
-                        // Slippery spikes on snow
                         if (weatherMode === 1) s.velX *= Math.pow(0.95, dt);
                         else s.velX = 0; 
                     }
@@ -557,7 +565,6 @@
                 let c = coinsList[i];
                 c.velY += 0.8 * dt; c.posY += c.velY * dt;
                 
-                // Wind affects coins
                 if (weatherMode === 2) c.posX += 1.5 * dt;
 
                 if (c.posY > ground - 30) { c.posY = ground - 30; c.velY = 0; }
@@ -599,7 +606,7 @@
                 } else {
                     teaItem.velY += 0.8 * dt; 
                     teaItem.posY += teaItem.velY * dt;
-                    if (weatherMode === 2) teaItem.posX += 1.5 * dt; // Wind blows tea
+                    if (weatherMode === 2) teaItem.posX += 1.5 * dt;
                     if (teaItem.posY > ground - 40) { teaItem.posY = ground - 40; teaItem.velY = 0; }
                 }
                 if (teaItem) { teaItem.el.style.left = teaItem.posX + 'px'; teaItem.el.style.top = teaItem.posY + 'px'; }
@@ -704,7 +711,6 @@
                         coinsList.push({ el: cEl, posX: p.posX + p.size/2 - 15, posY: p.posY, velY: -6 });
                     }
 
-                    // WEATHER WIND APPLIED GLOBALLY
                     if (weatherMode === 2) p.velX += 1.5 * dt;
 
                     let isNearMythic = !p.isMythic && pets.some(m => m.isMythic && !m.isDeleted && Math.hypot(m.posX - p.posX, m.posY - p.posY) < 150);
@@ -722,7 +728,6 @@
                             if (p.mode.id === 'Wave') p.velY *= -1; 
                             else { 
                                 p.velY *= -0.4; 
-                                // ICE FRICTION
                                 if (weatherMode === 1) p.velX *= Math.pow(0.98, dt);
                                 else p.velX *= Math.pow(0.8, dt); 
                             }
@@ -732,7 +737,6 @@
                             if (p.mode.id === 'Wave') p.velY *= -1; 
                             else { 
                                 p.velY *= -0.4; 
-                                // ICE FRICTION
                                 if (weatherMode === 1) p.velX *= Math.pow(0.98, dt);
                                 else p.velX *= Math.pow(0.8, dt); 
                             }
@@ -753,7 +757,6 @@
                         else { 
                             p.velY *= -0.4; 
                             if (p.mode.id !== 'Ship' && p.mode.id !== 'Jetpack') {
-                                // ICE FRICTION
                                 if (weatherMode === 1) p.velX *= Math.pow(0.98, dt);
                                 else p.velX *= Math.pow(0.8, dt); 
                             }
@@ -766,7 +769,6 @@
                         else { 
                             p.velY *= -0.4; 
                             if (p.mode.id !== 'Ship' && p.mode.id !== 'Jetpack') {
-                                // ICE FRICTION
                                 if (weatherMode === 1) p.velX *= Math.pow(0.98, dt);
                                 else p.velX *= Math.pow(0.8, dt); 
                             }
@@ -856,7 +858,6 @@
                                 else if (p.mode.id === 'Spider' || p.mode.id === 'Swing') p.spiderFlipped = !p.spiderFlipped; 
                                 p.roamTimer = 40;
                             } else { 
-                                // On ice, do not force stop! Let them slide.
                                 if (weatherMode !== 1) p.velX = 0; 
                                 p.roamTimer = Math.random() * 100 + 50; 
                             }
