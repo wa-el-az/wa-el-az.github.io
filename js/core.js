@@ -48,12 +48,20 @@ if (localStorage.getItem('waelos_feature_contextmenu') === 'false') {
 // ==========================================
 // 4. SYSTEM TELEMETRY (Digital Wellbeing)
 // ==========================================
+// BUG FIX 1: Prevent memory thrashing by saving to localStorage less frequently
 let waelosTimeSpent = parseInt(localStorage.getItem('waelos_time_spent')) || 0;
 
 setInterval(() => {
     waelosTimeSpent++;
-    localStorage.setItem('waelos_time_spent', waelosTimeSpent);
 }, 1000);
+
+setInterval(() => {
+    localStorage.setItem('waelos_time_spent', waelosTimeSpent);
+}, 30000); // Save only every 30 seconds
+
+window.addEventListener('beforeunload', () => {
+    localStorage.setItem('waelos_time_spent', waelosTimeSpent); // Save right before leaving
+});
 
 // ==========================================
 // 5. GLOBAL CHEATS ENGINE
@@ -315,6 +323,9 @@ window.waelConfirm = (title, msg, onConfirm) => {
 // ==========================================
 // 9. GLASSMORPHISM SELECT ENGINE
 // ==========================================
+// BUG FIX 4: Prevent global click listener leak
+let customSelectListenerAttached = false;
+
 function initCustomSelects() {
     document.querySelectorAll('select.pwd-input').forEach(select => {
         if (select.nextElementSibling && select.nextElementSibling.classList.contains('custom-select-wrapper')) return;
@@ -476,18 +487,21 @@ function initCustomSelects() {
         });
     });
 
-    document.addEventListener('click', () => {
-        document.querySelectorAll('.custom-select-options').forEach(p => {
-            p.style.opacity = '0';
-            p.style.transform = 'translateY(-10px)';
-            setTimeout(() => p.style.display = 'none', 200);
+    if (!customSelectListenerAttached) {
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.custom-select-options').forEach(p => {
+                p.style.opacity = '0';
+                p.style.transform = 'translateY(-10px)';
+                setTimeout(() => p.style.display = 'none', 200);
+            });
+            document.querySelectorAll('.custom-select-trigger').forEach(t => t.style.borderColor = 'rgba(255,255,255,0.2)');
+            document.querySelectorAll('.custom-select-trigger i').forEach(i => {
+                i.style.transform = 'rotate(0deg)';
+                i.style.color = 'rgba(255,255,255,0.7)';
+            });
         });
-        document.querySelectorAll('.custom-select-trigger').forEach(t => t.style.borderColor = 'rgba(255,255,255,0.2)');
-        document.querySelectorAll('.custom-select-trigger i').forEach(i => {
-            i.style.transform = 'rotate(0deg)';
-            i.style.color = 'rgba(255,255,255,0.7)';
-        });
-    });
+        customSelectListenerAttached = true;
+    }
     
     if (window.lucide) lucide.createIcons();
 }
@@ -563,6 +577,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         walkAndReplace(document.body);
+
+        // BUG FIX 3: Add MutationObserver to catch dynamically loaded emojis
+        const emojiObserver = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.addedNodes && mutation.addedNodes.length > 0) {
+                    mutation.addedNodes.forEach((node) => {
+                        if (node.nodeType === Node.ELEMENT_NODE) {
+                            walkAndReplace(node);
+                        } else if (node.nodeType === Node.TEXT_NODE) {
+                            replaceMoroccoEmojiInTextNode(node);
+                        }
+                    });
+                }
+            });
+        });
+        
+        emojiObserver.observe(document.body, { childList: true, subtree: true });
     }
 
     // GLOBAL DYNAMIC BACK BUTTON LOGIC
