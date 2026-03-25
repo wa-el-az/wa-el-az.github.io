@@ -134,7 +134,15 @@
             if (gameWon.player == huPlayer) { 
                 statusText.innerHTML = `<i data-lucide="trophy"></i> You Win!`; 
                 statusText.style.color = "#4ade80"; 
-                window.unlockAchievement('ttt_win');
+                
+                // BUG FIX 5: Validate difficulty level to unlock the correct achievement
+                const currentDiff = document.getElementById('difficulty').value;
+                if (currentDiff === 'hard') {
+                    window.unlockAchievement('ttt_hack');
+                } else {
+                    window.unlockAchievement('ttt_win');
+                }
+
             } else { 
                 statusText.innerHTML = `<i data-lucide="skull"></i> AI Wins!`; 
                 statusText.style.color = "#ff6b6b"; 
