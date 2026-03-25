@@ -3,16 +3,23 @@ document.addEventListener("DOMContentLoaded", async () => {
         const response = await fetch('/json/emoji-mapping.json');
         const emojiMap = await response.json();
 
+        // BUG FIX 4: Build a regular expression to quickly test text nodes
+        const emojiKeys = Object.keys(emojiMap);
+        const escapeRegExp = (string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const emojiRegex = new RegExp(`(${emojiKeys.map(escapeRegExp).join('|')})`);
+
         function replaceEmojisInNode(node) {
             if (node.nodeType === Node.TEXT_NODE) {
                 let text = node.nodeValue;
-                if (!text) return;
+                
+                // FAST EXIT: If the text node contains no emojis from the map, exit instantly.
+                if (!text || !emojiRegex.test(text)) return;
 
                 let newHtml = text;
                 let hasReplaced = false;
 
                 for (const [emoji, filename] of Object.entries(emojiMap)) {
-                    if (text.includes(emoji)) {
+                    if (newHtml.includes(emoji)) {
                         hasReplaced = true;
                         
                         const imgSrc = filename.startsWith('/') 
