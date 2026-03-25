@@ -306,15 +306,36 @@
             const btn = document.getElementById('syncBtn');
             btn.disabled = true; btn.innerText = "Syncing..."; msg.innerText = "";
 
-            globalLB[loggedInUser].score = score;
-
-            const payload = {
-                message: `Score sync: ${loggedInUser}`,
-                content: btoa(unescape(encodeURIComponent(JSON.stringify(globalLB, null, 2))))
-            };
-            if (fileSha) payload.sha = fileSha;
-
             try {
+                // BUG FIX 3: Fetch fresh leaderboard data immediately before syncing to prevent wipeouts
+                const res = await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/json/leaderboard.json`, { 
+                    headers: { 'Authorization': `Bearer ${CONFIG.GITHUB_TOKEN}` }, 
+                    cache: "no-store" 
+                });
+                
+                if (res.ok) {
+                    const data = await res.json();
+                    fileSha = data.sha;
+                    const latestLB = JSON.parse(decodeURIComponent(escape(atob(data.content))));
+                    
+                    // Merge local score with latest global data
+                    globalLB = { ...latestLB };
+                    if (!globalLB[loggedInUser]) {
+                        globalLB[loggedInUser] = { score: score, pass: localStorage.getItem('tea_pass') };
+                    } else {
+                        globalLB[loggedInUser].score = Math.max(globalLB[loggedInUser].score, score);
+                    }
+                } else {
+                    // Fallback to updating local state if fetch fails
+                    globalLB[loggedInUser].score = score;
+                }
+
+                const payload = {
+                    message: `Score sync: ${loggedInUser}`,
+                    content: btoa(unescape(encodeURIComponent(JSON.stringify(globalLB, null, 2))))
+                };
+                if (fileSha) payload.sha = fileSha;
+
                 const push = await fetch(`https://api.github.com/repos/${CONFIG.REPO_PATH}/contents/json/leaderboard.json`, {
                     method: 'PUT', headers: { 'Authorization': `Bearer ${CONFIG.GITHUB_TOKEN}`, 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
                 });
