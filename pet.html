@@ -9,7 +9,7 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body { 
-            padding: 80px 5vw; 
+            padding: 80px 5vw;
             display: flex; 
             flex-direction: column; 
             align-items: center; 
@@ -31,93 +31,127 @@
             max-width: 90vw;
             position: relative;
             z-index: 50;
-            cursor: grab; /* Indicates it's draggable */
+            cursor: grab;
+            /* Indicates it's draggable */
         }
-        .header-card:active { cursor: grabbing; }
+        .header-card:active { cursor: grabbing;
+        }
 
-        .header-card h1 { margin: 0 0 10px; display: flex; align-items: center; justify-content: center; gap: 10px; pointer-events: none; }
-        .header-card p { color: var(--text-muted); line-height: 1.5; margin: 0 0 25px; pointer-events: none; }
+        .header-card h1 { margin: 0 0 10px; display: flex; align-items: center;
+        justify-content: center; gap: 10px; pointer-events: none; }
+        .header-card p { color: var(--text-muted);
+        line-height: 1.5; margin: 0 0 25px; pointer-events: none; }
 
         .controls-row {
-            display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+            display: flex;
+            gap: 12px; justify-content: center; flex-wrap: wrap;
             margin-bottom: 15px; align-items: center;
         }
 
         .action-btn {
-            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            display: inline-flex;
+            align-items: center; justify-content: center; gap: 8px;
             padding: 12px 20px; border-radius: 12px; font-weight: bold; font-size: 14px;
-            cursor: pointer; border: none; transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+            cursor: pointer; border: none;
+            transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
             font-family: inherit;
         }
-        .action-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 15px rgba(0,0,0,0.2); }
-        .action-btn:active { transform: scale(0.95); }
+        .action-btn:hover { transform: translateY(-2px);
+        box-shadow: 0 8px 15px rgba(0,0,0,0.2); }
+        .action-btn:active { transform: scale(0.95);
+        }
 
         .btn-spawn, .btn-tea, .btn-laser { 
-            background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.2); 
+            background: rgba(255,255,255,0.1);
+            color: #fff; border: 1px solid rgba(255,255,255,0.2); 
         }
         
         .btn-laser.active { 
-            background: rgba(231, 76, 60, 0.3); border-color: #e74c3c; box-shadow: 0 0 15px rgba(231, 76, 60, 0.4); 
+            background: rgba(231, 76, 60, 0.3);
+            border-color: #e74c3c; box-shadow: 0 0 15px rgba(231, 76, 60, 0.4);
         }
 
         /* --- TOOLBOX EXPANSION MENU --- */
-        .toolbox-wrapper { position: relative; display: inline-block; }
-        .btn-more { background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.3); }
-        .btn-more.active { background: #fff; color: #000; box-shadow: 0 0 20px rgba(255,255,255,0.4); }
+        .toolbox-wrapper { position: relative;
+        display: inline-block; }
+        .btn-more { background: rgba(255,255,255,0.15); color: #fff; border: 1px solid rgba(255,255,255,0.3);
+        }
+        .btn-more.active { background: #fff; color: #000; box-shadow: 0 0 20px rgba(255,255,255,0.4);
+        }
         
         .toolbox-menu {
-            position: absolute; top: calc(100% + 12px); left: 50%; transform: translateX(-50%) translateY(-10px);
+            position: absolute;
+            top: calc(100% + 12px); left: 50%; transform: translateX(-50%) translateY(-10px);
             background: rgba(20, 20, 20, 0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 16px;
             padding: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
             box-shadow: 0 15px 40px rgba(0,0,0,0.6); opacity: 0; pointer-events: none;
             transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); width: max-content; z-index: 100;
         }
-        .toolbox-menu.active { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(0); }
+        .toolbox-menu.active { opacity: 1; pointer-events: auto; transform: translateX(-50%) translateY(0);
+        }
         
         .toolbox-item {
-            display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 18px;
+            display: flex;
+            align-items: center; justify-content: center; gap: 8px; padding: 12px 18px;
             background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 10px; color: #fff; font-size: 13px; font-weight: bold;
+            border-radius: 10px; color: #fff;
+            font-size: 13px; font-weight: bold;
             cursor: pointer; transition: 0.2s; font-family: inherit; width: 100%;
         }
-        .toolbox-item:hover { background: rgba(255,255,255,0.15); transform: translateY(-2px); }
-        .toolbox-item:active { transform: scale(0.95); }
+        .toolbox-item:hover { background: rgba(255,255,255,0.15); transform: translateY(-2px);
+        }
+        .toolbox-item:active { transform: scale(0.95);
+        }
         
-        .toolbox-item.tag-active { background: rgba(230, 126, 34, 0.2); border-color: #e67e22; color: #e67e22; }
-        .toolbox-item.pvp-active { background: rgba(231, 76, 60, 0.2); border-color: #e74c3c; color: #e74c3c; }
-        .toolbox-item.calm-active { background: rgba(52, 152, 219, 0.2); border-color: #3498db; color: #3498db; }
-        .toolbox-item i { width: 18px; height: 18px; pointer-events: none; }
+        .toolbox-item.tag-active { background: rgba(230, 126, 34, 0.2);
+        border-color: #e67e22; color: #e67e22; }
+        .toolbox-item.pvp-active { background: rgba(231, 76, 60, 0.2);
+        border-color: #e74c3c; color: #e74c3c; }
+        .toolbox-item.calm-active { background: rgba(52, 152, 219, 0.2);
+        border-color: #3498db; color: #3498db; }
+        .toolbox-item i { width: 18px; height: 18px;
+        pointer-events: none; }
 
         /* --- EXTREME SURVIVAL ELEMENTS --- */
         .demon-entity {
-            position: fixed; 
+            position: fixed;
             width: 85px; 
             height: 85px; 
             z-index: 10000;
             filter: drop-shadow(0 0 25px #ff0000);
             pointer-events: none;
-            object-fit: contain; /* Keeps Demon proper aspect ratio */
+            object-fit: contain;
+            /* Keeps Demon proper aspect ratio */
         }
 
         /* Death Animations */
         @keyframes petCorrupt {
-            0% { filter: brightness(1) sepia(0) invert(0); transform: scale(1) rotate(0); }
-            20% { filter: brightness(0.5) sepia(1) saturate(5) hue-rotate(-50deg); transform: scale(1.1) translateX(5px); }
-            40% { filter: brightness(0) invert(1); transform: scale(1.2) translateX(-5px); }
-            100% { filter: brightness(0); transform: scale(0) rotate(180deg); opacity: 0; }
+            0% { filter: brightness(1) sepia(0) invert(0);
+            transform: scale(1) rotate(0); }
+            20% { filter: brightness(0.5) sepia(1) saturate(5) hue-rotate(-50deg);
+            transform: scale(1.1) translateX(5px); }
+            40% { filter: brightness(0) invert(1);
+            transform: scale(1.2) translateX(-5px); }
+            100% { filter: brightness(0);
+            transform: scale(0) rotate(180deg); opacity: 0; }
         }
-        .death-corrupt { animation: petCorrupt 0.6s cubic-bezier(0.6, -0.28, 0.735, 0.045) forwards !important; }
+        .death-corrupt { animation: petCorrupt 0.6s cubic-bezier(0.6, -0.28, 0.735, 0.045) forwards !important;
+        }
 
         @keyframes demonKill {
-            0% { transform: scale(1); filter: brightness(1); }
-            100% { transform: scale(2.5) rotate(720deg); filter: brightness(5) hue-rotate(180deg); opacity: 0; }
+            0% { transform: scale(1);
+            filter: brightness(1); }
+            100% { transform: scale(2.5) rotate(720deg);
+            filter: brightness(5) hue-rotate(180deg); opacity: 0; }
         }
-        .demon-death { animation: demonKill 0.7s ease-in forwards !important; }
+        .demon-death { animation: demonKill 0.7s ease-in forwards !important;
+        }
 
         /* --- PERFECTLY LOOPING WEATHER CSS --- */
         #weather-overlay {
-            position: fixed; inset: 0; pointer-events: none; z-index: 8000;
+            position: fixed;
+            inset: 0; pointer-events: none; z-index: 8000;
             transition: opacity 1s ease; opacity: 0;
         }
         #weather-overlay.snowing {
@@ -129,33 +163,44 @@
             background-size: 100px 100px, 60px 60px, 150px 150px;
             animation: snowFall 6s linear infinite;
         }
-        @keyframes snowFall { 0% { background-position: 0px 0px, 0px 0px, 0px 0px; } 100% { background-position: 100px 100px, -60px 60px, 150px 150px; } }
+        @keyframes snowFall { 0% { background-position: 0px 0px, 0px 0px, 0px 0px;
+        } 100% { background-position: 100px 100px, -60px 60px, 150px 150px;
+        } }
         #weather-overlay.windy {
             opacity: 1;
             background-image: linear-gradient(90deg, transparent 40%, rgba(255,255,255,0.15) 50%, transparent 60%), linear-gradient(90deg, transparent 45%, rgba(255,255,255,0.08) 50%, transparent 55%);
             background-size: 600px 100%, 400px 100%;
             animation: windBlow 1.2s linear infinite;
         }
-        @keyframes windBlow { 0% { background-position: 0px 0px, 0px 0px; } 100% { background-position: 600px 0px, 400px 0px; } }
+        @keyframes windBlow { 0% { background-position: 0px 0px, 0px 0px;
+        } 100% { background-position: 600px 0px, 400px 0px; } }
 
         /* --- TRASH BIN --- */
         #trashBin {
-            position: fixed; bottom: 30px; right: 30px; width: 65px; height: 65px;
-            background: rgba(0, 0, 0, 0.6); border: 2px solid rgba(255, 255, 255, 0.15); border-radius: 18px;
+            position: fixed;
+            bottom: 30px; right: 30px; width: 65px; height: 65px;
+            background: rgba(0, 0, 0, 0.6); border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 18px;
             display: flex; align-items: center; justify-content: center; color: #fff;
             cursor: pointer; z-index: 9990; backdrop-filter: blur(10px);
             transition: all 0.3s cubic-bezier(0.25, 1, 0.5, 1); box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         }
-        #trashBin:hover { background: rgba(231, 76, 60, 0.2); border-color: #e74c3c; color: #e74c3c; transform: scale(1.1) rotate(-5deg); }
-        .magnet-active { background: rgba(231, 76, 60, 0.8) !important; border-color: #fff !important; color: #fff !important; transform: scale(1.2) !important; box-shadow: 0 0 30px rgba(231, 76, 60, 0.6) !important; }
+        #trashBin:hover { background: rgba(231, 76, 60, 0.2); border-color: #e74c3c; color: #e74c3c;
+        transform: scale(1.1) rotate(-5deg); }
+        .magnet-active { background: rgba(231, 76, 60, 0.8) !important;
+        border-color: #fff !important; color: #fff !important; transform: scale(1.2) !important; box-shadow: 0 0 30px rgba(231, 76, 60, 0.6) !important;
+        }
 
         /* --- THE PET CSS --- */
         .pet-entity {
-            position: fixed; object-fit: contain; z-index: 9999; cursor: grab;
-            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)); transition: transform 0.15s; 
+            position: fixed;
+            object-fit: contain; z-index: 9999; cursor: grab;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)); transition: transform 0.15s;
         }
-        .pet-entity:active { cursor: grabbing; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.7)); }
-        .ghost-trail { opacity: 0.5; pointer-events: none; transition: opacity 0.5s linear; z-index: 9998; }
+        .pet-entity:active { cursor: grabbing; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.7));
+        }
+        .ghost-trail { opacity: 0.5; pointer-events: none; transition: opacity 0.5s linear; z-index: 9998;
+        }
 
         /* User WASD Control Ring */
         .pet-possessed {
@@ -164,37 +209,63 @@
             z-index: 10005 !important;
         }
 
-        @keyframes itPulse { 0%, 100% { filter: drop-shadow(0 0 20px #ff0000) drop-shadow(0 0 10px #ff0000) brightness(1.2); } 50% { filter: drop-shadow(0 0 40px #ff0000) drop-shadow(0 0 20px #ff0000) brightness(1.5); } }
-        .pet-it { animation: itPulse 1s ease-in-out infinite !important; }
+        @keyframes itPulse { 0%, 100% { filter: drop-shadow(0 0 20px #ff0000) drop-shadow(0 0 10px #ff0000) brightness(1.2);
+        } 50% { filter: drop-shadow(0 0 40px #ff0000) drop-shadow(0 0 20px #ff0000) brightness(1.5);
+        } }
+        .pet-it { animation: itPulse 1s ease-in-out infinite !important;
+        }
 
-        @keyframes trueRGB { 0% { filter: hue-rotate(0deg) drop-shadow(0 0 20px #ff0000); } 33% { filter: hue-rotate(120deg) drop-shadow(0 0 20px #00ff00); } 66% { filter: hue-rotate(240deg) drop-shadow(0 0 20px #0000ff); } 100% { filter: hue-rotate(360deg) drop-shadow(0 0 20px #ff0000); } }
-        .sugar-rush { animation: trueRGB 1.5s linear infinite !important; }
+        @keyframes trueRGB { 0% { filter: hue-rotate(0deg) drop-shadow(0 0 20px #ff0000);
+        } 33% { filter: hue-rotate(120deg) drop-shadow(0 0 20px #00ff00); } 66% { filter: hue-rotate(240deg) drop-shadow(0 0 20px #0000ff);
+        } 100% { filter: hue-rotate(360deg) drop-shadow(0 0 20px #ff0000); } }
+        .sugar-rush { animation: trueRGB 1.5s linear infinite !important;
+        }
 
-        @keyframes morphFlash { 0% { filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)) brightness(1) saturate(1); transform: scale(1) rotate(0deg); } 50% { filter: drop-shadow(0 0 50px #4ade80) brightness(2.5) saturate(3); transform: scale(0.1) rotate(180deg); } 100% { filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)) brightness(1) saturate(1); transform: scale(1) rotate(360deg); } }
-        .morphing { animation: morphFlash 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) !important; }
+        @keyframes morphFlash { 0% { filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)) brightness(1) saturate(1);
+        transform: scale(1) rotate(0deg); } 50% { filter: drop-shadow(0 0 50px #4ade80) brightness(2.5) saturate(3); transform: scale(0.1) rotate(180deg);
+        } 100% { filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5)) brightness(1) saturate(1); transform: scale(1) rotate(360deg);
+        } }
+        .morphing { animation: morphFlash 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+        }
 
-        @keyframes morphFlashMythic { 0% { filter: drop-shadow(0 0 20px #ff0000); transform: scale(1) rotate(0deg); } 50% { filter: drop-shadow(0 0 60px #ffd700) brightness(2.5) saturate(3); transform: scale(0.1) rotate(180deg); } 100% { filter: drop-shadow(0 0 20px #ff0000); transform: scale(1) rotate(360deg); } }
-        .morphing-mythic { animation: morphFlashMythic 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) !important; }
+        @keyframes morphFlashMythic { 0% { filter: drop-shadow(0 0 20px #ff0000);
+        transform: scale(1) rotate(0deg); } 50% { filter: drop-shadow(0 0 60px #ffd700) brightness(2.5) saturate(3); transform: scale(0.1) rotate(180deg);
+        } 100% { filter: drop-shadow(0 0 20px #ff0000); transform: scale(1) rotate(360deg);
+        } }
+        .morphing-mythic { animation: morphFlashMythic 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+        }
         
         .mode-badge {
-            position: fixed; background: rgba(0,0,0,0.6); color: #4ade80; padding: 4px 10px;
+            position: fixed;
+            background: rgba(0,0,0,0.6); color: #4ade80; padding: 4px 10px;
             border-radius: 99px; font-size: 12px; font-weight: bold; pointer-events: none; z-index: 10000;
-            opacity: 0; transition: opacity 0.3s; border: 1px solid rgba(74, 222, 128, 0.3);
+            opacity: 0;
+            transition: opacity 0.3s; border: 1px solid rgba(74, 222, 128, 0.3);
         }
 
         .speech-bubble {
-            position: fixed; background: #fff; color: #111; padding: 8px 12px; border-radius: 12px;
+            position: fixed;
+            background: #fff; color: #111; padding: 8px 12px; border-radius: 12px;
             font-size: 13px; font-weight: bold; pointer-events: none; z-index: 10001; opacity: 0;
             transition: opacity 0.3s; box-shadow: 0 10px 20px rgba(0,0,0,0.3); max-width: 180px; text-align: center;
         }
-        .speech-bubble::after { content: ''; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%); border-width: 6px 6px 0; border-style: solid; border-color: #fff transparent transparent transparent; }
-        .speech-bubble-mythic { background: #000; color: #4ade80; box-shadow: 0 10px 30px rgba(74, 222, 128, 0.4); border: 1px solid #4ade80; }
-        .speech-bubble-mythic::after { border-color: #000 transparent transparent transparent; }
+        .speech-bubble::after { content: ''; position: absolute; bottom: -6px; left: 50%; transform: translateX(-50%);
+        border-width: 6px 6px 0; border-style: solid; border-color: #fff transparent transparent transparent;
+        }
+        .speech-bubble-mythic { background: #000; color: #4ade80;
+        box-shadow: 0 10px 30px rgba(74, 222, 128, 0.4); border: 1px solid #4ade80;
+        }
+        .speech-bubble-mythic::after { border-color: #000 transparent transparent transparent;
+        }
 
-        .tea-drop, .dropped-coin, .hazard-spike { position: fixed; z-index: 9998; pointer-events: none; }
-        .tea-drop { font-size: 36px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5)); }
-        .dropped-coin { width: 30px; height: 30px; filter: drop-shadow(0 5px 10px rgba(255,215,0,0.5)); }
-        .hazard-spike { width: 45px; height: 45px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.6)); }
+        .tea-drop, .dropped-coin, .hazard-spike { position: fixed; z-index: 9998; pointer-events: none;
+        }
+        .tea-drop { font-size: 36px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5));
+        }
+        .dropped-coin { width: 30px; height: 30px; filter: drop-shadow(0 5px 10px rgba(255,215,0,0.5));
+        }
+        .hazard-spike { width: 45px; height: 45px; filter: drop-shadow(0 5px 10px rgba(0,0,0,0.6));
+        }
     </style>
 </head>
 <body>
@@ -208,20 +279,24 @@
         <p>Spawn pets, drag this window around, and don't worry—your pets automatically save and persist when you close the tab!</p>
         
         <div class="controls-row">
+          
             <button class="action-btn btn-spawn" onclick="spawnNewRandomPet()"><i data-lucide="copy-plus"></i> Spawn Pet</button>
             <button class="action-btn btn-tea" onclick="dropTea()"><i data-lucide="coffee"></i> Drop Tea</button>
             <button class="action-btn btn-laser" id="laserToggle" onclick="toggleLaser()"><i data-lucide="mouse-pointer-2"></i> Laser: OFF</button>
             
             <div class="toolbox-wrapper">
                 <button class="action-btn btn-more" id="toolboxTrigger" onclick="toggleToolbox(event)">
+          
                     <i data-lucide="layout-grid"></i> Toolbox
                 </button>
                 <div class="toolbox-menu" id="toolboxMenu">
                     <button class="toolbox-item" onclick="dropSpike()"><i data-lucide="triangle-alert" style="color: #e74c3c;"></i> Drop Spike</button>
-                    <button class="toolbox-item" onclick="spawnDemon()"><i data-lucide="skull" style="color: #ff0000;"></i> Demon AI</button>
+                    <button class="toolbox-item" onclick="spawnDemon()"><i data-lucide="skull" style="color: #ff0000;"></i> Demon 
+AI</button>
                     <button class="toolbox-item" id="pvpToggleBtn" onclick="togglePvP()"><i data-lucide="swords" style="color: #e74c3c;"></i> PvP: OFF</button>
                     <button class="toolbox-item" id="tagToggleBtn" onclick="toggleTag()"><i data-lucide="gamepad-2"></i> Play Tag</button>
                     <button class="toolbox-item" id="calmToggleBtn" onclick="toggleCalm()"><i data-lucide="moon" style="color: #3498db;"></i> Calm: OFF</button>
+                  
                     <button class="toolbox-item" id="weatherToggleBtn" onclick="cycleWeather()"><i data-lucide="cloud-sun"></i> Weather: Clear</button>
                 </div>
             </div>
@@ -235,7 +310,6 @@
     <script src="js/config.js"></script>
     <script>
         lucide.createIcons();
-
         const backBtn = document.getElementById('dynamicBackBtn');
         if (document.referrer.toLowerCase().includes('shortcuts')) {
             backBtn.href = 'shortcuts';
@@ -261,9 +335,9 @@
                 toolboxTrigger.classList.remove('active');
             }
         });
-
         // Weather
-        let weatherMode = 0; // 0 = Clear, 1 = Snow, 2 = Wind
+        let weatherMode = 0;
+        // 0 = Clear, 1 = Snow, 2 = Wind
         const weatherNames = ["Clear", "Snow", "Wind"];
         const weatherIcons = ["cloud-sun", "snowflake", "wind"];
         
@@ -300,7 +374,6 @@
         const solidBox = document.getElementById('solid-box');
         let isDraggingBox = false;
         let boxOffsetX = 0; let boxOffsetY = 0;
-
         solidBox.addEventListener('mousedown', (e) => {
             if (e.target.tagName === 'BUTTON' || e.target.closest('.action-btn') || e.target.tagName === 'INPUT' || e.target.closest('.toolbox-menu')) return;
             
@@ -308,17 +381,18 @@
             let rect = solidBox.getBoundingClientRect();
             
             if (window.getComputedStyle(solidBox).position !== 'absolute') {
+    
                 solidBox.style.left = rect.left + 'px';
                 solidBox.style.top = rect.top + 'px';
                 solidBox.style.position = 'absolute';
                 solidBox.style.transform = 'none';
                 solidBox.style.margin = '0';
+          
             }
             
             boxOffsetX = e.clientX - rect.left;
             boxOffsetY = e.clientY - rect.top;
         });
-
         // ==========================================
         // DESKTOP PET ENGINE DATA
         // ==========================================
@@ -330,54 +404,60 @@
             { id: 'Cube', src: 'assets/gd/cube_274.png' }, { id: 'Cube', src: 'assets/gd/cube_1 (1).png' },
             { id: 'Cube', src: 'assets/gd/cube_1.png' }, { id: 'Cube', src: 'assets/gd/cube_30.png' },
             { id: 'Cube', src: 'assets/gd/cube_342.png' }, { id: 'Cube', src: 'assets/gd/cube_420.png' },
-            { id: 'Cube', src: 'assets/gd/cube_485.png' }, { id: 'Cube', src: 'assets/gd/cube_50.png' },
+            { id: 'Cube', src: 'assets/gd/cube_485.png' }, { 
+            id: 'Cube', src: 'assets/gd/cube_50.png' },
             { id: 'Cube', src: 'assets/gd/cube_59.png' }, { id: 'Cube', src: 'assets/gd/cube_60.png' },
             { id: 'Ship', src: 'assets/gd/ship_48.png' }, { id: 'Ship', src: 'assets/gd/ship_1 (2).png' },
             { id: 'Ship', src: 'assets/gd/ship_1.png' }, { id: 'Ship', src: 'assets/gd/ship_10.png' },
             { id: 'Ship', src: 'assets/gd/ship_21.png' }, { id: 'Ship', src: 'assets/gd/ship_22.png' },
+   
             { id: 'Ship', src: 'assets/gd/ship_55.png' },
             { id: 'Ball', src: 'assets/gd/ball_91.png' }, { id: 'Ball', src: 'assets/gd/ball_1.png' },
             { id: 'Ball', src: 'assets/gd/ball_15.png' }, { id: 'Ball', src: 'assets/gd/ball_29.png' },
             { id: 'Ball', src: 'assets/gd/ball_33.png' }, { id: 'Ball', src: 'assets/gd/ball_37.png' },
-            { id: 'UFO', src: 'assets/gd/ufo_79.png' }, { id: 'UFO', src: 'assets/gd/ufo_1.png' },
+            { id: 'UFO', src: 'assets/gd/ufo_79.png' 
+            }, { id: 'UFO', src: 'assets/gd/ufo_1.png' },
             { id: 'UFO', src: 'assets/gd/ufo_12.png' }, { id: 'UFO', src: 'assets/gd/ufo_132.png' },
             { id: 'UFO', src: 'assets/gd/ufo_18.png' }, { id: 'UFO', src: 'assets/gd/ufo_57.png' },
             { id: 'Spider', src: 'assets/gd/spider_49.png' }, { id: 'Spider', src: 'assets/gd/spider_1 (1).png' },
-            { id: 'Spider', src: 'assets/gd/spider_1.png' }, { id: 'Spider', src: 'assets/gd/spider_2 (1).png' },
+            { id: 'Spider', src: 'assets/gd/spider_1.png' }, { id: 'Spider', src: 'assets/gd/spider_2 (1).png' 
+            },
             { id: 'Spider', src: 'assets/gd/spider_2.png' }, { id: 'Spider', src: 'assets/gd/spider_35.png' },
             { id: 'Spider', src: 'assets/gd/spider_38.png' }, { id: 'Spider', src: 'assets/gd/spider_50.png' },
             { id: 'Wave', src: 'assets/gd/wave_46.png' }, { id: 'Wave', src: 'assets/gd/wave_17 (1).png' },
             { id: 'Wave', src: 'assets/gd/wave_17.png' }, { id: 'Wave', src: 'assets/gd/wave_2.png' },
+       
             { id: 'Wave', src: 'assets/gd/wave_4.png' }, { id: 'Wave', src: 'assets/gd/wave_71.png' },
             { id: 'Wave', src: 'assets/gd/wave_81.png' },
             { id: 'Robot', src: 'assets/gd/robot_35.png' }, { id: 'Robot', src: 'assets/gd/robot_1 (1).png' },
             { id: 'Robot', src: 'assets/gd/robot_1.png' }, { id: 'Robot', src: 'assets/gd/robot_11.png' },
-            { id: 'Robot', src: 'assets/gd/robot_16.png' }, { id: 'Robot', src: 'assets/gd/robot_29.png' },
+            { id: 'Robot', src: 'assets/gd/robot_16.png' }, { id: 
+            'Robot', src: 'assets/gd/robot_29.png' },
             { id: 'Robot', src: 'assets/gd/robot_68.png' },
             { id: 'Swing', src: 'assets/gd/swing_17.png' }, { id: 'Swing', src: 'assets/gd/swing_1 (1).png' },
             { id: 'Swing', src: 'assets/gd/swing_1 (2).png' }, { id: 'Swing', src: 'assets/gd/swing_1 (3).png' },
             { id: 'Swing', src: 'assets/gd/swing_1.png' }, { id: 'Swing', src: 'assets/gd/swing_13.png' },
+        
             { id: 'Swing', src: 'assets/gd/swing_15.png' },
             { id: 'Jetpack', src: 'assets/gd/jetpack_3.png' }, { id: 'Jetpack', src: 'assets/gd/jetpack_1 (1).png' },
             { id: 'Jetpack', src: 'assets/gd/jetpack_1 (2).png' }, { id: 'Jetpack', src: 'assets/gd/jetpack_1 (3).png' },
             { id: 'Jetpack', src: 'assets/gd/jetpack_1.png' }, { id: 'Jetpack', src: 'assets/gd/jetpack_2.png' }
         ];
-
         const DIALOGUE = [
             "WaelOS is running so smoothly...", "Have you redeemed any secret codes yet?", 
             "Where is the Windows Vault?", "Did you debloat Windows 11 today?",
             "My ThinkPad needs more RAM...", "Rectify11 makes everything look better.",
             "Error 404: Tea not found.", "Let me check the hardware specs.",
+        
             "I think there's a bug in my Python script.", "Is the glassmorphism blur set to 20px?",
             "I wonder if I can run Asphalt 8 in here...", "Look at me go!", 
             "I love exploring!", "Don't drop me!", "I just beat Stereo Madness!",
             "I'm practicing my wave spam.", "Fire in the hole!", "BloodBath is too hard...",
+         
             "Mint tea is the absolute best. 🍵", "Guercif weather is nice today!",
             "Do we have Math or SVT next?", "A proud Moroccan pet! 🇲🇦"
         ];
-
         const MYTHIC_DIALOGUE = ["Accessing Root Directory...", "I know about the Windows Vault.", "Bypassing terminal security protocols...", "I am self-aware.", "Quantum Wrap initialized.", "Anti-Gravity Aura active.", "System overload imminent.", "Where is the Mint Tea source code?", "Executing Hyper-Dash.", "You cannot contain me."];
-
         let pets = [];
         let coinsList = [];
         let spikesList = [];
@@ -391,12 +471,10 @@
         let mouseX = window.innerWidth / 2;
         let mouseY = window.innerHeight / 2;
         let activeBubblesQueue = [];
-
         // WASD Possession Variables
         let possessedPet = null;
         // Supports WASD + AZERTY (zqsd) and arrows
         const keys = { w: false, a: false, s: false, d: false, z: false, q: false, arrowup: false, arrowdown: false, arrowleft: false, arrowright: false };
-
         let secretTyping = "";
         window.addEventListener('keydown', (e) => {
             let k = e.key.toLowerCase();
@@ -405,20 +483,20 @@
             
             // "mythic" secret code listener
             if (k.length === 1) { 
+ 
                 secretTyping += k;
                 if (secretTyping.length > 6) secretTyping = secretTyping.slice(-6);
                 if (secretTyping === "mythic") {
                     spawnNewRandomPet({ forceMythic: true });
+                  
                     secretTyping = ""; 
                 }
             }
         });
-
         window.addEventListener('keyup', (e) => {
             let k = e.key.toLowerCase();
             if (keys.hasOwnProperty(k)) keys[k] = false;
         });
-
         function unpossess() {
             if (possessedPet) {
                 possessedPet.el.classList.remove('pet-possessed');
@@ -431,27 +509,28 @@
         document.body.addEventListener('dblclick', (e) => {
             if (e.target.tagName !== 'IMG' && possessedPet) unpossess();
         });
-
         // GLOBAL MOUSE EVENTS (Optimized for performance)
         window.addEventListener('mousemove', (e) => {
             mouseX = e.clientX; mouseY = e.clientY;
             
             if (isDraggingBox) {
                 solidBox.style.left = (e.clientX - boxOffsetX) + 'px';
-                solidBox.style.top = (e.clientY - boxOffsetY) + 'px';
+                solidBox.style.top = 
+                (e.clientY - boxOffsetY) + 'px';
             }
             
             pets.forEach(p => {
                 if (p.isDragging) {
                     p.velX = e.clientX - p.lastX; p.velY = e.clientY - p.lastY;
+           
                     p.lastX = e.clientX; p.lastY = e.clientY;
                     p.posX = e.clientX - p.offsetX; p.posY = e.clientY - p.offsetY;
                     if (p.velX > 0) p.isFacingRight = true;
                     if (p.velX < 0) p.isFacingRight = false;
+     
                 }
             });
         });
-
         window.addEventListener('mouseup', () => {
             if (isDraggingBox) isDraggingBox = false;
 
@@ -459,17 +538,21 @@
                 if (p.isDragging) {
                     p.isDragging = false;
                     p.el.style.transition = 'transform 0.15s'; 
+   
                     p.roamTimer = 60; 
                     if (p.mode.id === 'Spider' || p.mode.id === 'Swing') p.spiderFlipped = false;
 
                     let tbRect = trashBin.getBoundingClientRect();
-                    let pCenterX = p.posX + p.size / 2;
+                    let pCenterX = p.posX + p.size / 
+                    2;
                     let pCenterY = p.posY + p.size / 2;
                     
                     if (pCenterX > tbRect.left - 30 && pCenterX < tbRect.right + 30 && pCenterY > tbRect.top - 30 && pCenterY < tbRect.bottom + 30) {
+         
                         p.el.style.transition = 'all 0.4s ease-in'; p.el.style.transform = 'scale(0) rotate(360deg)';
                         p.el.style.opacity = '0'; p.badge.style.opacity = '0'; p.bubble.style.opacity = '0';
-                        setTimeout(() => { p.el.remove(); p.badge.remove(); p.bubble.remove(); }, 400);
+                        setTimeout(() => { p.el.remove();
+                        p.badge.remove(); p.bubble.remove(); }, 400);
                         if (p === itPet) toggleTag(); 
                         p.isDeleted = true;
                         trashBin.style.transform = 'scale(1.2)';
@@ -535,9 +618,10 @@
         }
 
         function dropTea() {
-            if (teaItem) return; 
+            if (teaItem) return;
             teaItem = { el: document.createElement('div'), posX: Math.random() * (window.innerWidth - 50), posY: -50, velY: 0 };
-            teaItem.el.className = 'tea-drop'; teaItem.el.innerText = '🍵';
+            teaItem.el.className = 'tea-drop';
+            teaItem.el.innerText = '🍵';
             document.body.appendChild(teaItem.el);
         }
 
@@ -568,6 +652,7 @@
                 posY: 300, 
                 velX: 0, 
                 velY: 0, 
+       
                 isDeleted: false 
             };
             demon.el.src = 'https://static.wikia.nocookie.net/geometry-dash/images/9/97/ExtremeDemon.png';
@@ -619,7 +704,7 @@
             petObj.bubble.className = petObj.isMythic ? 'speech-bubble speech-bubble-mythic' : 'speech-bubble';
 
             document.body.appendChild(petObj.el); 
-            document.body.appendChild(petObj.badge); 
+            document.body.appendChild(petObj.badge);
             document.body.appendChild(petObj.bubble);
 
             petObj.el.addEventListener('mousedown', (e) => {
@@ -627,12 +712,14 @@
                 petObj.isDragging = true;
                 petObj.offsetX = e.clientX - petObj.posX; petObj.offsetY = e.clientY - petObj.posY;
                 petObj.lastX = e.clientX; petObj.lastY = e.clientY;
+              
                 petObj.velX = 0; petObj.velY = 0;
                 petObj.el.style.transition = 'none'; 
 
                 if (thiefPet === petObj) {
                     thiefPet = null; backBtn.style.position = 'fixed'; backBtn.style.top = '24px'; backBtn.style.right = '24px'; backBtn.style.left = 'auto';
                 }
+    
             });
 
             // WASD POSSESSION LISTENER
@@ -641,9 +728,9 @@
                 if (possessedPet) unpossess();
                 possessedPet = petObj;
                 petObj.el.classList.add('pet-possessed');
+     
                 handleSpeech(petObj, "Player 1 Ready!");
             });
-
             pets.push(petObj);
         }
 
@@ -651,25 +738,33 @@
             let isRgbCheatOn = localStorage.getItem('waelos_cheat_rgb_multiplier') === 'true';
             let isMythic = customData && customData.forceMythic ? true : (customData && customData.forceNormal ? false : (isRgbCheatOn || Math.random() < 0.01));
             let mode = customData && customData.modeId ? {id: customData.modeId, src: customData.modeSrc} : GAMEMODES[Math.floor(Math.random() * GAMEMODES.length)];
-
             const petObj = {
                 el: document.createElement('img'), badge: document.createElement('div'), bubble: document.createElement('div'),
                 mode: mode,
-                posX: customData && customData.posX !== undefined ? customData.posX : window.innerWidth / 2 + (Math.random() * 100 - 50), 
-                posY: customData && customData.posY !== undefined ? customData.posY : 100, 
-                velX: customData && customData.velX !== undefined ? customData.velX : 0, 
-                velY: customData && customData.velY !== undefined ? customData.velY : 0,
-                isFacingRight: customData && customData.isFacingRight !== undefined ? customData.isFacingRight : true, 
+                posX: customData && customData.posX !== undefined ?
+                customData.posX : window.innerWidth / 2 + (Math.random() * 100 - 50), 
+                posY: customData && customData.posY !== undefined ?
+                customData.posY : 100, 
+                velX: customData && customData.velX !== undefined ?
+                customData.velX : 0, 
+                velY: customData && customData.velY !== undefined ?
+                customData.velY : 0,
+                isFacingRight: customData && customData.isFacingRight !== undefined ?
+                customData.isFacingRight : true, 
                 roamTimer: 60, transformTimer: Math.random() * 3600 + 600, speechTimer: Math.random() * 5400 + 1800,
-                spawnTimer: customData && customData.spawnTimer !== undefined ? customData.spawnTimer : Math.random() * 3600 + 1200, 
-                spiderFlipped: false, rotation: 0, sugarRush: customData && customData.sugarRush ? customData.sugarRush : 0, isDragging: false,
-                offsetX: 0, offsetY: 0, lastX: 0, lastY: 0, isMythic: isMythic, size: isMythic ? 65 : 50, 
-                isDeleted: false, isIt: customData && customData.isIt ? customData.isIt : false, tagCooldown: customData && customData.tagCooldown ? customData.tagCooldown : 0,
+                spawnTimer: customData && customData.spawnTimer !== undefined ?
+                customData.spawnTimer : Math.random() * 3600 + 1200, 
+                spiderFlipped: false, rotation: 0, sugarRush: customData && customData.sugarRush ?
+                customData.sugarRush : 0, isDragging: false,
+                offsetX: 0, offsetY: 0, lastX: 0, lastY: 0, isMythic: isMythic, size: isMythic ?
+                65 : 50, 
+                isDeleted: false, isIt: customData && customData.isIt ?
+                customData.isIt : false, tagCooldown: customData && customData.tagCooldown ? customData.tagCooldown : 0,
                 spiderFlipCooldown: 0,
-                hp: customData && customData.hp !== undefined ? customData.hp : 10,
+                hp: customData && customData.hp !== undefined ?
+                customData.hp : 10,
                 invincibility: 0
             };
-            
             initPet(petObj);
             
             if (petObj.isIt) {
@@ -692,7 +787,8 @@
             }));
             localStorage.setItem('waelos_saved_pets', JSON.stringify(petData));
         }
-        setInterval(savePets, 1000); // Auto-save every second
+        setInterval(savePets, 1000);
+        // Auto-save every second
 
         function loadPets() {
             const saved = localStorage.getItem('waelos_saved_pets');
@@ -706,25 +802,27 @@
                         lucide.createIcons();
                         return true;
                     }
-                } catch (e) { console.error("Failed to load pets", e); }
+                } catch (e) { console.error("Failed to load pets", e);
+                }
             }
             return false;
         }
 
         if (!loadPets()) spawnNewRandomPet();
-
         function morphPet(p) {
             let newMode;
             do { newMode = GAMEMODES[Math.floor(Math.random() * GAMEMODES.length)]; } while (newMode.id === p.mode.id);
 
             p.el.classList.add(p.isMythic ? 'morphing-mythic' : 'morphing');
-            p.spiderFlipped = false; p.rotation = 0; 
+            p.spiderFlipped = false;
+            p.rotation = 0; 
             
             setTimeout(() => {
                 if(p.isDeleted) return;
                 p.el.src = newMode.src; p.mode = newMode;
                 p.badge.innerText = `${p.mode.id} Mode`; p.badge.style.opacity = '1';
                 setTimeout(() => { if (!p.isDeleted) p.badge.style.opacity = '0'; }, 2000);
+          
             }, 300);
 
             setTimeout(() => { 
@@ -737,22 +835,21 @@
         // DYNAMIC PHYSICS ENGINE (DELTA-TIME)
         // ==========================================
         let lastTime = performance.now();
-
         function engineLoop(currentTime) {
             if (!currentTime) currentTime = performance.now();
             let dt = (currentTime - lastTime) / (1000 / 60);
             lastTime = currentTime;
             
-            if (dt > 2) dt = 2; 
+            if (dt > 2) dt = 2;
             if (dt < 0.01) dt = 0.01;
 
             const ground = window.innerHeight; const rightWall = window.innerWidth;
             const boxRect = solidBox.getBoundingClientRect();
             const tbRect = trashBin.getBoundingClientRect();
             const tbX = tbRect.left + tbRect.width / 2; const tbY = tbRect.top + tbRect.height / 2;
-            
             if (thiefPet && thiefPet.isDeleted) {
-                thiefPet = null; backBtn.style.position = 'fixed'; backBtn.style.top = '24px'; backBtn.style.right = '24px'; backBtn.style.left = 'auto';
+                thiefPet = null;
+                backBtn.style.position = 'fixed'; backBtn.style.top = '24px'; backBtn.style.right = '24px'; backBtn.style.left = 'auto';
             }
 
             // Extreme Demon Survival AI
@@ -762,9 +859,9 @@
                     if (!p.isDeleted && !p.isMythic) {
                         let d = Math.hypot(demon.posX - p.posX, demon.posY - p.posY);
                         if (d < minDist) { minDist = d; target = p; }
+      
                     }
                 });
-
                 if (target) {
                     let angle = Math.atan2(target.posY - demon.posY, target.posX - demon.posX);
                     demon.posX += Math.cos(angle) * 4 * dt; 
@@ -773,48 +870,58 @@
                         triggerDeath(target);
                     }
                 }
-                demon.el.style.left = demon.posX + 'px'; 
+                demon.el.style.left = demon.posX + 'px';
                 demon.el.style.top = demon.posY + 'px';
             }
 
             for (let i = spikesList.length - 1; i >= 0; i--) {
                 let s = spikesList[i];
                 if (isMagnetizing) {
-                    let dx = tbX - (s.posX + s.size/2); let dy = tbY - (s.posY + s.size/2); let dist = Math.hypot(dx, dy);
+                    let dx = tbX - (s.posX + s.size/2);
+                    let dy = tbY - (s.posY + s.size/2); let dist = Math.hypot(dx, dy);
                     s.velX += (dx / dist) * 2 * dt; s.velY += (dy / dist) * 2 * dt;
                     s.velX *= Math.pow(0.95, dt); s.velY *= Math.pow(0.95, dt);
                     s.posX += s.velX * dt; s.posY += s.velY * dt;
                     if (dist < 40) { s.el.remove(); spikesList.splice(i, 1); continue; }
                 } else {
-                    s.velY += 0.8 * dt; s.posY += s.velY * dt;
+                    s.velY += 0.8 * dt;
+                    s.posY += s.velY * dt;
                     if (weatherMode === 2) s.velX += 0.5 * dt;
                     if (s.posY > ground - s.size) { 
-                        s.posY = ground - s.size; s.velY = 0; s.velX = 0; 
+                        s.posY = ground - s.size;
+                        s.velY = 0; s.velX = 0; 
                     }
-                    if (Math.abs(s.velX) > 0) { s.posX += s.velX * dt; }
+                    if (Math.abs(s.velX) > 0) { s.posX += s.velX * dt;
+                    }
                 }
-                s.el.style.left = s.posX + 'px'; s.el.style.top = s.posY + 'px';
+                s.el.style.left = s.posX + 'px';
+                s.el.style.top = s.posY + 'px';
             }
 
             for (let i = coinsList.length - 1; i >= 0; i--) {
                 let c = coinsList[i];
                 c.life -= dt;
                 if (c.life <= 0) {
-                    c.el.style.transition = 'opacity 0.5s'; c.el.style.opacity = '0';
+                    c.el.style.transition = 'opacity 0.5s';
+                    c.el.style.opacity = '0';
                     setTimeout(() => c.el.remove(), 500); coinsList.splice(i, 1); continue;
                 }
 
-                c.velY += 0.8 * dt; c.posY += c.velY * dt;
+                c.velY += 0.8 * dt;
+                c.posY += c.velY * dt;
                 if (weatherMode === 2) c.posX += 1.5 * dt;
-                if (c.posY > ground - 30) { c.posY = ground - 30; c.velY = 0; }
-                c.el.style.left = c.posX + 'px'; c.el.style.top = c.posY + 'px';
+                if (c.posY > ground - 30) { c.posY = ground - 30; c.velY = 0;
+                }
+                c.el.style.left = c.posX + 'px';
+                c.el.style.top = c.posY + 'px';
 
                 let collected = false;
                 for (let p of pets) {
                     if (!p.isDeleted && !p.isMythic && !p.isDragging) {
-                        let dx = (p.posX + p.size/2) - (c.posX + 15); let dy = (p.posY + p.size/2) - (c.posY + 15);
+                        let dx = (p.posX + p.size/2) - (c.posX + 15);
+                        let dy = (p.posY + p.size/2) - (c.posY + 15);
                         if (Math.hypot(dx, dy) < (p.size/2 + 15)) {
-                            if (p === itPet) toggleTag(); 
+                            if (p === itPet) toggleTag();
                             collected = true; p.isMythic = true; p.size = 65;
                             p.el.style.width = '65px'; p.el.style.height = '65px'; p.el.classList.add('sugar-rush');
                             p.bubble.className = 'speech-bubble speech-bubble-mythic';
@@ -823,44 +930,51 @@
                         }
                     }
                 }
-                if (collected) { c.el.remove(); coinsList.splice(i, 1); }
+                if (collected) { c.el.remove();
+                coinsList.splice(i, 1); }
             }
 
             if (teaItem) {
                 let mythicPet = pets.find(m => m.isMythic && !m.isDeleted);
                 if (mythicPet && !isLaserMode && !isMagnetizing) {
-                    let dx = (mythicPet.posX + mythicPet.size/2) - teaItem.posX; let dy = (mythicPet.posY + mythicPet.size/2) - teaItem.posY;
+                    let dx = (mythicPet.posX + mythicPet.size/2) - teaItem.posX;
+                    let dy = (mythicPet.posY + mythicPet.size/2) - teaItem.posY;
                     let dist = Math.hypot(dx, dy);
                     if (dist > 30) { 
-                        let speed = isCalmMode ? 3 : 12;
-                        teaItem.posX += (dx / dist) * speed * dt; teaItem.posY += (dy / dist) * speed * dt; 
+                        let speed = isCalmMode ?
+                        3 : 12;
+                        teaItem.posX += (dx / dist) * speed * dt;
+                        teaItem.posY += (dy / dist) * speed * dt; 
                     } 
                     else {
-                        teaItem.el.remove(); teaItem = null;
+                        teaItem.el.remove();
+                        teaItem = null;
                         handleSpeech(mythicPet, "DATA CONSUMED.");
                     }
                 } else {
-                    teaItem.velY += 0.8 * dt; teaItem.posY += teaItem.velY * dt;
+                    teaItem.velY += 0.8 * dt;
+                    teaItem.posY += teaItem.velY * dt;
                     if (weatherMode === 2) teaItem.posX += 1.5 * dt;
-                    if (teaItem.posY > ground - 40) { teaItem.posY = ground - 40; teaItem.velY = 0; }
+                    if (teaItem.posY > ground - 40) { teaItem.posY = ground - 40; teaItem.velY = 0;
+                    }
                 }
-                if (teaItem) { teaItem.el.style.left = teaItem.posX + 'px'; teaItem.el.style.top = teaItem.posY + 'px'; }
+                if (teaItem) { teaItem.el.style.left = teaItem.posX + 'px';
+                teaItem.el.style.top = teaItem.posY + 'px'; }
             }
 
             for (let i = 0; i < pets.length; i++) {
                 for (let j = i + 1; j < pets.length; j++) {
-                    let p1 = pets[i]; let p2 = pets[j];
+                    let p1 = pets[i];
+                    let p2 = pets[j];
                     if (p1.isDragging || p2.isDragging || isMagnetizing || p1.isDeleted || p2.isDeleted) continue;
-
                     let dx = (p1.posX + p1.size/2) - (p2.posX + p2.size/2); let dy = (p1.posY + p1.size/2) - (p2.posY + p2.size/2);
                     let dist = Math.hypot(dx, dy); let minDist = (p1.size + p2.size) / 2;
-
                     if (dist < minDist) {
-                        let angle = Math.atan2(dy, dx); 
-                        
+                        let angle = Math.atan2(dy, dx);
                         // PvP Combat Bumping
                         if (isPvPMode && !p1.isMythic && !p2.isMythic) {
-                            let pushForce = isCalmMode ? 5 : 15; 
+                            let pushForce = isCalmMode ?
+                            5 : 15; 
                             p1.velX += Math.cos(angle) * pushForce; p2.velX -= Math.cos(angle) * pushForce;
                             p1.velY = p1.spiderFlipped ? 10 : -10;
                             p2.velY = p2.spiderFlipped ? 10 : -10;
@@ -871,7 +985,6 @@
                                 p2.hp -= 1;
                                 p1.invincibility = 30; // Cooldown
                                 p2.invincibility = 30;
-
                                 if (p1.hp <= 0 && p2.hp > 0) {
                                     triggerDeath(p1);
                                     p2.isMythic = true;
@@ -898,39 +1011,47 @@
                                 }
                             }
                             
-                            if (Math.random() < (0.2 * dt) && p1.speechTimer > 200 && p2.speechTimer > 200 && !p1.isDeleted && !p2.isDeleted) {
+                            if (Math.random() < (0.2 * dt) && p1.speechTimer > 200 && p2.speechTimer > 200 && 
+                            !p1.isDeleted && !p2.isDeleted) {
                                 const warCries = ["Charge!", "Die!", "Take that!", "Attack!", "Boom!"];
                                 handleSpeech(p1, warCries[Math.floor(Math.random() * warCries.length)]);
                                 p1.speechTimer = Math.random() * 1000 + 500;
                             }
                         } else {
-                            let pushForce = isCalmMode ? 0.5 : 2; 
+                            let pushForce = isCalmMode ?
+                            0.5 : 2; 
                             p1.velX += Math.cos(angle) * pushForce; p2.velX -= Math.cos(angle) * pushForce;
                         }
 
                         if (itPet) {
                             if (p1.isIt && !p2.isIt && !p2.isMythic && p1.tagCooldown <= 0 && p2.tagCooldown <= 0) {
+                                
                                 p1.isIt = false; p1.el.classList.remove('pet-it'); p1.tagCooldown = 60;
                                 p2.isIt = true; p2.el.classList.add('pet-it'); p2.tagCooldown = 60; itPet = p2;
                                 handleSpeech(p2, "Tag! You're It!");
                             } else if (p2.isIt && !p1.isIt && !p1.isMythic && p2.tagCooldown <= 0 && p1.tagCooldown <= 0) {
-                                p2.isIt = false; p2.el.classList.remove('pet-it'); p2.tagCooldown = 60;
+                                p2.isIt = false;
+                                p2.el.classList.remove('pet-it'); p2.tagCooldown = 60;
                                 p1.isIt = true; p1.el.classList.add('pet-it'); p1.tagCooldown = 60; itPet = p1;
                                 handleSpeech(p1, "Tag! You're It!");
                             }
                         }
 
                         if (p1.isMythic && !p2.isMythic) {
-                            p2.velY = isCalmMode ? -5 : -15; 
+                            p2.velY = isCalmMode ?
+                            -5 : -15; 
                             if (!isCalmMode) { handleSpeech(p1, "Move."); }
                         } else if (p2.isMythic && !p1.isMythic) {
-                            p1.velY = isCalmMode ? -5 : -15; 
+                            p1.velY = isCalmMode ?
+                            -5 : -15; 
                             if (!isCalmMode) { handleSpeech(p2, "Move."); }
                         } 
                         else if (!isPvPMode && Math.random() < (0.02 * dt) && p1.speechTimer > 200 && p2.speechTimer > 200 && !p1.isIt && !p2.isIt && !isCalmMode) {
+                    
                             handleSpeech(p1, "Watch out!");
                             handleSpeech(p2, "Oops!");
-                            p1.speechTimer = Math.random() * 1000 + 500; p2.speechTimer = Math.random() * 1000 + 500;
+                            p1.speechTimer = Math.random() * 1000 + 500;
+                            p2.speechTimer = Math.random() * 1000 + 500;
                         }
                     }
                 }
@@ -939,21 +1060,28 @@
             pets.forEach(p => {
                 if (p.isDeleted) return;
 
-                if (p.posX > window.innerWidth - p.size) p.posX = window.innerWidth - p.size;
+             
+                 if (p.posX > window.innerWidth - p.size) p.posX = window.innerWidth - p.size;
                 let pCenterX = p.posX + (p.size / 2); let pCenterY = p.posY + (p.size / 2);
                 if (p.tagCooldown > 0) p.tagCooldown -= dt;
                 if (p.invincibility > 0) p.invincibility -= dt;
+                
+                p.roamTimer -= dt; // FIX: Decrement roam timer so pets move when PvP is off
 
+            
                 let isGrounded = (p.posY >= ground - p.size - 5) || (p.posY >= boxRect.top - p.size - 5 && p.posY <= boxRect.top - p.size + 5 && pCenterX > boxRect.left && pCenterX < boxRect.right);
                 if (!p.isDragging && !isMagnetizing) {
                     for (let s of spikesList) {
+                  
                         let dx = s.posX - p.posX;
                         if (isGrounded && ((p.velX > 0 && dx > 0 && dx < 120) || (p.velX < 0 && dx < 0 && dx > -120))) {
                             if (Math.random() < (0.1 * dt)) { p.velY = -16; } 
+
                         }
                         let distHit = Math.hypot((p.posX + p.size/2) - (s.posX + s.size/2), (p.posY + p.size/2) - (s.posY + s.size/2));
                         if (distHit < (p.size/2 + s.size/2 - 10)) {
-                            p.el.style.transition = 'all 0.3s ease-in'; p.el.style.transform = 'scale(0) rotate(720deg)';
+                            p.el.style.transition = 'all 0.3s ease-in';
+                            p.el.style.transform = 'scale(0) rotate(720deg)';
                             p.el.style.filter = 'drop-shadow(0 0 30px #e74c3c)'; p.el.style.opacity = '0';
                             p.badge.style.opacity = '0'; p.bubble.style.opacity = '0';
                             setTimeout(() => { p.el.remove(); p.badge.remove(); p.bubble.remove(); }, 300);
@@ -964,15 +1092,16 @@
                     }
                 }
                 if (p.isDeleted) return;
-
                 if (isMagnetizing && !p.isDragging) {
-                    let dx = tbX - pCenterX; let dy = tbY - pCenterY; let dist = Math.hypot(dx, dy);
-                    p.velX += (dx / dist) * 2 * dt; p.velY += (dy / dist) * 2 * dt;
-                    p.velX *= Math.pow(0.95, dt); p.velY *= Math.pow(0.95, dt); 
+                    let dx = tbX - pCenterX;
+                    let dy = tbY - pCenterY; let dist = Math.hypot(dx, dy);
+                    p.velX += (dx / dist) * 2 * dt;
+                    p.velY += (dy / dist) * 2 * dt;
+                    p.velX *= Math.pow(0.95, dt); p.velY *= Math.pow(0.95, dt);
                     p.posX += p.velX * dt; p.posY += p.velY * dt;
-
                     if (dist < 40) {
-                        p.el.style.transition = 'all 0.3s ease-in'; p.el.style.transform = 'scale(0) rotate(720deg)';
+                        p.el.style.transition = 'all 0.3s ease-in';
+                        p.el.style.transform = 'scale(0) rotate(720deg)';
                         p.el.style.opacity = '0'; p.badge.style.opacity = '0'; p.bubble.style.opacity = '0';
                         setTimeout(() => { p.el.remove(); p.badge.remove(); p.bubble.remove(); }, 300);
                         if (p === itPet) toggleTag();
@@ -980,13 +1109,12 @@
                     }
                 } 
                 else if (!p.isDragging) {
-                    let baseMult = isCalmMode ? 0.2 : 1;
+                    let baseMult = isCalmMode ?
+                    0.2 : 1;
                     let spdMult = (p.sugarRush > 0 || p.isMythic) ? (baseMult * 2) : baseMult;
-                    
                     if (p.sugarRush > 0) p.sugarRush -= dt;
                     if (p.sugarRush > 0 && !p.isMythic) p.el.classList.add('sugar-rush');
                     else if (!p.isMythic) p.el.classList.remove('sugar-rush');
-
                     // Mythic Protection, Coins & Reproduction
                     if (p.isMythic) {
                         p.spawnTimer -= dt;
@@ -999,17 +1127,19 @@
                             let dToDemon = Math.hypot(p.posX - demon.posX, p.posY - demon.posY);
                             let angle = Math.atan2(demon.posY - p.posY, demon.posX - p.posX);
                             
-                            p.velX += Math.cos(angle) * 0.8 * dt; 
+                            p.velX += Math.cos(angle) * 0.8 * dt;
                             p.velY += Math.sin(angle) * 0.8 * dt;
                             
                             if (dToDemon < 50) {
-                                demon.el.classList.add('demon-death'); 
+                                demon.el.classList.add('demon-death');
                                 demon.isDeleted = true;
                                 for(let k=0; k<10; k++) {
                                     let c = { 
                                         el: document.createElement('img'), 
+           
                                         posX: demon.posX, posY: demon.posY, 
                                         velX: (Math.random()-0.5)*15, velY: -10-Math.random()*10, life: 600 
+                     
                                     };
                                     c.el.src = 'https://static.wikia.nocookie.net/geometry-dash-fan-ideas/images/4/4d/Stone_coin.png';
                                     c.el.className = 'dropped-coin'; 
@@ -1019,7 +1149,7 @@
                                 setTimeout(() => { demon.el.remove(); demon = null; }, 700);
                             }
                         } else if (Math.random() < (0.0002 * dt)) {
-                            let cEl = document.createElement('img'); 
+                            let cEl = document.createElement('img');
                             cEl.src = 'https://static.wikia.nocookie.net/geometry-dash-fan-ideas/images/4/4d/Stone_coin.png'; 
                             cEl.className = 'dropped-coin'; 
                             document.body.appendChild(cEl);
@@ -1028,11 +1158,11 @@
                     }
 
                     if (weatherMode === 2 && !isCalmMode) p.velX += 1.5 * dt;
-
                     // AI / WASD Controller Switch
                     if (p === possessedPet && !p.isDragging) {
                         // USER CONTROLS (WASD + ZQSD + ARROWS)
-                        let controlSpeed = isCalmMode ? 1 : 2;
+                        let controlSpeed = isCalmMode ?
+                        1 : 2;
                         if (keys.a || keys.q || keys.arrowleft) p.velX -= controlSpeed * dt;
                         if (keys.d || keys.arrowright) p.velX += controlSpeed * dt;
                         
@@ -1042,11 +1172,13 @@
                             } else if (p.mode.id === 'Wave') {
                                 p.velY = -8;
                             } else if (isGrounded) {
-                                p.velY = p.spiderFlipped ? 15 : -15;
+                                p.velY = p.spiderFlipped ?
+                                15 : -15;
                             }
                         }
                         
                         if (keys.s || keys.arrowdown) {
+                     
                             if (p.mode.id === 'Wave') {
                                 p.velY = 8;
                             } else if (!isGrounded && p.mode.id !== 'Spider' && p.mode.id !== 'Swing') {
@@ -1058,8 +1190,8 @@
                                 }
                             }
                         }
+        
                         if (p.spiderFlipCooldown > 0) p.spiderFlipCooldown -= dt;
-
                     } else {
                         // NORMAL AI
                         if (!p.isMythic && demon && !demon.isDeleted) {
@@ -1073,18 +1205,20 @@
                             let dx = teaItem.posX - pCenterX;
                             if (Math.abs(dx) > 10) p.velX += (dx > 0 ? 0.3 : -0.3) * spdMult * dt;
                             if (Math.hypot(dx, teaItem.posY - pCenterY) < 50) {
-                                teaItem.el.remove(); teaItem = null; p.sugarRush = 600; 
+                                teaItem.el.remove();
+                                teaItem = null; p.sugarRush = 600; 
                                 handleSpeech(p, "YUM!");
                             }
                         } else if (isLaserMode) {
-                            let dx = mouseX - pCenterX; 
+                            let dx = mouseX - pCenterX;
                             let dy = mouseY - pCenterY; 
                             let dist = Math.hypot(dx, dy);
                             if (dist > 20) {
                                 p.velX += (dx / dist) * 0.5 * spdMult * dt;
                                 if (p.mode.id === 'Ship' || p.mode.id === 'Jetpack') p.velY += (dy / dist) * 0.5 * spdMult * dt;
                                 else if (p.posY >= ground - p.size || p.posY <= 0 || (p.posY === boxRect.top - p.size) || p.posY === boxRect.bottom) {
-                                    if (dy < -50 && Math.random() < (0.1 * dt)) p.velY = p.spiderFlipped ? 15 : -15; 
+                                    if (dy < -50 && Math.random() < (0.1 * dt)) p.velY = p.spiderFlipped ?
+                                    15 : -15; 
                                 }
                             }
                         } else if (itPet && !p.isMythic && p.isIt) {
@@ -1092,33 +1226,41 @@
                             if (normalPetsCount < 2) {
                                 toggleTag();
                             } else {
-                                let closest = null; let minD = Infinity;
+                                let closest = null;
+                                let minD = Infinity;
                                 pets.forEach(o => {
                                     if (!o.isDeleted && !o.isMythic && !o.isIt) {
                                         let d = Math.hypot(p.posX - o.posX, p.posY - o.posY);
+    
                                         if (d < minD) { minD = d; closest = o; }
                                     }
+                 
                                 });
                                 if (closest) {
                                     let dx = closest.posX - p.posX;
                                     p.velX += (dx > 0 ? 0.3 : -0.3) * spdMult * dt;
                                     if (closest.posY < p.posY - 40 && p.posY >= ground - p.size - 5 && Math.random() < (0.05 * dt)) {
-                                        p.velY = p.spiderFlipped ? (isCalmMode ? 5 : 15) : (isCalmMode ? -5 : -15);
+                                        p.velY = p.spiderFlipped ?
+                                        (isCalmMode ? 5 : 15) : (isCalmMode ? -5 : -15);
                                     }
                                 }
                             }
-                        } else if (itPet && !p.isMythic && !p.isIt && Math.hypot(p.posX - itPet.posX, p.posY - itPet.posY) < 250) {
+                        } else if (itPet && !p.isMythic && !p.isIt && Math.hypot(p.posX - itPet.posX, p.posY - itPet.posY) < 
+                        250) {
                             let dx = p.posX - itPet.posX;
                             p.velX += (dx > 0 ? 0.4 : -0.4) * spdMult * dt;
                             if (Math.random() < (0.02 * dt) && p.posY >= ground - p.size - 5) {
-                                p.velY = p.spiderFlipped ? 15 : -15;
+                                p.velY = p.spiderFlipped ?
+                                15 : -15;
                             }
                         } else if (isPvPMode && !p.isMythic) {
                             // PvP Combat AI: Hunt nearest non-mythic
-                            let closest = null; let minD = Infinity;
+                            let closest = null;
+                            let minD = Infinity;
                             pets.forEach(o => {
                                 if (o !== p && !o.isDeleted && !o.isMythic) {
                                     let d = Math.hypot(p.posX - o.posX, p.posY - o.posY);
+          
                                     if (d < minD) { minD = d; closest = o; }
                                 }
                             });
@@ -1126,107 +1268,129 @@
                                 let dx = closest.posX - p.posX;
                                 p.velX += (dx > 0 ? 0.6 : -0.6) * spdMult * dt;
                                 if (closest.posY < p.posY - 40 && p.posY >= ground - p.size - 5 && Math.random() < (0.05 * dt)) {
-                                    p.velY = p.spiderFlipped ? (isCalmMode ? 5 : 15) : (isCalmMode ? -5 : -15);
+                                    p.velY = p.spiderFlipped ?
+                                    (isCalmMode ? 5 : 15) : (isCalmMode ? -5 : -15);
                                 }
                             }
                         } else if (p.roamTimer <= 0) {
                             const action = Math.random();
                             if (p.mode.id === 'Ship' || p.mode.id === 'Jetpack') {
-                                p.velX = (Math.random() - 0.5) * 12 * spdMult; p.velY = (Math.random() - 0.5) * 12 * spdMult; p.roamTimer = isCalmMode ? 180 : 60;
+                                p.velX = (Math.random() - 0.5) * 12 * spdMult;
+                                p.velY = (Math.random() - 0.5) * 12 * spdMult; p.roamTimer = isCalmMode ? 180 : 60;
                             } else if (p.mode.id === 'Wave') {
-                                p.velX = (Math.random() > 0.5 ? 6 : -6) * spdMult; p.velY = (Math.random() > 0.5 ? 6 : -6) * spdMult; p.roamTimer = isCalmMode ? 200 : 100;
+                                p.velX = (Math.random() > 0.5 ? 6 : -6) * spdMult;
+                                p.velY = (Math.random() > 0.5 ? 6 : -6) * spdMult; p.roamTimer = isCalmMode ? 200 : 100;
                             } else if (Math.abs(p.velY) < 1 || p.mode.id === 'Swing') {
                                 if (isCalmMode && action < 0.8) {
-                                    if (weatherMode !== 1) p.velX = 0; p.roamTimer = Math.random() * 200 + 100;
+                                    if (weatherMode !== 1) p.velX = 0;
+                                    p.roamTimer = Math.random() * 200 + 100;
                                 }
                                 else if (p.isMythic && (p.mode.id === 'Cube' || p.mode.id === 'Robot') && action < 0.15 && !isCalmMode) {
-                                    let ghost = document.createElement('img'); ghost.src = p.mode.src; ghost.className = 'pet-entity ghost-trail';
-                                    ghost.style.width = p.size + 'px'; ghost.style.height = p.size + 'px'; ghost.style.left = p.posX + 'px'; ghost.style.top = p.posY + 'px'; ghost.style.transform = p.el.style.transform;
-                                    document.body.appendChild(ghost); setTimeout(() => { ghost.style.opacity = '0'; setTimeout(() => ghost.remove(), 500); }, 50);
-                                    p.posX += p.isFacingRight ? 200 : -200; p.roamTimer = 30;
+                                    let ghost = document.createElement('img');
+                                    ghost.src = p.mode.src; ghost.className = 'pet-entity ghost-trail';
+                                    ghost.style.width = p.size + 'px'; ghost.style.height = p.size + 'px';
+                                    ghost.style.left = p.posX + 'px'; ghost.style.top = p.posY + 'px'; ghost.style.transform = p.el.style.transform;
+                                    document.body.appendChild(ghost);
+                                    setTimeout(() => { ghost.style.opacity = '0'; setTimeout(() => ghost.remove(), 500); }, 50);
+                                    p.posX += p.isFacingRight ? 200 : -200;
+                                    p.roamTimer = 30;
                                 } 
-                                else if (action < 0.3) { p.velX = -3 * spdMult; p.isFacingRight = false; p.roamTimer = isCalmMode ? Math.random() * 200 + 100 : Math.random() * 100 + 50; }
-                                else if (action < 0.6) { p.velX = 3 * spdMult; p.isFacingRight = true; p.roamTimer = isCalmMode ? Math.random() * 200 + 100 : Math.random() * 100 + 50; }
+                                else if (action < 0.3) { p.velX = -3 * spdMult;
+                                p.isFacingRight = false; p.roamTimer = isCalmMode ? Math.random() * 200 + 100 : Math.random() * 100 + 50;
+                                }
+                                else if (action < 0.6) { p.velX = 3 * spdMult;
+                                p.isFacingRight = true; p.roamTimer = isCalmMode ? Math.random() * 200 + 100 : Math.random() * 100 + 50;
+                                }
                                 else if (action < 0.8) {
-                                    if (p.mode.id === 'Cube' || p.mode.id === 'Ball') p.velY = p.spiderFlipped ? (isCalmMode ? 5 : 15) : (isCalmMode ? -5 : -15);
-                                    else if (p.mode.id === 'Robot') p.velY = p.spiderFlipped ? (isCalmMode ? 7 : 20) : (isCalmMode ? -7 : -20); 
-                                    else if (p.mode.id === 'UFO') p.velY = p.spiderFlipped ? (isCalmMode ? 4 : 10) : (isCalmMode ? -4 : -10);
+                                    if (p.mode.id === 'Cube' || p.mode.id === 'Ball') p.velY = p.spiderFlipped ?
+                                    (isCalmMode ? 5 : 15) : (isCalmMode ? -5 : -15);
+                                    else if (p.mode.id === 'Robot') p.velY = p.spiderFlipped ?
+                                    (isCalmMode ? 7 : 20) : (isCalmMode ? -7 : -20); 
+                                    else if (p.mode.id === 'UFO') p.velY = p.spiderFlipped ?
+                                    (isCalmMode ? 4 : 10) : (isCalmMode ? -4 : -10);
                                     else if (p.mode.id === 'Spider' || p.mode.id === 'Swing') p.spiderFlipped = !p.spiderFlipped; 
                                     p.roamTimer = isCalmMode ? 120 : 40;
                                 } else { 
-                                    if (weatherMode !== 1) p.velX = 0; p.roamTimer = isCalmMode ? Math.random() * 200 + 150 : Math.random() * 100 + 50; 
+                                    if (weatherMode !== 1) p.velX = 0;
+                                    p.roamTimer = isCalmMode ? Math.random() * 200 + 150 : Math.random() * 100 + 50;
                                 }
-                            } else if (p.mode.id === 'UFO' && action < 0.05) { p.velY = p.spiderFlipped ? (isCalmMode ? 4 : 10) : (isCalmMode ? -4 : -10); }
+                            } else if (p.mode.id === 'UFO' && action < 0.05) { p.velY = p.spiderFlipped ?
+                                (isCalmMode ? 4 : 10) : (isCalmMode ? -4 : -10);
+                            }
                         }
                     }
 
                     // Physics Apply (Gravity, Bounds, and Friction)
-                    let isNearMythic = !p.isMythic && pets.some(m => m.isMythic && !m.isDeleted && Math.hypot(m.posX - p.posX, m.posY - p.posY) < 150);
+                    let isNearMythic = !p.isMythic && pets.some(m => m.isMythic && !m.isDeleted 
+                    && Math.hypot(m.posX - p.posX, m.posY - p.posY) < 150);
                     let activeGravity = 0.8;
-                    if (p.mode.id === 'Ship' || p.mode.id === 'Jetpack' || p.mode.id === 'Wave') activeGravity = 0; 
+                    if (p.mode.id === 'Ship' || p.mode.id === 'Jetpack' || p.mode.id === 'Wave') activeGravity = 0;
                     if ((p.mode.id === 'Spider' || p.mode.id === 'Swing') && p.spiderFlipped) activeGravity = -0.8; 
                     if (isNearMythic) activeGravity = -0.5;
-
                     p.velY += activeGravity * dt; let prevY = p.posY;
                     p.posX += p.velX * dt; p.posY += p.velY * dt;
-
                     // Friction
                     p.velX *= 0.95;
-
                     // Obstacle Collisions
                     if (pCenterX > boxRect.left && pCenterX < boxRect.right && !isNearMythic) {
                         if (p.velY >= 0 && prevY + p.size <= boxRect.top + 15 && p.posY + p.size >= boxRect.top) {
+                          
                             p.posY = boxRect.top - p.size;
-                            if (p.mode.id === 'Wave') p.velY *= -1; 
+                            if (p.mode.id === 'Wave') p.velY *= -1;
                             else { 
-                                p.velY *= -0.4; 
+                                p.velY *= -0.4;
                                 if (weatherMode === 1) p.velX *= Math.pow(0.98, dt);
-                                else p.velX *= Math.pow(0.8, dt); 
+                                else p.velX *= Math.pow(0.8, dt);
                             }
                         }
                         if (p.velY <= 0 && prevY >= boxRect.bottom - 15 && p.posY <= boxRect.bottom) {
                             p.posY = boxRect.bottom;
                             if (p.mode.id === 'Wave') p.velY *= -1; 
                             else { 
-                                p.velY *= -0.4; 
+                                p.velY *= -0.4;
                                 if (weatherMode === 1) p.velX *= Math.pow(0.98, dt);
-                                else p.velX *= Math.pow(0.8, dt); 
+                                else p.velX *= Math.pow(0.8, dt);
                             }
                         }
                     }
 
                     // Screen Edge Collisions
                     if (p.isMythic) {
-                        if (p.posX < -p.size) p.posX = rightWall;
+           
+                         if (p.posX < -p.size) p.posX = rightWall;
                         if (p.posX > rightWall) p.posX = -p.size;
                     } else {
-                        if (p.posX < 0) { p.posX = 0; p.velX *= -1; if (p.mode.id === 'Ball') p.velY = isCalmMode ? -4 : -12; }
-                        if (p.posX > rightWall - p.size) { p.posX = rightWall - p.size; p.velX *= -1; if (p.mode.id === 'Ball') p.velY = isCalmMode ? -4 : -12; }
+                        if (p.posX < 0) { p.posX = 0;
+                            p.velX *= -1; if (p.mode.id === 'Ball') p.velY = isCalmMode ? -4 : -12;
+                        }
+                        if (p.posX > rightWall - p.size) { p.posX = rightWall - p.size;
+                            p.velX *= -1; if (p.mode.id === 'Ball') p.velY = isCalmMode ? -4 : -12;
+                        }
                     }
 
                     if (p.posY > ground - p.size) {
-                        p.posY = ground - p.size; 
+                        p.posY = ground - p.size;
                         if (p.mode.id === 'Wave') p.velY *= -1; 
                         else { 
-                            p.velY *= -0.4; 
+                            p.velY *= -0.4;
                             if (p.mode.id !== 'Ship' && p.mode.id !== 'Jetpack') {
                                 if (weatherMode === 1) p.velX *= Math.pow(0.98, dt);
                                 else p.velX *= Math.pow(0.8, dt); 
                             }
                         }
-                        if (Math.abs(p.velY) < 1) p.velY = 0; 
+                        if (Math.abs(p.velY) < 1) p.velY = 0;
                     }
                     if (p.posY < 0) {
-                        p.posY = 0; 
+                        p.posY = 0;
                         if (p.mode.id === 'Wave') p.velY *= -1; 
                         else { 
-                            p.velY *= -0.4; 
+                            p.velY *= -0.4;
                             if (p.mode.id !== 'Ship' && p.mode.id !== 'Jetpack') {
                                 if (weatherMode === 1) p.velX *= Math.pow(0.98, dt);
                                 else p.velX *= Math.pow(0.8, dt); 
                             }
                         }
-                        if (Math.abs(p.velY) < 1) p.velY = 0; 
+                        if (Math.abs(p.velY) < 1) p.velY = 0;
                     }
 
                     // Direction & Display Updates
@@ -1238,7 +1402,7 @@
                         if (keys.a || keys.q || keys.arrowleft) p.isFacingRight = false;
                     }
 
-                    p.el.style.left = p.posX + 'px'; 
+                    p.el.style.left = p.posX + 'px';
                     p.el.style.top = p.posY + 'px';
                     p.badge.style.left = p.posX + 'px'; 
                     p.badge.style.top = (p.posY - 20) + 'px';
@@ -1249,14 +1413,15 @@
                     let spiderScale = p.spiderFlipped ? ' scaleY(-1)' : '';
                     
                     if (p.mode.id === 'Ball' && Math.abs(p.velX) > 0.5 && !p.isDragging) {
-                        p.rotation += p.velX * 3 * dt; 
+                        p.rotation += p.velX * 3 * dt;
                         p.el.style.transform = `rotate(${p.rotation}deg)`;
                     } else if (p.mode.id === 'Ship' || p.mode.id === 'Jetpack') {
-                        let tilt = p.velY * 2; 
+                        let tilt = p.velY * 2;
                         if (!p.isFacingRight) tilt *= -1; 
                         p.el.style.transform = `${flipScale} rotate(${tilt}deg)`;
                     } else if (p.mode.id === 'Wave') {
-                        let tilt = p.velY > 0 ? 35 : -35; 
+                        let tilt = p.velY > 0 ?
+                        35 : -35; 
                         if (!p.isFacingRight) tilt *= -1; 
                         p.el.style.transform = `${flipScale} rotate(${tilt}deg)`;
                     } else {
@@ -1267,17 +1432,18 @@
                     if (p !== possessedPet) {
                         p.speechTimer -= dt;
                         if (p.speechTimer <= 0 && !p.isIt) {
-                            let dialogList = p.isMythic ? MYTHIC_DIALOGUE : DIALOGUE;
+                            let dialogList = p.isMythic ?
+                            MYTHIC_DIALOGUE : DIALOGUE;
                             handleSpeech(p, dialogList[Math.floor(Math.random() * dialogList.length)]);
-                            p.speechTimer = isCalmMode ? Math.random() * 10000 + 5000 : Math.random() * 5400 + 1800;
+                            p.speechTimer = isCalmMode ?
+                            Math.random() * 10000 + 5000 : Math.random() * 5400 + 1800;
                         }
                     }
                 }
             });
-
             pets = pets.filter(p => !p.isDeleted);
             if (isMagnetizing && pets.length === 0 && spikesList.length === 0) { 
-                isMagnetizing = false; 
+                isMagnetizing = false;
                 trashBin.classList.remove('magnet-active'); 
             }
 
