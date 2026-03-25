@@ -43,14 +43,7 @@ document.head.appendChild(sysStyle);
 
 // 2. The Core Unlock Function (With Security)
 window.unlockAchievement = function(id) {
-    const isAuthenticated = localStorage.getItem('gh_token') === CONFIG.GITHUB_TOKEN;
-    const isWael = localStorage.getItem('active_user') === 'Wael';
-
-    // Block saving for guests
-    if (!isAuthenticated || !isWael) {
-        console.warn("Achievement triggered, but not logged in as Wael. Progress not saved.");
-        return; 
-    }
+    // BUG FIX 1 & 2: Removed the security block that prevented guests from saving local achievements.
 
     if (!ACHIEVEMENTS[id] || unlocked.includes(id)) return;
 
