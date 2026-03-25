@@ -4,6 +4,6 @@ const CONFIG = {
     REPO_NAME: "WaelOS",
     REPO_PATH: "wa-el-az/WaelOS",
     ADMIN_USER: "Wael",
-    ADMIN_PASS: "Kiloalpha_5@"
+    ADMIN_PASS: "Kiloalpha_5@",
     GEMINI_API_KEY: "AIzaSyAc3ggmX03oTcTxQFdwNK-J5h7saMMEsd8"
 };
