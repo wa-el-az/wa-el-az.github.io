@@ -113,7 +113,6 @@ if (localStorage.getItem('waelos_feature_spotlight') !== 'false') {
         { name: "Home", url: "index", icon: "home" },
         { name: "Projects", url: "projects", icon: "layers" },
         { name: "Shortcuts", url: "shortcuts", icon: "zap" },
-        { name: "wAI Assistant", url: "ai", icon: "brain-circuit" },
         { name: "Desktop Pet", url: "pet", icon: "bot" }, 
         { name: "Tea Clicker", url: "tea", icon: "coffee" },
         { name: "Geometry Dash", url: "gd", icon: "play" },
