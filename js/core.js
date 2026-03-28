@@ -48,7 +48,6 @@ if (localStorage.getItem('waelos_feature_contextmenu') === 'false') {
 // ==========================================
 // 4. SYSTEM TELEMETRY (Digital Wellbeing)
 // ==========================================
-// BUG FIX 1: Prevent memory thrashing by saving to localStorage less frequently
 let waelosTimeSpent = parseInt(localStorage.getItem('waelos_time_spent')) || 0;
 
 setInterval(() => {
@@ -323,7 +322,6 @@ window.waelConfirm = (title, msg, onConfirm) => {
 // ==========================================
 // 9. GLASSMORPHISM SELECT ENGINE
 // ==========================================
-// BUG FIX 4: Prevent global click listener leak
 let customSelectListenerAttached = false;
 
 function initCustomSelects() {
@@ -578,7 +576,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         walkAndReplace(document.body);
 
-        // BUG FIX 3: Add MutationObserver to catch dynamically loaded emojis
         const emojiObserver = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
                 if (mutation.addedNodes && mutation.addedNodes.length > 0) {
@@ -617,3 +614,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 });
+
+// ==========================================
+// 11. PWA SERVICE WORKER REGISTRATION
+// ==========================================
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').then(registration => {
+            console.log('WaelOS PWA Engine Active:', registration.scope);
+        }).catch(error => {
+            console.error('WaelOS PWA Engine Failed:', error);
+        });
+    });
+}
