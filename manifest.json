@@ -6,17 +6,19 @@
   "display": "fullscreen",
   "background_color": "#0b0b0b",
   "theme_color": "#4ade80",
-  "orientation": "portrait",
+  "orientation": "portrait"
   "icons": [
     {
-      "src": "/assets/icon.png",
+      "src": "../assets/icon/android/mipmap-xxxhdpi/wael.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "/assets/icon.png",
+      "src": "../assets/icon/android/playstore-icon.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
